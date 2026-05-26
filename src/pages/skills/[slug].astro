@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import FichaDetalle from '../../components/FichaDetalle.astro';
+
+export async function getStaticPaths() {
+  const items = await getCollection('skills');
+  return items.map((item) => ({ params: { slug: item.id }, props: { item } }));
+}
+
+const { item } = Astro.props;
+const d = item.data;
+---
+
+<Base titulo={d.titulo} descripcion={d.resumen}>
+  <p><a href="/catalogo/">← Volver al catálogo</a></p>
+  <FichaDetalle
+    tipo="skill"
+    titulo={d.titulo}
+    nivel={d.nivel}
+    gratis={d.gratis}
+    resumen={d.resumen}
+    descripcion={d.descripcion}
+    accionTitulo="Cómo usar y acceder"
+    accionTexto={`${d.comoUsar}\n\n${d.comoAcceder}`}
+    ejemplo={d.ejemplo}
+    enlaces={d.enlaces}
+    tags={d.tags}
+    actualizado={d.actualizado}
+    revisarAntesDe={d.revisarAntesDe}
+  />
+</Base>

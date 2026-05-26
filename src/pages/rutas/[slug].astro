@@ -1,0 +1,44 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const rutas = await getCollection('rutas');
+  return rutas.map((ruta) => ({ params: { slug: ruta.id }, props: { ruta } }));
+}
+
+const { ruta } = Astro.props;
+const d = ruta.data;
+const carpeta: Record<string, string> = { skill: 'skills', mcp: 'mcps', ia: 'ias' };
+
+// Resolver cada paso a su ficha (título + href). Si la ref no existe, lo marcamos.
+const pasos = await Promise.all(
+  d.pasos.map(async (p) => {
+    const entry = await getEntry(((p.tipo === 'skill' ? 'skills' : p.tipo === 'mcp' ? 'mcps' : 'ias') as any), p.ref).catch(() => undefined);
+    return {
+      porque: p.porque,
+      titulo: entry?.data?.titulo ?? p.ref,
+      href: entry ? `/${carpeta[p.tipo]}/${p.ref}/` : null,
+      existe: !!entry,
+    };
+  })
+);
+---
+
+<Base titulo={d.titulo} descripcion={d.resumen}>
+  <p><a href="/#rutas">← Todas las rutas</a></p>
+  <div class="badges"><span class="badge">ruta</span><span class={`badge nivel-${d.nivel}`}>{d.nivel}</span></div>
+  <h1 class="titulo-pag">{d.titulo}</h1>
+  <p class="sub">{d.meta}</p>
+  <p>{d.resumen}</p>
+
+  <h2>Pasos</h2>
+  <ol class="pasos">
+    {pasos.map((p) => (
+      <li>
+        {p.href ? <a href={p.href}><strong>{p.titulo}</strong></a> : <strong>{p.titulo} (ficha pendiente)</strong>}
+        <div style="color:var(--text-soft)">{p.porque}</div>
+      </li>
+    ))}
+  </ol>
+</Base>

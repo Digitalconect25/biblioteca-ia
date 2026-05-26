@@ -1,0 +1,92 @@
+---
+import CopyButton from './CopyButton.astro';
+
+interface Enlace { texto: string; url: string; }
+interface Props {
+  tipo: 'skill' | 'mcp' | 'ia';
+  titulo: string;
+  nivel: string;
+  gratis?: boolean;
+  resumen: string;
+  descripcion: string;
+  // Acción inmediata (cómo acceder/conectar), depende del tipo.
+  accionTitulo: string;
+  accionTexto: string;
+  ejemplo?: string;
+  ejemploTitulo?: string;
+  funciones?: string[];
+  casosDeUso?: string[];
+  planPago?: string;
+  enlaces?: Enlace[];
+  tags?: string[];
+  actualizado: Date;
+  revisarAntesDe?: Date;
+}
+const {
+  tipo, titulo, nivel, gratis = true, resumen, descripcion,
+  accionTitulo, accionTexto, ejemplo, ejemploTitulo = 'Ejemplo',
+  funciones = [], casosDeUso = [], planPago, enlaces = [], tags = [],
+  actualizado, revisarAntesDe,
+} = Astro.props;
+
+const tipoLabel = { skill: 'Skill', mcp: 'MCP', ia: 'IA' }[tipo];
+const desactualizada = revisarAntesDe && new Date() > revisarAntesDe;
+const fmt = (d: Date) => d.toLocaleDateString('es', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<article data-pagefind-body>
+  <div class="badges">
+    <span class="badge">{tipoLabel}</span>
+    <span class={`badge nivel-${nivel}`}>{nivel}</span>
+    {gratis && <span class="badge gratis">gratis</span>}
+  </div>
+
+  <h1 class="titulo-pag">{titulo}</h1>
+  <p class="sub">{resumen}</p>
+
+  {desactualizada && (
+    <p class="aviso-stale">
+      ⚠️ Esta ficha pasó su fecha de revisión ({fmt(revisarAntesDe!)}). Algunos datos
+      (precios, límites) pueden haber cambiado. Verificá en los enlaces oficiales.
+    </p>
+  )}
+
+  <h2>Qué es</h2>
+  <p>{descripcion}</p>
+
+  <h2>{accionTitulo}</h2>
+  <p>{accionTexto}</p>
+
+  {funciones.length > 0 && (
+    <>
+      <h2>Funciones</h2>
+      <ul>{funciones.map((f) => <li>{f}</li>)}</ul>
+    </>
+  )}
+
+  {ejemplo && <CopyButton texto={ejemplo} etiqueta={ejemploTitulo} />}
+
+  {casosDeUso.length > 0 && (
+    <>
+      <h2>Casos de uso</h2>
+      <ul>{casosDeUso.map((c) => <li>{c}</li>)}</ul>
+    </>
+  )}
+
+  {planPago && (
+    <p><strong>Plan de pago:</strong> {planPago}</p>
+  )}
+
+  {enlaces.length > 0 && (
+    <>
+      <h2>Enlaces</h2>
+      <ul>{enlaces.map((e) => <li><a href={e.url} rel="noopener noreferrer" target="_blank">{e.texto}</a></li>)}</ul>
+    </>
+  )}
+
+  {tags.length > 0 && (
+    <div class="badges">{tags.map((t) => <span class="badge">#{t}</span>)}</div>
+  )}
+
+  <p class="sub" style="margin-top:1.5rem">Actualizado: {fmt(actualizado)}</p>
+</article>

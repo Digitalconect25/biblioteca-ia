@@ -1,0 +1,35 @@
+---
+interface Props {
+  href: string;
+  titulo: string;
+  resumen: string;
+  nivel: string;
+  gratis?: boolean;
+  tipo: string; // skill | mcp | ia
+  tags?: string[];
+}
+const { href, titulo, resumen, nivel, gratis = true, tipo, tags = [] } = Astro.props;
+const tipoLabel: Record<string, string> = { skill: 'Skill', mcp: 'MCP', ia: 'IA' };
+---
+
+<a
+  class="card"
+  href={href}
+  data-pagefind-filter={`tipo:${tipo}, nivel:${nivel}, gratis:${gratis ? 'sí' : 'no'}`}
+  data-tipo={tipo}
+  data-nivel={nivel}
+  data-gratis={gratis ? 'si' : 'no'}
+>
+  <div class="badges">
+    <span class="badge">{tipoLabel[tipo] ?? tipo}</span>
+    <span class={`badge nivel-${nivel}`}>{nivel}</span>
+    {gratis && <span class="badge gratis">gratis</span>}
+  </div>
+  <strong>{titulo}</strong>
+  <span style="color:var(--text-soft)">{resumen}</span>
+  {tags.length > 0 && (
+    <div class="badges" style="margin-top:auto">
+      {tags.slice(0, 3).map((t) => <span class="badge">#{t}</span>)}
+    </div>
+  )}
+</a>

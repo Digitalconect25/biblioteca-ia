@@ -1,0 +1,81 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import FichaCard from '../components/FichaCard.astro';
+
+const rutas = await getCollection('rutas');
+const skills = await getCollection('skills');
+const ias = await getCollection('ias');
+
+// Destacados: unos pocos ítems para mostrar el catálogo.
+const destacados = [
+  ...ias.slice(0, 2).map((i) => ({ href: `/ias/${i.id}/`, titulo: i.data.titulo, resumen: i.data.resumen, nivel: i.data.nivel, gratis: i.data.gratis, tipo: 'ia', tags: i.data.tags })),
+  ...skills.slice(0, 2).map((i) => ({ href: `/skills/${i.id}/`, titulo: i.data.titulo, resumen: i.data.resumen, nivel: i.data.nivel, gratis: i.data.gratis, tipo: 'skill', tags: i.data.tags })),
+];
+---
+
+<Base titulo="Aprendé IA, gratis y en español">
+  <section style="padding:1rem 0 1.5rem">
+    <h1 class="titulo-pag">Aprendé IA, gratis y en español</h1>
+    <p class="sub" style="font-size:1.1rem;max-width:60ch">
+      Una biblioteca interactiva de skills, MCPs y las IAs más usadas: qué son, cómo se usan,
+      cómo se accede y para qué sirven. Por niveles, de principiante a avanzado.
+    </p>
+    <p style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem">
+      <a class="btn btn-primario" href="/catalogo/?nivel=principiante">Empezar desde cero</a>
+      <a class="btn" href="/catalogo/">Ver catálogo completo</a>
+    </p>
+  </section>
+
+  <section aria-labelledby="h-niveles">
+    <h2 id="h-niveles">Elegí tu nivel</h2>
+    <div class="puertas">
+      <a class="card" href="/catalogo/?nivel=principiante">
+        <span class="badge nivel-principiante">principiante</span>
+        <strong>Recién empiezo</strong>
+        <span style="color:var(--text-soft)">Qué es la IA, qué herramientas existen y cómo dar los primeros pasos.</span>
+      </a>
+      <a class="card" href="/catalogo/?nivel=intermedio">
+        <span class="badge nivel-intermedio">intermedio</span>
+        <strong>Ya uso IA</strong>
+        <span style="color:var(--text-soft)">Sacarle más jugo: skills, MCPs y casos de uso que quizá no conocés.</span>
+      </a>
+      <a class="card" href="/catalogo/?nivel=avanzado">
+        <span class="badge nivel-avanzado">avanzado</span>
+        <strong>Quiero profundizar</strong>
+        <span style="color:var(--text-soft)">Integraciones, MCPs y flujos más potentes.</span>
+      </a>
+    </div>
+  </section>
+
+  <section id="rutas" aria-labelledby="h-rutas" style="margin-top:2rem">
+    <h2 id="h-rutas">Rutas por meta</h2>
+    <p class="sub">Recorridos ordenados para lograr algo concreto, paso a paso.</p>
+    {rutas.length === 0 ? (
+      <div class="estado-vacio"><p>Todavía no hay rutas publicadas. ¡Pronto!</p></div>
+    ) : (
+      <div class="grid">
+        {rutas.map((r) => (
+          <a class="card" href={`/rutas/${r.id}/`}>
+            <div class="badges">
+              <span class="badge">ruta</span>
+              <span class={`badge nivel-${r.data.nivel}`}>{r.data.nivel}</span>
+            </div>
+            <strong>{r.data.titulo}</strong>
+            <span style="color:var(--text-soft)">{r.data.resumen}</span>
+            <span style="color:var(--text-soft);margin-top:auto">{r.data.pasos.length} pasos</span>
+          </a>
+        ))}
+      </div>
+    )}
+  </section>
+
+  <section aria-labelledby="h-destacados" style="margin-top:2rem">
+    <h2 id="h-destacados">Destacados</h2>
+    {destacados.length === 0 ? (
+      <div class="estado-vacio"><p>Sin contenido todavía.</p></div>
+    ) : (
+      <div class="grid">{destacados.map((d) => <FichaCard {...d} />)}</div>
+    )}
+  </section>
+</Base>

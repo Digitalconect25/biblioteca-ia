@@ -1,0 +1,138 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import FichaCard from '../../components/FichaCard.astro';
+
+const [skills, mcps, ias] = await Promise.all([
+  getCollection('skills'),
+  getCollection('mcps'),
+  getCollection('ias'),
+]);
+
+type Tarjeta = {
+  href: string; titulo: string; resumen: string; nivel: string;
+  gratis: boolean; tipo: string; tags: string[];
+};
+
+const tarjetas: Tarjeta[] = [
+  ...skills.map((i) => ({ href: `/skills/${i.id}/`, titulo: i.data.titulo, resumen: i.data.resumen, nivel: i.data.nivel, gratis: i.data.gratis, tipo: 'skill', tags: i.data.tags })),
+  ...mcps.map((i) => ({ href: `/mcps/${i.id}/`, titulo: i.data.titulo, resumen: i.data.resumen, nivel: i.data.nivel, gratis: i.data.gratis, tipo: 'mcp', tags: i.data.tags })),
+  ...ias.map((i) => ({ href: `/ias/${i.id}/`, titulo: i.data.titulo, resumen: i.data.resumen, nivel: i.data.nivel, gratis: i.data.gratis, tipo: 'ia', tags: i.data.tags })),
+].sort((a, b) => a.titulo.localeCompare(b.titulo, 'es'));
+---
+
+<Base titulo="Catálogo">
+  <h1 class="titulo-pag">Catálogo</h1>
+  <p class="sub">Buscá y filtrá entre {tarjetas.length} fichas de skills, MCPs e IAs.</p>
+
+  <label for="buscar" style="display:block;margin:.5rem 0 .25rem">Buscar</label>
+  <input id="buscar" type="search" placeholder="Ej: claude, automatizar, buscar…"
+         style="width:100%;max-width:420px;padding:.6rem;border-radius:var(--radius);border:1px solid var(--border);background:var(--card);color:var(--text);min-height:44px" />
+
+  <div style="margin:1rem 0">
+    <div class="badges" role="group" aria-label="Filtrar por tipo">
+      <strong style="align-self:center">Tipo:</strong>
+      <button class="chip" data-dim="tipo" data-val="skill" aria-pressed="false">Skills</button>
+      <button class="chip" data-dim="tipo" data-val="mcp" aria-pressed="false">MCPs</button>
+      <button class="chip" data-dim="tipo" data-val="ia" aria-pressed="false">IAs</button>
+    </div>
+    <div class="badges" role="group" aria-label="Filtrar por nivel" style="margin-top:.5rem">
+      <strong style="align-self:center">Nivel:</strong>
+      <button class="chip" data-dim="nivel" data-val="principiante" aria-pressed="false">Principiante</button>
+      <button class="chip" data-dim="nivel" data-val="intermedio" aria-pressed="false">Intermedio</button>
+      <button class="chip" data-dim="nivel" data-val="avanzado" aria-pressed="false">Avanzado</button>
+    </div>
+    <div class="badges" role="group" aria-label="Filtrar por precio" style="margin-top:.5rem">
+      <strong style="align-self:center">Precio:</strong>
+      <button class="chip" data-dim="gratis" data-val="si" aria-pressed="false">Solo gratis</button>
+      <button id="limpiar" class="chip" type="button" style="margin-left:auto">Limpiar filtros</button>
+    </div>
+  </div>
+
+  <div id="grid" class="grid">
+    {tarjetas.map((t) => (
+      <div class="celda" data-tipo={t.tipo} data-nivel={t.nivel} data-gratis={t.gratis ? 'si' : 'no'}
+           data-texto={`${t.titulo} ${t.resumen} ${t.tags.join(' ')}`.toLowerCase()}>
+        <FichaCard {...t} />
+      </div>
+    ))}
+  </div>
+
+  <div id="vacio" class="estado-vacio" hidden>
+    <p>No encontramos fichas con esos criterios.</p>
+    <button id="vacio-limpiar" class="btn">Quitar filtros</button>
+  </div>
+</Base>
+
+<script is:inline>
+  (function () {
+    var filtros = { tipo: null, nivel: null, gratis: null };
+    var q = '';
+    var grid = document.getElementById('grid');
+    var celdas = Array.prototype.slice.call(document.querySelectorAll('.celda'));
+    var vacio = document.getElementById('vacio');
+    var input = document.getElementById('buscar');
+
+    function normaliza(s) {
+      return (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '');
+    }
+
+    function leerURL() {
+      var p = new URLSearchParams(location.search);
+      filtros.tipo = p.get('tipo');
+      filtros.nivel = p.get('nivel');
+      filtros.gratis = p.get('gratis');
+      q = p.get('q') || '';
+      if (input) input.value = q;
+    }
+    function escribirURL() {
+      var p = new URLSearchParams();
+      if (filtros.tipo) p.set('tipo', filtros.tipo);
+      if (filtros.nivel) p.set('nivel', filtros.nivel);
+      if (filtros.gratis) p.set('gratis', filtros.gratis);
+      if (q) p.set('q', q);
+      var qs = p.toString();
+      history.replaceState(null, '', qs ? '?' + qs : location.pathname);
+    }
+    function pintarChips() {
+      document.querySelectorAll('.chip[data-dim]').forEach(function (c) {
+        var activo = filtros[c.getAttribute('data-dim')] === c.getAttribute('data-val');
+        c.setAttribute('aria-pressed', activo ? 'true' : 'false');
+        c.style.borderColor = activo ? 'var(--accent)' : 'var(--border)';
+        c.style.color = activo ? 'var(--accent)' : 'var(--text)';
+      });
+    }
+    function aplicar() {
+      var qn = normaliza(q.toLowerCase());
+      var visibles = 0;
+      celdas.forEach(function (cel) {
+        var ok = true;
+        if (filtros.tipo && cel.dataset.tipo !== filtros.tipo) ok = false;
+        if (filtros.nivel && cel.dataset.nivel !== filtros.nivel) ok = false;
+        if (filtros.gratis === 'si' && cel.dataset.gratis !== 'si') ok = false;
+        if (ok && qn) ok = normaliza(cel.dataset.texto).indexOf(qn) !== -1;
+        cel.hidden = !ok;
+        if (ok) visibles++;
+      });
+      if (vacio) vacio.hidden = visibles !== 0;
+      if (grid) grid.hidden = visibles === 0;
+    }
+    function refrescar() { pintarChips(); aplicar(); escribirURL(); }
+
+    document.querySelectorAll('.chip[data-dim]').forEach(function (c) {
+      c.addEventListener('click', function () {
+        var dim = c.getAttribute('data-dim');
+        var val = c.getAttribute('data-val');
+        filtros[dim] = filtros[dim] === val ? null : val; // toggle
+        refrescar();
+      });
+    });
+    function limpiar() { filtros = { tipo: null, nivel: null, gratis: null }; q = ''; if (input) input.value = ''; refrescar(); }
+    document.getElementById('limpiar')?.addEventListener('click', limpiar);
+    document.getElementById('vacio-limpiar')?.addEventListener('click', limpiar);
+    input?.addEventListener('input', function () { q = input.value; refrescar(); });
+
+    leerURL();
+    refrescar();
+  })();
+</script>

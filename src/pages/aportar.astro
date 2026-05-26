@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base titulo="Aportar">
+  <h1 class="titulo-pag">Aportar una ficha</h1>
+  <p class="sub">La biblioteca es abierta: cualquiera puede sumar o corregir contenido.</p>
+
+  <h2>Cómo funciona (v1)</h2>
+  <ol class="pasos">
+    <li>Hacé un <em>fork</em> del repositorio en GitHub.</li>
+    <li>Copiá la plantilla de <code>plantillas/ficha-skill.md</code> (o mcp / ia) a la carpeta correspondiente en <code>src/content/</code>.</li>
+    <li>Completá los campos. El nombre del archivo es el identificador (ej: <code>claude-code.md</code> → <code>/skills/claude-code/</code>).</li>
+    <li>Abrí un <em>Pull Request</em>. La validación automática revisa que el formato esté bien y te avisa si falta algo.</li>
+  </ol>
+
+  <h2>Reglas simples</h2>
+  <ul>
+    <li><strong>Lo estable va en la ficha</strong> (qué es, cómo funciona). <strong>Lo que cambia seguido</strong> (precios, límites) se enlaza a la fuente oficial, no se copia.</li>
+    <li>Poné <code>revisarAntesDe</code> para que la ficha avise cuando convenga revisarla.</li>
+    <li>Nivel: <code>principiante</code>, <code>intermedio</code> o <code>avanzado</code>.</li>
+    <li>Escribí claro y en español.</li>
+  </ul>
+
+  <p>¿Dudas? Abrí un <em>issue</em> en GitHub y te ayudamos.</p>
+</Base>

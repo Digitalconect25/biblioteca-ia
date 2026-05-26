@@ -1,0 +1,171 @@
+:root {
+  --bg: #ffffff;
+  --bg-soft: #f4f5f7;
+  --card: #ffffff;
+  --border: #d9dce1;
+  --text: #1a1c20;
+  --text-soft: #565b64;
+  --accent: #2f5bd6;
+  --accent-contrast: #ffffff;
+  --ok: #1f7a3d;
+  --warn-bg: #fff4d6;
+  --warn-text: #6b4e00;
+  --radius: 10px;
+  --maxw: 1100px;
+  --space: 1rem;
+}
+
+:root[data-theme='dark'] {
+  --bg: #15171c;
+  --bg-soft: #1e2128;
+  --card: #1e2128;
+  --border: #343a44;
+  --text: #eef0f3;
+  --text-soft: #aab1bd;
+  --accent: #7aa0ff;
+  --accent-contrast: #0e1014;
+  --ok: #5fcf86;
+  --warn-bg: #4a3c12;
+  --warn-text: #ffdf99;
+}
+
+* { box-sizing: border-box; }
+
+html { color-scheme: light dark; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+a { color: var(--accent); }
+
+.contenedor { max-width: var(--maxw); margin: 0 auto; padding: 0 1rem; }
+
+/* Foco visible global — nunca outline:none (accesibilidad). */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Objetivos táctiles mínimos 44x44. */
+.btn, button, .chip {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.btn-primario {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border-color: var(--accent);
+  text-decoration: none;
+}
+
+header.sitio {
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-soft);
+}
+header.sitio .barra {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 1rem;
+  max-width: var(--maxw);
+  margin: 0 auto;
+}
+header.sitio nav { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+header.sitio .marca { font-weight: 700; text-decoration: none; color: var(--text); }
+header.sitio .crecer { flex: 1; }
+
+footer.sitio {
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+  padding: 1.5rem 1rem;
+  color: var(--text-soft);
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  padding: 1rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.card:hover { border-color: var(--accent); }
+
+.badges { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.badge {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text-soft);
+}
+.badge.nivel-principiante { border-color: var(--ok); color: var(--ok); }
+.badge.nivel-intermedio { border-color: var(--accent); color: var(--accent); }
+.badge.nivel-avanzado { border-color: #b4690e; color: #b4690e; }
+.badge.gratis { border-color: var(--ok); color: var(--ok); }
+
+.aviso-stale {
+  background: var(--warn-bg);
+  color: var(--warn-text);
+  border: 1px solid var(--warn-text);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.bloque-codigo { position: relative; }
+.bloque-codigo pre {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  overflow: auto;
+}
+
+.puertas { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+
+.estado-vacio {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-soft);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+h1 { line-height: 1.2; }
+.titulo-pag { margin-bottom: 0.25rem; }
+.sub { color: var(--text-soft); margin-top: 0; }
+
+ol.pasos { padding-left: 1.2rem; }
+ol.pasos li { margin-bottom: 0.75rem; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .card { transition: border-color 0.15s ease; }
+}

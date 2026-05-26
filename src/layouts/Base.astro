@@ -1,0 +1,64 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  titulo: string;
+  descripcion?: string;
+}
+const { titulo, descripcion = 'Biblioteca interactiva y gratuita para aprender IA en español.' } = Astro.props;
+const anio = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={descripcion} />
+    <title>{titulo} · Biblioteca IA</title>
+    <!-- Anti-FOUC: aplica el tema guardado antes del primer paint. -->
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem('tema');
+          if (!t) {
+            t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <header class="sitio">
+      <div class="barra">
+        <a class="marca" href="/">📚 Biblioteca IA</a>
+        <nav aria-label="Principal">
+          <a href="/catalogo/">Catálogo</a>
+          <a href="/#rutas">Rutas</a>
+          <a href="/aportar/">Aportar</a>
+        </nav>
+        <span class="crecer"></span>
+        <button id="toggle-tema" class="btn" type="button" aria-label="Cambiar tema claro/oscuro">
+          <span aria-hidden="true">🌓</span> Tema
+        </button>
+      </div>
+    </header>
+
+    <main class="contenedor" style="padding-top:1.5rem">
+      <slot />
+    </main>
+
+    <footer class="sitio">
+      <p>Biblioteca IA · {anio} · Gratuita y abierta. Hecha con Astro.</p>
+    </footer>
+
+    <script is:inline>
+      document.getElementById('toggle-tema')?.addEventListener('click', function () {
+        var actual = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', actual);
+        try { localStorage.setItem('tema', actual); } catch (e) {}
+      });
+    </script>
+  </body>
+</html>

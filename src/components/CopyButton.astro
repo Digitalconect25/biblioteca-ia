@@ -1,0 +1,46 @@
+---
+interface Props {
+  texto: string;
+  etiqueta?: string;
+}
+const { texto, etiqueta = 'Ejemplo' } = Astro.props;
+---
+
+<div class="bloque-codigo">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <strong>{etiqueta}</strong>
+    <button class="btn copiar" type="button" data-texto={texto}>
+      <span aria-hidden="true">📋</span> Copiar
+    </button>
+  </div>
+  <pre><code>{texto}</code></pre>
+  <span class="copiar-aviso" role="status" aria-live="polite" style="font-size:.85rem;color:var(--ok)"></span>
+</div>
+
+<script is:inline>
+  document.querySelectorAll('.copiar').forEach(function (btn) {
+    btn.addEventListener('click', async function () {
+      var texto = btn.getAttribute('data-texto') || '';
+      var aviso = btn.closest('.bloque-codigo')?.querySelector('.copiar-aviso');
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(texto);
+        } else {
+          // Fallback para contextos sin clipboard API.
+          var ta = document.createElement('textarea');
+          ta.value = texto;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        if (aviso) aviso.textContent = 'Copiado ✓';
+      } catch (e) {
+        if (aviso) aviso.textContent = 'No se pudo copiar; seleccioná y copiá a mano.';
+      }
+      setTimeout(function () { if (aviso) aviso.textContent = ''; }, 2500);
+    });
+  });
+</script>
