@@ -84,7 +84,7 @@ const rutas = defineCollection({
     pasos: z
       .array(
         z.object({
-          tipo: z.enum(['skill', 'mcp', 'ia']),
+          tipo: z.enum(['skill', 'mcp', 'ia', 'truco']),
           ref: z.string(), // id (filename) del ítem en su colección
           porque: z.string(),
         })
