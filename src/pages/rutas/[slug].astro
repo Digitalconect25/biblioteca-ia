@@ -9,12 +9,13 @@ export async function getStaticPaths() {
 
 const { ruta } = Astro.props;
 const d = ruta.data;
-const carpeta: Record<string, string> = { skill: 'skills', mcp: 'mcps', ia: 'ias' };
+const carpeta: Record<string, string> = { skill: 'skills', mcp: 'mcps', ia: 'ias', truco: 'trucos' };
+const coleccion: Record<string, string> = { skill: 'skills', mcp: 'mcps', ia: 'ias', truco: 'trucos' };
 
 // Resolver cada paso a su ficha (título + href). Si la ref no existe, lo marcamos.
 const pasos = await Promise.all(
   d.pasos.map(async (p) => {
-    const entry = await getEntry(((p.tipo === 'skill' ? 'skills' : p.tipo === 'mcp' ? 'mcps' : 'ias') as any), p.ref).catch(() => undefined);
+    const entry = await getEntry((coleccion[p.tipo] as any), p.ref).catch(() => undefined);
     return {
       porque: p.porque,
       titulo: entry?.data?.titulo ?? p.ref,
