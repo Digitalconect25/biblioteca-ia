@@ -1,0 +1,57 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const cursos = (await getCollection('cursos')).sort((a, b) => (a.data.orden ?? 0) - (b.data.orden ?? 0));
+const conKeys = cursos.map((c) => ({
+  id: c.id,
+  data: c.data,
+  keys: c.data.lecciones.map((l) => `${l.col}/${l.id}`),
+}));
+const totalLecciones = conKeys.reduce((n, c) => n + c.keys.length, 0);
+---
+
+<Base titulo="Cursos" descripcion="Cursos de IA de principiante a avanzado, con progreso y certificado.">
+  <span class="eyebrow">Academia IA</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">Cursos</h1>
+  <p class="sub" style="max-width:62ch">
+    {cursos.length} cursos, {totalLecciones} lecciones, de principiante a avanzado. Avanzá a tu ritmo:
+    tu progreso se guarda solo y al terminar un curso te llevás tu certificado.
+  </p>
+
+  <div class="grid" style="margin-top:1.5rem">
+    {conKeys.map((c) => (
+      <a class="card curso-card" href={`/cursos/${c.id}/`} data-keys={JSON.stringify(c.keys)}>
+        <div class="badges">
+          <span class={`badge nivel-${c.data.nivel}`}>{c.data.nivel}</span>
+          {c.data.duracion && <span class="badge">⏱ {c.data.duracion}</span>}
+          <span class="badge curso-estado" hidden>✓ Completado</span>
+        </div>
+        <strong style="font-size:1.15rem">{c.data.titulo}</strong>
+        <span style="color:var(--text-soft)">{c.data.resumen}</span>
+        <div class="barra-prog" style="margin-top:auto"><span></span></div>
+        <span class="sub curso-pct" style="font-size:.85rem">0 de {c.keys.length} lecciones</span>
+      </a>
+    ))}
+  </div>
+
+  <p class="sub" style="margin-top:1.5rem">
+    ¿Preferís un solo plan lineal? Mirá el <a href="/estudiar/">método de estudio completo</a>.
+  </p>
+</Base>
+
+<script is:inline>
+  (function () {
+    var KEY = 'bib-ia-progreso';
+    var map; try { map = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { map = {}; }
+    document.querySelectorAll('.curso-card').forEach(function (card) {
+      var keys = [];
+      try { keys = JSON.parse(card.getAttribute('data-keys') || '[]'); } catch (e) {}
+      var done = keys.filter(function (k) { return map[k]; }).length;
+      var pct = keys.length ? Math.round((done * 100) / keys.length) : 0;
+      var bar = card.querySelector('.barra-prog > span'); if (bar) bar.style.width = pct + '%';
+      var lbl = card.querySelector('.curso-pct'); if (lbl) lbl.textContent = done + ' de ' + keys.length + ' lecciones · ' + pct + '%';
+      if (pct === 100) { var e = card.querySelector('.curso-estado'); if (e) e.hidden = false; }
+    });
+  })();
+</script>

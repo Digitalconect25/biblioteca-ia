@@ -1,0 +1,126 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, getEntry, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const cursos = await getCollection('cursos');
+  return cursos.map((curso) => ({ params: { slug: curso.id }, props: { curso } }));
+}
+
+const colLabel: Record<string, string> = {
+  ias: 'IA', skills: 'Herramienta', mcps: 'MCP', trucos: 'Truco', ensenanzas: 'Enseñanza',
+};
+
+const { curso } = Astro.props;
+const d = curso.data;
+const { Content } = await render(curso);
+
+const lecciones = (
+  await Promise.all(
+    d.lecciones.map(async (l) => {
+      const entry = await getEntry(l.col as any, l.id).catch(() => undefined);
+      if (!entry) return null;
+      return {
+        key: `${l.col}/${l.id}`,
+        href: `/${l.col}/${l.id}/`,
+        titulo: (entry as any).data.titulo,
+        tipo: colLabel[l.col],
+      };
+    })
+  )
+).filter(Boolean) as { key: string; href: string; titulo: string; tipo: string }[];
+const allKeys = JSON.stringify(lecciones.map((l) => l.key));
+const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<Base titulo={d.titulo} descripcion={d.resumen}>
+  <p><a href="/cursos/">← Todos los cursos</a></p>
+  <span class="eyebrow">Curso</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">{d.titulo}</h1>
+  <p class="sub" style="max-width:62ch">{d.resumen}</p>
+  <div class="badges" style="margin:.5rem 0">
+    <span class={`badge nivel-${d.nivel}`}>{d.nivel}</span>
+    {d.duracion && <span class="badge">⏱ {d.duracion}</span>}
+    <span class="badge">{lecciones.length} lecciones</span>
+  </div>
+
+  <p>{d.descripcion}</p>
+  <div class="prosa"><Content /></div>
+
+  <div data-keys={allKeys} id="curso"
+       style="border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--card);padding:1.1rem 1.3rem;margin:1.5rem 0">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+      <strong>Tu progreso en este curso</strong>
+      <span id="curso-pct" class="badge">0%</span>
+    </div>
+    <div class="barra-prog"><span id="curso-bar"></span></div>
+  </div>
+
+  <h2>Lecciones</h2>
+  <ul class="lista-estudio">
+    {lecciones.map((l, i) => (
+      <li>
+        <input type="checkbox" id={`chk-${l.key}`} data-key={l.key} />
+        <label for={`chk-${l.key}`} style="flex:1">
+          <span style="color:var(--text-soft);font-family:var(--font-mono);font-size:.8rem">{String(i + 1).padStart(2, '0')}</span>
+          {' '}<a href={l.href}>{l.titulo}</a>
+          <span class="item-tipo">{l.tipo}</span>
+        </label>
+      </li>
+    ))}
+  </ul>
+
+  <!-- Certificado (aparece al 100%) -->
+  <section id="certificado" class="certificado" hidden>
+    <div class="cert-inner">
+      <span class="eyebrow" style="margin:0 auto">Certificado de finalización</span>
+      <p class="cert-otorga">Otorgado a</p>
+      <input id="cert-nombre" class="cert-nombre" type="text" placeholder="Escribí tu nombre" aria-label="Tu nombre" />
+      <p class="cert-texto">por completar el curso</p>
+      <p class="cert-curso">{d.titulo}</p>
+      <p class="cert-pie">
+        <span>Academia de IA ConectaNex</span>
+        <span>{hoy}</span>
+      </p>
+    </div>
+    <button id="cert-print" class="btn btn-primario no-print" style="margin-top:1rem">Imprimir / Guardar PDF</button>
+  </section>
+</Base>
+
+<script is:inline>
+  (function () {
+    var KEY = 'bib-ia-progreso', NOMBRE = 'bib-ia-nombre';
+    function load() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } }
+    function save(m) { try { localStorage.setItem(KEY, JSON.stringify(m)); } catch (e) {} }
+    var map = load();
+    var cont = document.getElementById('curso');
+    var keys = []; try { keys = JSON.parse(cont.getAttribute('data-keys') || '[]'); } catch (e) {}
+    var boxes = [].slice.call(document.querySelectorAll('input[type=checkbox][data-key]'));
+    var cert = document.getElementById('certificado');
+    var nombre = document.getElementById('cert-nombre');
+
+    function refresh() {
+      var done = keys.filter(function (k) { return map[k]; }).length;
+      var pct = keys.length ? Math.round((done * 100) / keys.length) : 0;
+      var bar = document.getElementById('curso-bar'); if (bar) bar.style.width = pct + '%';
+      var lbl = document.getElementById('curso-pct'); if (lbl) lbl.textContent = pct + '% · ' + done + '/' + keys.length;
+      boxes.forEach(function (b) { var li = b.closest('li'); if (li) li.classList.toggle('hecho', !!map[b.dataset.key]); });
+      if (cert) cert.hidden = pct !== 100;
+    }
+    boxes.forEach(function (b) {
+      b.checked = !!map[b.dataset.key];
+      b.addEventListener('change', function () {
+        map = load();
+        if (b.checked) map[b.dataset.key] = true; else delete map[b.dataset.key];
+        save(map); refresh();
+      });
+    });
+    if (nombre) {
+      try { nombre.value = localStorage.getItem(NOMBRE) || ''; } catch (e) {}
+      nombre.addEventListener('input', function () { try { localStorage.setItem(NOMBRE, nombre.value); } catch (e) {} });
+    }
+    var pr = document.getElementById('cert-print');
+    if (pr) pr.addEventListener('click', function () { window.print(); });
+    refresh();
+  })();
+</script>

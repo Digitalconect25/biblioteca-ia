@@ -8,6 +8,7 @@ const skills = await getCollection('skills');
 const ias = await getCollection('ias');
 const trucos = await getCollection('trucos');
 const ensenanzas = await getCollection('ensenanzas');
+const cursos = (await getCollection('cursos')).sort((a, b) => (a.data.orden ?? 0) - (b.data.orden ?? 0));
 
 // Destacados: unos pocos ítems para mostrar el catálogo.
 const destacados = [
@@ -18,13 +19,13 @@ const destacados = [
 
 <Base titulo="Aprendé IA, gratis y en español">
   <section style="padding:2.5rem 0 2rem">
-    <span class="eyebrow">Biblioteca de IA · gratis y en español</span>
+    <span class="eyebrow">Academia de IA · ConectaNex · gratis y en español</span>
     <h1 class="titulo-pag" style="font-size:clamp(2.2rem,5vw,3.4rem);margin-top:1rem;max-width:18ch">
-      Dominá la frontera de la inteligencia artificial
+      Aprendé inteligencia artificial, de cero a avanzado
     </h1>
     <p class="sub" style="font-size:1.15rem;max-width:62ch;margin-top:0.75rem">
-      Una biblioteca interactiva de IAs, herramientas, MCPs, enseñanzas y trucos: qué son,
-      cómo se usan, cómo se accede y para qué sirven. Por niveles, de principiante a avanzado.
+      Una academia gratuita y en español: cursos con certificado, IAs, herramientas, MCPs y trucos.
+      Avanzá a tu ritmo y llevate tu progreso guardado.
     </p>
     <p style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.5rem">
       <a class="btn btn-primario" href="/estudiar/">Empezar el plan de estudio</a>
@@ -32,7 +33,28 @@ const destacados = [
     </p>
   </section>
 
-  <section aria-labelledby="h-niveles">
+  <section aria-labelledby="h-cursos">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap">
+      <h2 id="h-cursos">Cursos</h2>
+      <a href="/cursos/" style="font-size:.9rem">Ver todos →</a>
+    </div>
+    <p class="sub">Recorridos con lecciones en orden, progreso y certificado al terminar.</p>
+    <div class="grid">
+      {cursos.map((c) => (
+        <a class="card" href={`/cursos/${c.id}/`}>
+          <div class="badges">
+            <span class={`badge nivel-${c.data.nivel}`}>{c.data.nivel}</span>
+            {c.data.duracion && <span class="badge">⏱ {c.data.duracion}</span>}
+          </div>
+          <strong style="font-size:1.1rem">{c.data.titulo}</strong>
+          <span style="color:var(--text-soft)">{c.data.resumen}</span>
+          <span style="color:var(--text-soft);margin-top:auto;font-size:.85rem">{c.data.lecciones.length} lecciones</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section aria-labelledby="h-niveles" style="margin-top:2rem">
     <h2 id="h-niveles">Elegí tu nivel</h2>
     <div class="puertas">
       <a class="card" href="/catalogo/?nivel=principiante">

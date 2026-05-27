@@ -137,6 +137,37 @@ h1 { line-height: 1.1; }
   border: 1px solid var(--border-strong); border-radius: 999px; padding: 0.05rem 0.45rem; margin-left: 0.4rem;
 }
 .lista-estudio li.hecho label { text-decoration: line-through; color: var(--text-soft); }
+
+/* ===== Certificado ===== */
+.certificado {
+  border: 2px solid var(--navy); border-radius: var(--radius-lg);
+  padding: 1.5rem; margin: 2rem 0; background: var(--card);
+}
+:root[data-theme='dark'] .certificado { border-color: var(--accent); }
+.cert-inner {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 2rem 1.5rem; text-align: center;
+}
+.cert-otorga, .cert-texto { color: var(--text-soft); margin: 0.85rem 0 0.25rem; }
+.cert-nombre {
+  font-family: var(--font-body); font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 700;
+  text-align: center; border: none; border-bottom: 2px solid var(--accent);
+  background: transparent; color: var(--text); width: 100%; max-width: 440px; padding: 0.25rem 0;
+}
+.cert-curso { font-size: 1.4rem; font-weight: 700; color: var(--navy); margin: 0.4rem 0; }
+:root[data-theme='dark'] .cert-curso { color: var(--accent-soft); }
+.cert-pie {
+  display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem;
+  color: var(--text-soft); font-family: var(--font-mono); font-size: 0.78rem;
+  border-top: 1px solid var(--border); padding-top: 1rem;
+}
+
+@media print {
+  body * { visibility: hidden; }
+  #certificado, #certificado * { visibility: visible; }
+  #certificado { position: absolute; left: 0; top: 0; width: 100%; margin: 0; border: none; }
+  .no-print { display: none !important; }
+}
 .btn-primario:hover {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25);

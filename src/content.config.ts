@@ -141,4 +141,26 @@ const ensenanzas = defineCollection({
   }),
 });
 
-export const collections = { skills, mcps, ias, rutas, trucos, ensenanzas };
+// Cursos: recorridos con nombre y lecciones ordenadas (referencian fichas reales).
+const cursos = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/cursos' }),
+  schema: z.object({
+    titulo: z.string(),
+    nivel,
+    resumen: z.string().max(220, { message: "resumen: máximo 220 caracteres" }),
+    descripcion: z.string(),
+    orden: z.number().default(0),
+    duracion: z.string().optional(), // ej. "2-3 horas"
+    lecciones: z
+      .array(
+        z.object({
+          col: z.enum(['ias', 'skills', 'mcps', 'trucos', 'ensenanzas']),
+          id: z.string(),
+        })
+      )
+      .min(1, { message: "un curso necesita al menos una lección" }),
+    actualizado: z.coerce.date(),
+  }),
+});
+
+export const collections = { skills, mcps, ias, rutas, trucos, ensenanzas, cursos };
