@@ -17,13 +17,16 @@ const destacados = [
 ---
 
 <Base titulo="Aprendé IA, gratis y en español">
-  <section style="padding:1rem 0 1.5rem">
-    <h1 class="titulo-pag">Aprendé IA, gratis y en español</h1>
-    <p class="sub" style="font-size:1.1rem;max-width:60ch">
-      Una biblioteca interactiva de skills, MCPs y las IAs más usadas: qué son, cómo se usan,
-      cómo se accede y para qué sirven. Por niveles, de principiante a avanzado.
+  <section style="padding:2.5rem 0 2rem">
+    <span class="eyebrow">Biblioteca de IA · gratis y en español</span>
+    <h1 class="titulo-pag" style="font-size:clamp(2.2rem,5vw,3.4rem);margin-top:1rem;max-width:18ch">
+      Dominá la frontera de la inteligencia artificial
+    </h1>
+    <p class="sub" style="font-size:1.15rem;max-width:62ch;margin-top:0.75rem">
+      Una biblioteca interactiva de IAs, herramientas, MCPs, enseñanzas y trucos: qué son,
+      cómo se usan, cómo se accede y para qué sirven. Por niveles, de principiante a avanzado.
     </p>
-    <p style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem">
+    <p style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.5rem">
       <a class="btn btn-primario" href="/catalogo/?nivel=principiante">Empezar desde cero</a>
       <a class="btn" href="/catalogo/">Ver catálogo completo</a>
     </p>
@@ -149,5 +152,14 @@ const destacados = [
     ) : (
       <div class="grid">{destacados.map((d) => <FichaCard {...d} />)}</div>
     )}
+  </section>
+
+  <section class="cta-band">
+    <span class="eyebrow" style="background:rgba(6,182,212,0.18);color:#9beaf7">Velocidad intelectual</span>
+    <h2 style="font-size:clamp(1.6rem,4vw,2.4rem);margin:1rem 0 .5rem">¿Listo para construir con IA?</h2>
+    <p class="sub" style="max-width:52ch;margin:0 auto 1.5rem">
+      Explorá el catálogo, seguí una ruta y probá las enseñanzas. Todo gratis, todo en español.
+    </p>
+    <a class="btn btn-primario" href="/catalogo/" style="background:var(--accent);border-color:var(--accent);color:#06121a">Explorar la biblioteca</a>
   </section>
 </Base>
