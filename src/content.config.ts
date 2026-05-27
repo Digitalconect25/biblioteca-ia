@@ -16,6 +16,17 @@ const enlace = z.object({
   url: z.string().url({ message: "url inválida (debe empezar con http...)" }),
 });
 
+// Un grupo de comandos con variantes por sistema operativo.
+// Cada grupo tiene un título (ej. "Instalar") y al menos una variante (windows/mac/otro).
+const grupoComandos = z.object({
+  titulo: z.string(),
+  windows: z.string().optional(),
+  mac: z.string().optional(),
+  // Para comandos iguales en todos los SO (ej. npm), usar `comun` y no repetir.
+  comun: z.string().optional(),
+  nota: z.string().optional(),
+});
+
 // Campos comunes a skills / mcps / ias.
 const baseFicha = z.object({
   titulo: z.string(),
@@ -24,6 +35,8 @@ const baseFicha = z.object({
   descripcion: z.string(),
   gratis: z.boolean().default(true),
   ejemplo: z.string().optional(),
+  // Comandos por SO (Windows / macOS), en orden. Opcional.
+  comandos: z.array(grupoComandos).default([]),
   enlaces: z.array(enlace).default([]),
   tags: z.array(z.string()).default([]),
   actualizado: z.coerce.date(),

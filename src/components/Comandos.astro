@@ -1,0 +1,30 @@
+---
+import CopyButton from './CopyButton.astro';
+
+interface Grupo {
+  titulo: string;
+  windows?: string;
+  mac?: string;
+  comun?: string;
+  nota?: string;
+}
+interface Props {
+  grupos: Grupo[];
+}
+const { grupos } = Astro.props;
+---
+
+{grupos.length > 0 && (
+  <section aria-label="Comandos">
+    <h2>Comandos</h2>
+    {grupos.map((g) => (
+      <div class="grupo-comandos">
+        <h3>{g.titulo}</h3>
+        {g.comun && <CopyButton texto={g.comun} etiqueta="🪟🍎 Windows y macOS" />}
+        {g.windows && <CopyButton texto={g.windows} etiqueta="🪟 Windows (PowerShell)" />}
+        {g.mac && <CopyButton texto={g.mac} etiqueta="🍎 macOS / Linux" />}
+        {g.nota && <p class="sub" style="margin-top:.25rem">{g.nota}</p>}
+      </div>
+    ))}
+  </section>
+)}

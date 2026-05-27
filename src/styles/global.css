@@ -166,6 +166,16 @@ h1 { line-height: 1.2; }
 ol.pasos { padding-left: 1.2rem; }
 ol.pasos li { margin-bottom: 0.75rem; }
 
+.grupo-comandos {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background: var(--bg-soft);
+}
+.grupo-comandos h3 { margin: 0.25rem 0 0.5rem; font-size: 1rem; }
+.grupo-comandos .bloque-codigo { margin-bottom: 0.75rem; }
+
 @media (prefers-reduced-motion: no-preference) {
   .card { transition: border-color 0.15s ease; }
 }
