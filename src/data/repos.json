@@ -1,0 +1,429 @@
+[
+{
+  "nombre": "affaan-m/ECC",
+  "url": "https://github.com/affaan-m/ECC",
+  "desc": "Meta-harness open source con decenas de agentes, skills, hooks y reglas para Claude Code.",
+  "cat": "agentes",
+  "stars": 195957
+},
+{
+  "nombre": "affaan-m/everything-claude-code",
+  "url": "https://github.com/affaan-m/everything-claude-code",
+  "desc": "Colección lista para copiar a ~/.claude: agentes, skills, comandos, reglas y configs de MCP.",
+  "cat": "agentes",
+  "stars": 195957
+},
+{
+  "nombre": "affaan-m/agentshield",
+  "url": "https://github.com/affaan-m/agentshield",
+  "desc": "Escanea tu setup de agentes buscando secretos, permisos abiertos, hooks peligrosos y MCP riesgosos.",
+  "cat": "seguridad",
+  "stars": 711
+},
+{
+  "nombre": "mixedbread-ai/mgrep",
+  "url": "https://github.com/mixedbread-ai/mgrep",
+  "desc": "Búsqueda semántica de código y docs que gasta cerca de la mitad de tokens que grep o ripgrep.",
+  "cat": "buscadores",
+  "stars": 4176
+},
+{
+  "nombre": "snyk/agent-scan",
+  "url": "https://github.com/snyk/agent-scan",
+  "desc": "Detecta agentes y servidores MCP en tu máquina y revisa más de 15 riesgos como inyección de prompts.",
+  "cat": "seguridad",
+  "stars": 2485
+},
+{
+  "nombre": "anthropics/claude-code",
+  "url": "https://github.com/anthropics/claude-code",
+  "desc": "Repositorio oficial de Claude Code; incluye el plugin security-guidance.",
+  "cat": "oficial",
+  "stars": 127009
+},
+{
+  "nombre": "google-gemini/gemini-cli",
+  "url": "https://github.com/google-gemini/gemini-cli",
+  "desc": "Agente de IA open source que mete a Gemini directo en tu terminal para construir y programar.",
+  "cat": "agentes",
+  "stars": 104660
+},
+{
+  "nombre": "google/adk-python",
+  "url": "https://github.com/google/adk-python",
+  "desc": "Toolkit en Python para crear, evaluar y desplegar agentes de IA.",
+  "cat": "frameworks",
+  "stars": 19886
+},
+{
+  "nombre": "mattpocock/skills",
+  "url": "https://github.com/mattpocock/skills",
+  "desc": "Skills de Matt Pocock; incluye /grill-me, que te interroga antes de construir.",
+  "cat": "skills",
+  "stars": 108434
+},
+{
+  "nombre": "Fission-AI/OpenSpec",
+  "url": "https://github.com/Fission-AI/OpenSpec",
+  "desc": "Framework spec-driven: arma plan, specs y pasos antes de escribir código.",
+  "cat": "especificaciones",
+  "stars": 51173
+},
+{
+  "nombre": "vercel-labs/agent-skills",
+  "url": "https://github.com/vercel-labs/agent-skills",
+  "desc": "Skills de Vercel para Claude; incluye web-design-guidelines que audita tu diseño.",
+  "cat": "skills",
+  "stars": 27198
+},
+{
+  "nombre": "anthropics/skills",
+  "url": "https://github.com/anthropics/skills",
+  "desc": "Repo oficial de Anthropic con skills de referencia para construir las tuyas.",
+  "cat": "skills",
+  "stars": 141899
+},
+{
+  "nombre": "vercel-labs/agent-browser",
+  "url": "https://github.com/vercel-labs/agent-browser",
+  "desc": "Navegador para Claude Code que reduce hasta 10x el costo de tokens al navegar internet.",
+  "cat": "navegadores",
+  "stars": 34473
+},
+{
+  "nombre": "virgiliojr94/book-to-skill",
+  "url": "https://github.com/virgiliojr94/book-to-skill",
+  "desc": "Extrae libros (PDF, EPUB, DOCX, MOBI) con Docling y los guarda como habilidad de Claude.",
+  "cat": "skills",
+  "stars": 2171
+},
+{
+  "nombre": "Hainrixz/the-architect",
+  "url": "https://github.com/Hainrixz/the-architect",
+  "desc": "Meta-agente que te entrevista en cuatro fases y entrega un blueprint de 16 secciones para tu app.",
+  "cat": "agentes",
+  "stars": 254
+},
+{
+  "nombre": "Hainrixz/all-deploy",
+  "url": "https://github.com/Hainrixz/all-deploy",
+  "desc": "Detecta tu stack, elige Vercel o Railway, despliega preview y promueve a producción con un comando.",
+  "cat": "despliegue",
+  "stars": 25
+},
+{
+  "nombre": "rmyndharis/OpenWA",
+  "url": "https://github.com/rmyndharis/OpenWA",
+  "desc": "Gateway WhatsApp self-hosted (MIT) con REST API, webhooks y multi-sesión sobre NestJS.",
+  "cat": "comunicaciones",
+  "stars": 6689
+},
+{
+  "nombre": "anthropics/claude-plugins-official",
+  "url": "https://github.com/anthropics/claude-plugins-official",
+  "desc": "Directorio oficial de Anthropic con plugins de Claude Code.",
+  "cat": "oficial",
+  "stars": 28231
+},
+{
+  "nombre": "github/spec-kit",
+  "url": "https://github.com/github/spec-kit",
+  "desc": "Toolkit MIT que mete Spec-Driven Development en Claude Code.",
+  "cat": "especificaciones",
+  "stars": 106467
+},
+{
+  "nombre": "alchaincyf/huashu-design",
+  "url": "https://github.com/alchaincyf/huashu-design",
+  "desc": "Skill MIT con 7 modos de diseño: prototipos, slides, motion, infografías y crítica.",
+  "cat": "diseño",
+  "stars": 15370
+},
+{
+  "nombre": "openai/codex-plugin-cc",
+  "url": "https://github.com/openai/codex-plugin-cc",
+  "desc": "Plugin oficial que mete los comandos de Codex (review, adversarial, rescue) en Claude Code.",
+  "cat": "plugins",
+  "stars": 19795
+},
+{
+  "nombre": "browser-use/browser-harness",
+  "url": "https://github.com/browser-use/browser-harness",
+  "desc": "Abre tu Chrome real, ejecuta tareas web y guarda lo aprendido como skill por sitio.",
+  "cat": "navegadores",
+  "stars": 13888
+},
+{
+  "nombre": "microsoft/markitdown",
+  "url": "https://github.com/microsoft/markitdown",
+  "desc": "Convierte Word, PDF, Excel y URLs de YouTube a Markdown limpio.",
+  "cat": "herramientas",
+  "stars": 125793
+},
+{
+  "nombre": "BayramAnnakov/claude-reflect",
+  "url": "https://github.com/BayramAnnakov/claude-reflect",
+  "desc": "Patrón de reflexión: el LLM revisa su propio trabajo antes de cerrar.",
+  "cat": "skills",
+  "stars": 1044
+},
+{
+  "nombre": "thedotmack/claude-mem",
+  "url": "https://github.com/thedotmack/claude-mem",
+  "desc": "Plugin que captura observaciones por hooks con dashboard local y storage SQLite.",
+  "cat": "memoria",
+  "stars": 79130
+},
+{
+  "nombre": "nolly-studio/cult-ui",
+  "url": "https://github.com/nolly-studio/cult-ui",
+  "desc": "75 componentes premium para shadcn con animaciones y 2 skills oficiales.",
+  "cat": "diseño",
+  "stars": 4678
+},
+{
+  "nombre": "Vinzent03/obsidian-git",
+  "url": "https://github.com/Vinzent03/obsidian-git",
+  "desc": "Plugin de Obsidian que sincroniza tu vault con Git.",
+  "cat": "plugins",
+  "stars": 11063
+},
+{
+  "nombre": "YouMind-OpenLab/awesome-gpt-image-2",
+  "url": "https://github.com/YouMind-OpenLab/awesome-gpt-image-2",
+  "desc": "Miles de prompts gratis para generar imágenes con GPT Image, actualizado por la comunidad.",
+  "cat": "creación",
+  "stars": 6770
+},
+{
+  "nombre": "nexu-io/open-design",
+  "url": "https://github.com/nexu-io/open-design",
+  "desc": "Alternativa local-first y open-source a Claude Design: 71 estilos de marca y 19 skills.",
+  "cat": "diseño",
+  "stars": 53816
+},
+{
+  "nombre": "Anil-matcha/Open-Generative-AI",
+  "url": "https://github.com/Anil-matcha/Open-Generative-AI",
+  "desc": "Interfaz unificada para cientos de modelos de imagen y video.",
+  "cat": "creación",
+  "stars": 17105
+},
+{
+  "nombre": "safishamsi/graphify",
+  "url": "https://github.com/safishamsi/graphify",
+  "desc": "Convierte cualquier carpeta en grafo de conocimiento; mucho menos tokens en preguntas de arquitectura.",
+  "cat": "análisis",
+  "stars": 54965
+},
+{
+  "nombre": "czlonkowski/n8n-mcp",
+  "url": "https://github.com/czlonkowski/n8n-mcp",
+  "desc": "MCP que conecta Claude con n8n para controlar miles de nodos de automatización sin código.",
+  "cat": "automatización",
+  "stars": 21311
+},
+{
+  "nombre": "ollama/ollama",
+  "url": "https://github.com/ollama/ollama",
+  "desc": "Corre LLMs open-source localmente (Llama, Mistral, Qwen) con un solo comando.",
+  "cat": "modelos",
+  "stars": 172450
+},
+{
+  "nombre": "langchain-ai/langchain",
+  "url": "https://github.com/langchain-ai/langchain",
+  "desc": "Framework para apps de LLMs con chains, agentes y RAG.",
+  "cat": "frameworks",
+  "stars": 137805
+},
+{
+  "nombre": "run-llama/llama_index",
+  "url": "https://github.com/run-llama/llama_index",
+  "desc": "Framework de retrieval para conectar LLMs con tus PDFs, SQL y APIs.",
+  "cat": "frameworks",
+  "stars": 49706
+},
+{
+  "nombre": "crewAIInc/crewAI",
+  "url": "https://github.com/crewAIInc/crewAI",
+  "desc": "Framework para orquestar agentes especializados con roles y tareas colaborativas.",
+  "cat": "orquestación",
+  "stars": 52311
+},
+{
+  "nombre": "Shubhamsaboo/awesome-llm-apps",
+  "url": "https://github.com/Shubhamsaboo/awesome-llm-apps",
+  "desc": "Colección curada de 100+ agentes y apps de LLM en 13 categorías.",
+  "cat": "colecciones",
+  "stars": 111909
+},
+{
+  "nombre": "anthropics/anthropic-cookbook",
+  "url": "https://github.com/anthropics/anthropic-cookbook",
+  "desc": "Recetas oficiales de Anthropic: patrones, ejemplos y código de referencia.",
+  "cat": "educación",
+  "stars": 44461
+},
+{
+  "nombre": "syncthing/syncthing",
+  "url": "https://github.com/syncthing/syncthing",
+  "desc": "Sincronización P2P de archivos entre dispositivos, sin nube ni cuentas.",
+  "cat": "herramientas",
+  "stars": 84632
+},
+{
+  "nombre": "ComposioHQ/awesome-claude-skills",
+  "url": "https://github.com/ComposioHQ/awesome-claude-skills",
+  "desc": "Colección curada de 100+ skills para Claude Code.",
+  "cat": "colecciones",
+  "stars": 62138
+},
+{
+  "nombre": "davila7/claude-code-templates",
+  "url": "https://github.com/davila7/claude-code-templates",
+  "desc": "Templates curados de Claude Code para proyectos comunes.",
+  "cat": "templates",
+  "stars": 27618
+},
+{
+  "nombre": "addyosmani/agent-skills",
+  "url": "https://github.com/addyosmani/agent-skills",
+  "desc": "Skills curadas por Addy Osmani para agentes; fundamentos de planeación.",
+  "cat": "skills",
+  "stars": 46459
+},
+{
+  "nombre": "coleam00/Archon",
+  "url": "https://github.com/coleam00/Archon",
+  "desc": "Sistema de orquestación de agentes con tareas paralelas y memoria compartida.",
+  "cat": "orquestación",
+  "stars": 21923
+},
+{
+  "nombre": "drona23/claude-token-efficient",
+  "url": "https://github.com/drona23/claude-token-efficient",
+  "desc": "Plugin que reduce los tokens que Claude Code consume por sesión.",
+  "cat": "optimización",
+  "stars": 5444
+},
+{
+  "nombre": "microsoft/playwright-mcp",
+  "url": "https://github.com/microsoft/playwright-mcp",
+  "desc": "MCP oficial de Playwright para automatización de navegador desde Claude.",
+  "cat": "automatización",
+  "stars": 33110
+},
+{
+  "nombre": "tradesdontlie/tradingview-mcp",
+  "url": "https://github.com/tradesdontlie/tradingview-mcp",
+  "desc": "MCP que conecta Claude a TradingView para análisis técnico y alertas.",
+  "cat": "finanzas",
+  "stars": 3202
+},
+{
+  "nombre": "D4Vinci/Scrapling",
+  "url": "https://github.com/D4Vinci/Scrapling",
+  "desc": "Librería de scraping open-source con MCP integrado para extraer datos web.",
+  "cat": "scraping",
+  "stars": 54529
+},
+{
+  "nombre": "ahujasid/blender-mcp",
+  "url": "https://github.com/ahujasid/blender-mcp",
+  "desc": "MCP que conecta Blender con Claude para modelar 3D usando lenguaje natural.",
+  "cat": "creación",
+  "stars": 22074
+},
+{
+  "nombre": "Hainrixz/whatsapp-agentkit",
+  "url": "https://github.com/Hainrixz/whatsapp-agentkit",
+  "desc": "Kit para correr agentes de Claude conectados a WhatsApp Business.",
+  "cat": "comunicaciones",
+  "stars": 274
+},
+{
+  "nombre": "BloopAI/vibe-kanban",
+  "url": "https://github.com/BloopAI/vibe-kanban",
+  "desc": "Kanban open-source diseñado para vibe coding con Claude Code.",
+  "cat": "gestión",
+  "stars": 26549
+},
+{
+  "nombre": "anthropics/anthropic-quickstarts",
+  "url": "https://github.com/anthropics/anthropic-quickstarts",
+  "desc": "Plantillas oficiales de Anthropic para arrancar proyectos con Claude.",
+  "cat": "templates",
+  "stars": 16799
+},
+{
+  "nombre": "anthropics/courses",
+  "url": "https://github.com/anthropics/courses",
+  "desc": "Cursos oficiales de Anthropic para aprender Claude desde cero.",
+  "cat": "educación",
+  "stars": 21609
+},
+{
+  "nombre": "anthropics/prompt-eng-interactive-tutorial",
+  "url": "https://github.com/anthropics/prompt-eng-interactive-tutorial",
+  "desc": "Tutorial interactivo oficial de prompt engineering por Anthropic.",
+  "cat": "educación",
+  "stars": 35994
+},
+{
+  "nombre": "anthropics/anthropic-sdk-python",
+  "url": "https://github.com/anthropics/anthropic-sdk-python",
+  "desc": "SDK oficial de la API de Anthropic en Python.",
+  "cat": "SDK",
+  "stars": 3539
+},
+{
+  "nombre": "anthropics/anthropic-sdk-typescript",
+  "url": "https://github.com/anthropics/anthropic-sdk-typescript",
+  "desc": "SDK oficial de la API de Anthropic en TypeScript.",
+  "cat": "SDK",
+  "stars": 1974
+},
+{
+  "nombre": "anthropics/anthropic-sdk-go",
+  "url": "https://github.com/anthropics/anthropic-sdk-go",
+  "desc": "SDK oficial de la API de Anthropic en Go.",
+  "cat": "SDK",
+  "stars": 1060
+},
+{
+  "nombre": "anthropics/anthropic-sdk-ruby",
+  "url": "https://github.com/anthropics/anthropic-sdk-ruby",
+  "desc": "SDK oficial de la API de Anthropic en Ruby.",
+  "cat": "SDK",
+  "stars": 342
+},
+{
+  "nombre": "blader/humanizer",
+  "url": "https://github.com/blader/humanizer",
+  "desc": "Tool que humaniza texto generado por IA y quita los tells robóticos.",
+  "cat": "textos",
+  "stars": 21212
+},
+{
+  "nombre": "coreyhaines31/marketingskills",
+  "url": "https://github.com/coreyhaines31/marketingskills",
+  "desc": "Pack open-source de skills de marketing para Claude Code: copy, SEO, ads, email.",
+  "cat": "marketing",
+  "stars": 30772
+},
+{
+  "nombre": "microsoft/playwright",
+  "url": "https://github.com/microsoft/playwright",
+  "desc": "Framework de automatización de navegador, base de muchos MCP de QA.",
+  "cat": "automatización",
+  "stars": 89645
+},
+{
+  "nombre": "kepano/obsidian-skills",
+  "url": "https://github.com/kepano/obsidian-skills",
+  "desc": "Skills de Claude para trabajar adentro de tu vault de Obsidian.",
+  "cat": "skills",
+  "stars": 33293
+}
+]

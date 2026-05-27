@@ -1,0 +1,97 @@
+---
+import Base from '../layouts/Base.astro';
+import reposData from '../data/repos.json';
+
+type Repo = { nombre: string; url: string; desc: string; cat: string; stars?: number };
+const repos = (reposData as Repo[]).slice().sort((a, b) => (b.stars ?? 0) - (a.stars ?? 0));
+const categorias = Array.from(new Set(repos.map((r) => r.cat))).sort((a, b) => a.localeCompare(b, 'es'));
+const fmtStars = (n?: number) => {
+  if (!n && n !== 0) return '';
+  if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'k';
+  return String(n);
+};
+---
+
+<Base titulo="Repos" descripcion="Directorio de repositorios de GitHub para construir con IA y Claude Code.">
+  <span class="eyebrow">Directorio</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">Repositorios</h1>
+  <p class="sub">{repos.length} repos de GitHub para construir con IA y Claude Code (skills, MCPs, agentes, plugins y más). Curados por la comunidad y verificados.</p>
+
+  <label for="buscar" style="display:block;margin:1rem 0 .25rem">Buscar</label>
+  <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center">
+    <input id="buscar" type="search" placeholder="Ej: mcp, diseño, agente, seo…"
+           style="flex:1;min-width:240px;padding:.6rem;border-radius:var(--radius);border:1px solid var(--border-strong);background:var(--card);color:var(--text);min-height:44px" />
+    <select id="cat" style="padding:.6rem;border-radius:var(--radius);border:1px solid var(--border-strong);background:var(--card);color:var(--text);min-height:44px">
+      <option value="">Todas las categorías</option>
+      {categorias.map((c) => <option value={c}>{c}</option>)}
+    </select>
+  </div>
+
+  <div id="grid" class="grid" style="margin-top:1.25rem">
+    {repos.map((r) => (
+      <a class="card celda" href={r.url} target="_blank" rel="noopener noreferrer"
+         data-cat={r.cat} data-texto={`${r.nombre} ${r.desc} ${r.cat}`.toLowerCase()}>
+        <div class="badges">
+          <span class="badge">{r.cat}</span>
+          {r.stars !== undefined && <span class="badge gratis">★ {fmtStars(r.stars)}</span>}
+        </div>
+        <strong style="font-family:var(--font-mono);font-size:0.95rem">{r.nombre}</strong>
+        <span style="color:var(--text-soft)">{r.desc}</span>
+        <span style="color:var(--accent-ink);margin-top:auto;font-size:.85rem">Ver en GitHub →</span>
+      </a>
+    ))}
+  </div>
+
+  <div id="vacio" class="estado-vacio" hidden>
+    <p>No encontramos repos con esos criterios.</p>
+    <button id="vacio-limpiar" class="btn">Quitar filtros</button>
+  </div>
+
+  <p class="sub" style="margin-top:1.5rem;font-size:.85rem">
+    Lista curada a partir de la comunidad <a href="https://www.tododeia.com/community/repos" target="_blank" rel="noopener noreferrer">tododeia</a>.
+    Las estrellas se tomaron de GitHub al momento de armar el directorio y pueden variar.
+  </p>
+</Base>
+
+<script is:inline>
+  (function () {
+    var q = '', cat = '';
+    var celdas = Array.prototype.slice.call(document.querySelectorAll('.celda'));
+    var vacio = document.getElementById('vacio');
+    var grid = document.getElementById('grid');
+    var input = document.getElementById('buscar');
+    var sel = document.getElementById('cat');
+
+    function normaliza(s){ return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,''); }
+    function leerURL(){
+      var p = new URLSearchParams(location.search);
+      cat = p.get('cat') || ''; q = p.get('q') || '';
+      if (input) input.value = q; if (sel) sel.value = cat;
+    }
+    function escribirURL(){
+      var p = new URLSearchParams();
+      if (cat) p.set('cat', cat); if (q) p.set('q', q);
+      var qs = p.toString();
+      history.replaceState(null, '', qs ? '?' + qs : location.pathname);
+    }
+    function aplicar(){
+      var qn = normaliza(q.toLowerCase()); var vis = 0;
+      celdas.forEach(function(c){
+        var ok = true;
+        if (cat && c.dataset.cat !== cat) ok = false;
+        if (ok && qn) ok = normaliza(c.dataset.texto).indexOf(qn) !== -1;
+        c.style.display = ok ? '' : 'none';
+        if (ok) vis++;
+      });
+      if (vacio) vacio.hidden = vis !== 0;
+      if (grid) grid.style.display = vis === 0 ? 'none' : '';
+      escribirURL();
+    }
+    input && input.addEventListener('input', function(){ q = input.value; aplicar(); });
+    sel && sel.addEventListener('change', function(){ cat = sel.value; aplicar(); });
+    document.getElementById('vacio-limpiar')?.addEventListener('click', function(){
+      q=''; cat=''; if(input) input.value=''; if(sel) sel.value=''; aplicar();
+    });
+    leerURL(); aplicar();
+  })();
+</script>
