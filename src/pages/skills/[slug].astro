@@ -17,6 +17,7 @@ const { Content } = await render(item);
   <p><a href="/catalogo/">← Volver al catálogo</a></p>
   <FichaDetalle
     tipo="skill"
+    itemKey={`skills/${item.id}`}
     titulo={d.titulo}
     nivel={d.nivel}
     gratis={d.gratis}

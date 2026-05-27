@@ -40,9 +40,9 @@ const anio = new Date().getFullYear();
       <div class="barra">
         <a class="marca" href="/">📚 Biblioteca IA</a>
         <nav aria-label="Principal">
+          <a href="/estudiar/">Estudiar</a>
           <a href="/catalogo/">Catálogo</a>
           <a href="/repos/">Repos</a>
-          <a href="/#aprender">Aprender</a>
           <a href="/#rutas">Rutas</a>
           <a href="/#trucos">Trucos</a>
           <a href="/aportar/">Aportar</a>
@@ -68,6 +68,38 @@ const anio = new Date().getFullYear();
         document.documentElement.setAttribute('data-theme', actual);
         try { localStorage.setItem('tema', actual); } catch (e) {}
       });
+    </script>
+
+    <!-- Progreso de estudio (localStorage, sin backend) -->
+    <script is:inline>
+      (function () {
+        var KEY = 'bib-ia-progreso';
+        window.bibProgreso = {
+          load: function () { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } },
+          save: function (m) { try { localStorage.setItem(KEY, JSON.stringify(m)); } catch (e) {} },
+          KEY: KEY
+        };
+        function paint(btn, on) {
+          btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+          btn.classList.toggle('marcado', on);
+          var ico = btn.querySelector('.marcar-icono');
+          var txt = btn.querySelector('.marcar-txt');
+          if (ico) ico.textContent = on ? '✓' : '○';
+          if (txt) txt.textContent = on ? 'Aprendido' : 'Marcar como aprendido';
+        }
+        var map = window.bibProgreso.load();
+        document.querySelectorAll('.marcar').forEach(function (btn) {
+          var k = btn.getAttribute('data-key');
+          paint(btn, !!map[k]);
+          btn.addEventListener('click', function () {
+            var m = window.bibProgreso.load();
+            if (m[k]) { delete m[k]; } else { m[k] = true; }
+            window.bibProgreso.save(m);
+            paint(btn, !!m[k]);
+            document.dispatchEvent(new CustomEvent('progreso-cambio'));
+          });
+        });
+      })();
     </script>
   </body>
 </html>

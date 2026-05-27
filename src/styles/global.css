@@ -100,6 +100,43 @@ h1 { line-height: 1.1; }
   border-color: var(--navy);
   text-decoration: none;
 }
+
+.btn.marcar { font-size: 0.9rem; }
+.btn.marcar.marcado {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+:root[data-theme='dark'] .btn.marcar.marcado { color: var(--accent-soft); }
+.marcar-icono { font-weight: 700; }
+
+/* Barras de progreso (método de estudio) */
+.barra-prog {
+  height: 8px; border-radius: 999px; background: var(--bg-soft);
+  border: 1px solid var(--border); overflow: hidden; margin: 0.4rem 0;
+}
+.barra-prog > span {
+  display: block; height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+  transition: width 0.3s ease;
+}
+.etapa {
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  background: var(--card); padding: 1.25rem 1.4rem; margin-bottom: 1.25rem;
+}
+.etapa-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.lista-estudio { list-style: none; padding: 0; margin: 0.75rem 0 0; }
+.lista-estudio li {
+  display: flex; align-items: flex-start; gap: 0.6rem;
+  padding: 0.5rem 0; border-top: 1px solid var(--border);
+}
+.lista-estudio li:first-child { border-top: none; }
+.lista-estudio input[type=checkbox] { width: 20px; height: 20px; margin-top: 0.15rem; accent-color: var(--accent); flex-shrink: 0; cursor: pointer; }
+.lista-estudio .item-tipo {
+  font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-soft);
+  border: 1px solid var(--border-strong); border-radius: 999px; padding: 0.05rem 0.45rem; margin-left: 0.4rem;
+}
+.lista-estudio li.hecho label { text-decoration: line-through; color: var(--text-soft); }
 .btn-primario:hover {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25);

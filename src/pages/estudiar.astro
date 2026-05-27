@@ -1,0 +1,174 @@
+---
+import Base from '../layouts/Base.astro';
+import { getEntry } from 'astro:content';
+
+const colLabel: Record<string, string> = {
+  ias: 'IA', skills: 'Herramienta', mcps: 'MCP', trucos: 'Truco', ensenanzas: 'Enseñanza',
+};
+
+// Plan de estudio: 3 etapas con ítems ordenados (referencian fichas reales).
+const plan = [
+  {
+    nombre: 'Etapa 1 · Fundamentos',
+    nivel: 'principiante',
+    desc: 'Qué es la IA, cómo hablarle y las herramientas base. Empezá por acá aunque nunca hayas usado IA.',
+    items: [
+      { col: 'trucos', id: 'dar-contexto' },
+      { col: 'trucos', id: 'mostrar-ejemplo' },
+      { col: 'ias', id: 'chatgpt' },
+      { col: 'ias', id: 'claude' },
+      { col: 'ias', id: 'gemini' },
+      { col: 'skills', id: 'que-es-una-skill' },
+      { col: 'mcps', id: 'que-es-mcp' },
+      { col: 'trucos', id: 'verificar-datos' },
+    ],
+  },
+  {
+    nombre: 'Etapa 2 · Sacarle el jugo',
+    nivel: 'intermedio',
+    desc: 'Mejores prompts y las herramientas que multiplican tu trabajo: investigación, estudio y programación asistida.',
+    items: [
+      { col: 'trucos', id: 'dividir-en-pasos' },
+      { col: 'trucos', id: 'iterar-no-empezar-de-cero' },
+      { col: 'ias', id: 'perplexity' },
+      { col: 'ias', id: 'notebooklm' },
+      { col: 'skills', id: 'claude-code' },
+      { col: 'skills', id: 'cursor' },
+      { col: 'trucos', id: 'comparar-dos-ias' },
+      { col: 'trucos', id: 'guardar-tus-prompts' },
+    ],
+  },
+  {
+    nombre: 'Etapa 3 · Automatizar y construir',
+    nivel: 'avanzado',
+    desc: 'Conectar la IA a tus herramientas con MCP y automatizar tareas reales con Claude. El nivel de poder.',
+    items: [
+      { col: 'ensenanzas', id: 'automatizar-codigo-con-claude-code' },
+      { col: 'mcps', id: 'filesystem' },
+      { col: 'ensenanzas', id: 'conectar-claude-con-mcp' },
+      { col: 'mcps', id: 'github' },
+      { col: 'ensenanzas', id: 'automatizar-github-con-claude' },
+      { col: 'skills', id: 'superpowers' },
+      { col: 'trucos', id: 'archivo-de-instrucciones' },
+      { col: 'ensenanzas', id: 'equipar-claude-code-skills-mcps' },
+      { col: 'skills', id: 'open-design' },
+    ],
+  },
+];
+
+const planRes = await Promise.all(
+  plan.map(async (etapa) => ({
+    ...etapa,
+    items: (
+      await Promise.all(
+        etapa.items.map(async (it) => {
+          const entry = await getEntry(it.col as any, it.id).catch(() => undefined);
+          if (!entry) return null;
+          return {
+            key: `${it.col}/${it.id}`,
+            href: `/${it.col}/${it.id}/`,
+            titulo: (entry as any).data.titulo,
+            tipo: colLabel[it.col],
+          };
+        })
+      )
+    ).filter(Boolean) as { key: string; href: string; titulo: string; tipo: string }[],
+  }))
+);
+
+const total = planRes.reduce((n, e) => n + e.items.length, 0);
+---
+
+<Base titulo="Método de estudio" descripcion="Un plan paso a paso para aprender IA de cero a avanzado, con tu progreso guardado.">
+  <span class="eyebrow">Método de estudio</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">Tu plan para aprender IA</h1>
+  <p class="sub" style="max-width:62ch">
+    Un recorrido ordenado de {total} pasos, de principiante a avanzado. Marcá cada cosa cuando
+    la aprendas: tu progreso queda guardado en este navegador. No hace falta cuenta.
+  </p>
+
+  <div style="border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--card);padding:1.1rem 1.3rem;margin:1.25rem 0">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+      <strong>Tu progreso</strong>
+      <span id="prog-total-lbl" class="badge">0% · 0 de {total}</span>
+    </div>
+    <div class="barra-prog"><span id="prog-total-bar"></span></div>
+    <p class="sub" id="prog-msg" style="margin:.25rem 0 0;font-size:.9rem">Marcá tu primer paso para arrancar.</p>
+  </div>
+
+  {planRes.map((etapa) => (
+    <section class="etapa">
+      <div class="etapa-head">
+        <div>
+          <span class={`badge nivel-${etapa.nivel}`}>{etapa.nivel}</span>
+          <h2 style="margin:.4rem 0 .25rem">{etapa.nombre}</h2>
+        </div>
+        <span class="badge etapa-pct">0/{etapa.items.length}</span>
+      </div>
+      <p class="sub" style="margin:0">{etapa.desc}</p>
+      <div class="barra-prog"><span></span></div>
+      <ul class="lista-estudio">
+        {etapa.items.map((it) => (
+          <li>
+            <input type="checkbox" id={`chk-${it.key}`} data-key={it.key} />
+            <label for={`chk-${it.key}`} style="flex:1">
+              <a href={it.href}>{it.titulo}</a>
+              <span class="item-tipo">{it.tipo}</span>
+            </label>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  <section class="cta-band">
+    <h2 style="font-size:clamp(1.4rem,3.5vw,2rem);margin:0 0 .5rem">Terminaste el plan</h2>
+    <p class="sub" style="max-width:50ch;margin:0 auto 1.25rem">
+      Cuando completes las tres etapas, ya sabés usar IA, conectarla a tus herramientas y automatizar
+      tareas reales. Seguí explorando el catálogo y los repos para profundizar.
+    </p>
+    <a class="btn btn-primario" href="/catalogo/" style="background:var(--accent);border-color:var(--accent);color:#06121a">Ir al catálogo completo</a>
+  </section>
+</Base>
+
+<script is:inline>
+  (function () {
+    var KEY = 'bib-ia-progreso';
+    function load() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } }
+    function save(m) { try { localStorage.setItem(KEY, JSON.stringify(m)); } catch (e) {} }
+    var map = load();
+    var boxes = [].slice.call(document.querySelectorAll('input[type=checkbox][data-key]'));
+
+    function refresh() {
+      document.querySelectorAll('.etapa').forEach(function (et) {
+        var bs = [].slice.call(et.querySelectorAll('input[data-key]'));
+        var done = bs.filter(function (b) { return map[b.dataset.key]; }).length;
+        var pct = bs.length ? Math.round((done * 100) / bs.length) : 0;
+        var bar = et.querySelector('.barra-prog > span'); if (bar) bar.style.width = pct + '%';
+        var lbl = et.querySelector('.etapa-pct'); if (lbl) lbl.textContent = done + '/' + bs.length;
+        bs.forEach(function (b) { var li = b.closest('li'); if (li) li.classList.toggle('hecho', !!map[b.dataset.key]); });
+      });
+      var doneT = boxes.filter(function (b) { return map[b.dataset.key]; }).length;
+      var pctT = boxes.length ? Math.round((doneT * 100) / boxes.length) : 0;
+      var ob = document.getElementById('prog-total-bar'); if (ob) ob.style.width = pctT + '%';
+      var ol = document.getElementById('prog-total-lbl'); if (ol) ol.textContent = pctT + '% · ' + doneT + ' de ' + boxes.length;
+      var msg = document.getElementById('prog-msg');
+      if (msg) {
+        if (pctT === 0) msg.textContent = 'Marcá tu primer paso para arrancar.';
+        else if (pctT === 100) msg.textContent = '¡Completaste el plan! Crack total.';
+        else msg.textContent = 'Vas muy bien. Seguí con el próximo paso.';
+      }
+    }
+
+    boxes.forEach(function (b) {
+      b.checked = !!map[b.dataset.key];
+      b.addEventListener('change', function () {
+        map = load();
+        if (b.checked) map[b.dataset.key] = true; else delete map[b.dataset.key];
+        save(map);
+        refresh();
+      });
+    });
+    refresh();
+  })();
+</script>

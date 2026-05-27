@@ -1,11 +1,13 @@
 ---
 import CopyButton from './CopyButton.astro';
 import Comandos from './Comandos.astro';
+import BotonAprendido from './BotonAprendido.astro';
 
 interface Enlace { texto: string; url: string; }
 interface Grupo { titulo: string; windows?: string; mac?: string; comun?: string; nota?: string; }
 interface Props {
   tipo: 'skill' | 'mcp' | 'ia';
+  itemKey?: string;
   titulo: string;
   nivel: string;
   gratis?: boolean;
@@ -26,7 +28,7 @@ interface Props {
   revisarAntesDe?: Date;
 }
 const {
-  tipo, titulo, nivel, gratis = true, resumen, descripcion,
+  tipo, itemKey, titulo, nivel, gratis = true, resumen, descripcion,
   accionTitulo, accionTexto, comandos = [], ejemplo, ejemploTitulo = 'Ejemplo',
   funciones = [], casosDeUso = [], planPago, enlaces = [], tags = [],
   actualizado, revisarAntesDe,
@@ -53,6 +55,8 @@ const fmt = (d: Date) => d.toLocaleDateString('es', { year: 'numeric', month: 'l
       (precios, límites) pueden haber cambiado. Verificá en los enlaces oficiales.
     </p>
   )}
+
+  {itemKey && <p style="margin:1rem 0"><BotonAprendido itemKey={itemKey} /></p>}
 
   <h2>Qué es</h2>
   <p>{descripcion}</p>

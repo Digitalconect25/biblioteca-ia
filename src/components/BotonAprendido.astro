@@ -1,0 +1,8 @@
+---
+interface Props { itemKey: string; }
+const { itemKey } = Astro.props;
+---
+<button class="btn marcar" type="button" data-key={itemKey} aria-pressed="false">
+  <span class="marcar-icono" aria-hidden="true">○</span>
+  <span class="marcar-txt">Marcar como aprendido</span>
+</button>
