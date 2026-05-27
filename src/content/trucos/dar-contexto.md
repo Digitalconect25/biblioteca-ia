@@ -16,5 +16,34 @@ tags: [prompting, basico, contexto]
 actualizado: 2026-05-27
 ---
 
-Probá el mismo pedido con y sin contexto: la diferencia es enorme. El contexto es gratis y
-es lo que más mejora los resultados.
+Cuando le pedís algo "en seco", la IA tiene que adivinar quién sos, para qué lo necesitás y a qué nivel responder. Y adivina mal: te devuelve algo genérico, demasiado técnico o demasiado básico, y terminás reescribiendo el pedido tres veces. El contexto evita ese ida y vuelta. Tres líneas que dicen quién, para quién y para qué orientan toda la respuesta desde el primer intento.
+
+## Cómo aplicarlo
+
+1. **Dale un rol.** "Actuá como nutricionista", "como abogado laboral", "como profesor de primaria". El rol activa el vocabulario y el criterio correctos.
+2. **Definí el objetivo.** Qué querés lograr: explicar, convencer, resumir, decidir. No es lo mismo "explicame el IVA" que "ayudame a decidir si me conviene ser monotributista".
+3. **Aclará para quién es.** Un niño, un cliente, tu jefe, vos mismo. El público define el tono y la profundidad.
+4. **Sumá restricciones si importan.** Largo, tono, idioma, qué evitar. "En 5 líneas", "sin tecnicismos", "en español rioplatense".
+
+## Antes y después
+
+Pedido vago:
+
+```
+Explicame qué es el interés compuesto.
+```
+
+Con contexto:
+
+```
+Actuá como profesor de finanzas personales, paciente y claro.
+Explicale qué es el interés compuesto a alguien de 16 años
+que nunca ahorró. Usá un ejemplo con plata real y montos chicos.
+Máximo 6 líneas, sin fórmulas.
+```
+
+## Llevalo más lejos
+
+- **Pedile que te pregunte.** Cerrá con "antes de responder, haceme las preguntas que necesites para darme la mejor respuesta". La IA detecta qué le falta saber.
+- **Pegá material de referencia.** Sumá un texto, una conversación previa o un ejemplo de tu trabajo para que copie tu estilo y tu contexto real.
+- **Guardá tu contexto fijo.** Si siempre trabajás desde el mismo rol o proyecto, ponelo en las instrucciones personalizadas de la IA y no lo repetís más.

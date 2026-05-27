@@ -52,5 +52,24 @@ actualizado: 2026-05-27
 revisarAntesDe: 2026-09-27
 ---
 
-Regla profesional: instalá solo lo que vas a usar. Es fácil llenar la carpeta de skills con
-cientos de cosas; un set chico y conocido rinde más que un cofre que no recordás.
+Al terminar vas a tener tu Claude Code equipado con un pack de skills, al menos un MCP conectado y un plugin instalado, y vas a saber verificar que todo cargó. Es la diferencia entre usar Claude Code "pelado" y tener un equipo con capacidades a medida de tu trabajo.
+
+## Qué tener en cuenta
+
+Conviene entender qué es cada cosa, porque se confunden. Una **skill** es una instrucción reutilizable que Claude aplica cuando hace falta; un **MCP** es un servidor que le da acceso a herramientas externas (archivos, terminal, web); un **plugin** empaqueta comandos y configuraciones que se instalan desde dentro de Claude Code. No compiten: se suman.
+
+El **scope** importa. Instalar Global deja la skill disponible en todos tus proyectos; instalar a nivel proyecto la limita a esa carpeta. Para algo que vas a usar siempre, Global; para algo específico de un cliente, mejor por proyecto. Los MCP que dan acceso a la terminal o al sistema de archivos son potentes y por eso mismo conviene revisarlos antes de aprobar acciones. Y como casi todo se baja con `npx`, necesitás Node al día y conexión.
+
+## Si algo falla
+
+- **`npx skills add ...` no muestra la lista.** Verificá que Node responda con `node --version`. Si la terminal quedó esperando, es la pantalla de selección: marcá con A, Enter, y elegí Claude Code y scope Global.
+- **El MCP no aparece en `claude mcp list`.** Reabrí la sesión de Claude Code. Si sigue ausente, repetí el `claude mcp add` y mirá si imprime algún error de descarga.
+- **El plugin no se instala.** Tiene que correrse desde dentro de Claude Code, después de lanzar `claude`, no desde la terminal del sistema.
+- **`/mcp` no lista nada.** El servidor no cargó: revisá el nombre del paquete y que Node lo haya descargado sin error.
+- **Instalaste de más y Claude se confunde.** Sacá lo que no uses; demasiadas skills compiten por la atención del modelo.
+
+## Siguiente nivel
+
+- Armá un `CLAUDE.md` que documente qué skills y MCPs usás en el proyecto, para que el equipo arranque parejo.
+- Conectá un MCP propio de tu stack (tu base de datos, tu API interna) con el mismo `claude mcp add`.
+- Explorá el marketplace oficial de plugins para sumar comandos de revisión, testing o despliegue.

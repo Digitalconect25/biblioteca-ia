@@ -32,5 +32,39 @@ actualizado: 2026-05-27
 revisarAntesDe: 2026-09-27
 ---
 
-Si usás Claude Code para marketing, este pack te da decenas de habilidades listas. Empezá
-por product-marketing-context, que es el contexto base que leen las demás skills.
+Este pack convierte a Claude Code en tu equipo de marketing: trae skills de copywriting, estrategia de contenidos, CRO, anuncios, email, pricing y psicología de marketing. Le sirve a fundadores, marketers solos y agencias chicas que quieren producir material sin saltar entre diez herramientas distintas. Todo queda disponible de forma global una vez instalado.
+
+## Cómo instalarlo y usarlo, paso a paso
+
+1. Asegurate de tener Node instalado (para poder usar `npx`).
+2. Corré el comando de instalación:
+
+```
+npx skills add coreyhaines31/marketingskills
+```
+
+3. Cuando aparezca la lista de skills, apretá la tecla `A` para marcarlas todas y confirmá con `Enter`.
+4. Elegí **Claude Code** como agente y **Global** como scope, así las tenés en cualquier proyecto.
+5. Para el primer uso, abrí Claude y arrancá por el contexto base de product-marketing: es el que leen las demás skills antes de trabajar.
+
+## Ejemplo real
+
+Querés una landing para un producto nuevo. Después de cargar el contexto de marketing, pedís:
+
+```
+Escribí el copy de una landing para mi app de gestión de turnos.
+Usá la skill de copywriting y dame hero, beneficios y CTA.
+```
+
+Claude toma el contexto, aplica la skill de copy y te devuelve la estructura lista para editar.
+
+## Trucos y errores comunes
+
+- No saltees el contexto de marketing: sin él, las skills trabajan a ciegas y el copy sale genérico.
+- Nombrá la skill que querés ("usá la de CRO", "usá la de email") cuando la tarea sea específica; ayuda a que elija bien.
+- Mantené el repo actualizado: volvé a correr el comando cada tanto para traer mejoras y skills nuevas.
+- No esperes que reemplace tu criterio: revisá siempre el copy antes de publicarlo.
+
+## Cuándo conviene
+
+Para quien hace marketing en Claude Code y quiere un set amplio y coherente de habilidades en un solo lugar. Ideal si sos fundador, marketer independiente o trabajás en una agencia chica y producís copy, contenido y campañas seguido.

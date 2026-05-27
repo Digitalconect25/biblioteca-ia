@@ -38,5 +38,24 @@ actualizado: 2026-05-28
 revisarAntesDe: 2026-09-28
 ---
 
-Cuidado con el "Review Gate" (un hook que audita cada respuesta de Claude con Codex): es
-potente pero, mal usado, puede vaciar tu cuota en horas. Activalo solo cuando lo necesites.
+Al terminar vas a tener a Claude Code y a Codex de OpenAI trabajando sobre la misma carpeta, con revisión cruzada de código. La idea no es elegir uno: es que Claude planee y construya, y Codex audite o rescate cuando Claude se traba. Dos modelos distintos mirando el mismo problema atrapan errores que uno solo deja pasar.
+
+## Qué tener en cuenta
+
+Son dos cuentas y dos cuotas separadas: Claude consume tu plan de Anthropic, Codex el de OpenAI o ChatGPT. Si usás los dos intensivamente, vas a gastar de ambos lados, así que tenelo en cuenta antes de armar flujos automáticos.
+
+Hay dos caminos para conectarlos y conviene elegir según tu costumbre. El Camino A (correr `claude` dentro de la terminal embebida de ChatGPT) es simple y los deja en la misma carpeta sin instalar nada extra. El Camino B (el plugin oficial) te da comandos dedicados como `/codex:review`, `/codex:adversarial-review` y `/codex:rescue` directo en Claude Code. El plugin se instala desde dentro de Claude Code; revisá el repo para los pasos exactos, que pueden cambiar entre versiones.
+
+## Si algo falla
+
+- **`npm install -g @openai/codex` falla por permisos.** En Mac puede pedir privilegios; usá un gestor de versiones de Node en vez de instalar en el sistema, o seguí la guía del repo de Codex.
+- **Los comandos `/codex:...` no aparecen en Claude Code.** El plugin no quedó instalado: corré la instalación desde dentro de `claude` y reabrí la sesión.
+- **Codex no ve los mismos archivos que Claude.** Asegurate de que ambos estén lanzados desde la misma carpeta del proyecto.
+- **Las revisiones se contradicen.** Es esperable: tomá a Codex como segunda opinión, no como veredicto. Vos decidís.
+- **Se te dispara la cuota.** Revisá si dejaste activo algún hook que llama a Codex de forma automática.
+
+## Siguiente nivel
+
+- Sumá `/codex:review` a tu rutina antes de cada commit como chequeo fijo.
+- Usá `/codex:rescue` cuando Claude se atore en un bug que no logra cerrar.
+- Cuidado con el "Review Gate" (un hook que audita cada respuesta de Claude con Codex): es potente pero, mal usado, puede vaciar tu cuota en horas. Activalo solo cuando lo necesites.

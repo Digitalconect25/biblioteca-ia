@@ -62,6 +62,8 @@ const fmt = (d: Date) => d.toLocaleDateString('es', { year: 'numeric', month: 'l
 
   <Comandos grupos={comandos} />
 
+  <div class="prosa"><slot /></div>
+
   {funciones.length > 0 && (
     <>
       <h2>Funciones</h2>

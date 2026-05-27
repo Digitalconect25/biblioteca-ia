@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import FichaDetalle from '../../components/FichaDetalle.astro';
 
@@ -10,6 +10,7 @@ export async function getStaticPaths() {
 
 const { item } = Astro.props;
 const d = item.data;
+const { Content } = await render(item);
 ---
 
 <Base titulo={d.titulo} descripcion={d.resumen}>
@@ -29,5 +30,7 @@ const d = item.data;
     tags={d.tags}
     actualizado={d.actualizado}
     revisarAntesDe={d.revisarAntesDe}
-  />
+  >
+    <Content />
+  </FichaDetalle>
 </Base>

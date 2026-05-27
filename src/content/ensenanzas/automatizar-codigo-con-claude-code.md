@@ -43,5 +43,30 @@ actualizado: 2026-05-27
 revisarAntesDe: 2026-09-27
 ---
 
-Empezá con tareas chicas y verificables. A medida que confiás en el flujo, le delegás cosas
-más grandes. La clave profesional: dale contexto claro y revisá los diffs.
+Al terminar vas a tener a Claude Code resolviendo una tarea real en tu proyecto, de punta a punta, sin que sueltes el control: vos aprobás cada cambio que importa. Eso te ahorra el ida y vuelta de copiar y pegar entre el chat y el editor, y te deja delegar lo aburrido para concentrarte en decidir.
+
+## Qué tener en cuenta
+
+Claude Code consume cuota de tu plan según el tamaño del proyecto y la cantidad de archivos que lee. Una sesión larga en un repo grande gasta más rápido que varias preguntas cortas, así que conviene arrancar en una carpeta acotada.
+
+Antes de empezar, asegurate de que tu proyecto esté bajo control de versiones. Si la carpeta todavía no es un repo, inicializalo:
+
+```
+git init
+```
+
+Así, si un cambio no te gusta, lo revertís sin drama. Claude pide permiso para editar archivos y correr comandos: leé qué va a hacer antes de aprobar, sobre todo cuando toca borrar o instalar dependencias. No le des por sentado que entiende el negocio; cuanto más contexto le des (qué framework usás, qué convención de nombres, qué no debe tocar), mejor sale el resultado.
+
+## Si algo falla
+
+- **El comando `claude` no se reconoce.** Cerrá y reabrí la terminal para que tome el PATH actualizado. Si sigue sin aparecer, reinstalá con el instalador de tu sistema.
+- **No abre el navegador para iniciar sesión.** Copiá a mano la URL que imprime la terminal y pegala en el navegador donde ya tenés tu cuenta de Anthropic abierta.
+- **Edita archivos que no querías.** Frenalo, revertí con `git checkout .` y volvé a pedir la tarea aclarando qué archivos o carpetas no debe tocar.
+- **Dice que terminó pero el proyecto no corre.** Pedile explícitamente que ejecute el proyecto o las pruebas y que arregle los errores que aparezcan, en vez de confiar en su resumen.
+- **Se queda sin contexto en tareas largas.** Dividí el pedido en pasos chicos y empezá una sesión nueva cuando cambies de objetivo.
+
+## Siguiente nivel
+
+- Creá un archivo `CLAUDE.md` en la raíz con las reglas de tu proyecto (estilo, comandos, qué evitar); Claude lo lee solo al arrancar.
+- Sumale skills y MCPs para darle capacidades extra (ver la enseñanza de equipar Claude Code).
+- Conectalo a tu repo de GitHub para que actúe directo en issues y PRs (ver la enseñanza de automatizar GitHub).

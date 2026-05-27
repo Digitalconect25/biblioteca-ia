@@ -241,6 +241,42 @@ footer.sitio {
 ol.pasos { padding-left: 1.2rem; }
 ol.pasos li { margin-bottom: 0.75rem; }
 
+/* ===== Prosa (cuerpo Markdown educativo) ===== */
+.prosa { margin: 1.5rem 0; max-width: 70ch; }
+.prosa:empty { display: none; }
+.prosa > :first-child { margin-top: 0; }
+.prosa h2 {
+  font-size: 1.4rem; margin: 2rem 0 0.75rem; padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.prosa h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
+.prosa p { margin: 0.75rem 0; }
+.prosa ul, .prosa ol { margin: 0.75rem 0; padding-left: 1.4rem; }
+.prosa li { margin: 0.35rem 0; }
+.prosa li::marker { color: var(--accent); }
+.prosa a { font-weight: 500; }
+.prosa code {
+  font-family: var(--font-mono); font-size: 0.85em;
+  background: var(--bg-soft); border: 1px solid var(--border);
+  padding: 0.1rem 0.35rem; border-radius: 5px;
+}
+.prosa pre {
+  background: var(--navy-deep); color: #eef2f8;
+  border-radius: var(--radius); padding: 1rem; overflow: auto;
+  font-family: var(--font-mono); font-size: 0.85rem; margin: 1rem 0;
+}
+.prosa pre code { background: none; border: none; padding: 0; color: inherit; }
+.prosa blockquote {
+  margin: 1rem 0; padding: 0.5rem 1rem;
+  border-left: 3px solid var(--accent);
+  background: var(--bg-soft); border-radius: 0 var(--radius) var(--radius) 0;
+  color: var(--text-soft);
+}
+.prosa table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.92rem; }
+.prosa th, .prosa td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; }
+.prosa th { background: var(--bg-soft); font-family: var(--font-mono); font-size: 0.8rem; }
+.prosa hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
 @media (prefers-reduced-motion: reduce) {
   .card, .btn, .chip { transition: none; }
   html { scroll-behavior: auto; }

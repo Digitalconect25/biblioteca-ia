@@ -46,5 +46,24 @@ actualizado: 2026-05-27
 revisarAntesDe: 2026-09-27
 ---
 
-Esto convierte tu repo en un compañero de trabajo: pedís cambios desde un issue y aparecen
-como PR para revisar. Empezá en un repo de prueba y revisá siempre los PR antes de fusionar.
+Al terminar vas a poder mencionar a @claude en cualquier issue o PR y que actúe solo: implementa el cambio, abre un PR y te lo deja listo para revisar. Tu repo pasa a tener un colaborador que trabaja en la nube de GitHub Actions, sin que tengas que abrir la terminal.
+
+## Qué tener en cuenta
+
+Necesitás ser admin del repo: instalar la GitHub App, crear el workflow y cargar secretos requieren ese permiso. Si trabajás en un repo de una organización, puede que tengas que pedirle a quien administre que apruebe la app.
+
+Cada vez que @claude responde, corre la Action y consume crédito de tu cuenta de Anthropic. Un repo público y muy activo puede gastar rápido si cualquiera puede dispararla, así que conviene empezar en un repo privado o de prueba. El `ANTHROPIC_API_KEY` se guarda como secreto del repositorio: nunca lo pegues en el workflow ni en un comentario. Tené presente también que la Action consume minutos de GitHub Actions, que tienen su propia cuota.
+
+## Si algo falla
+
+- **`/install-github-app` no hace nada.** Corré el comando desde Claude Code parado dentro de la carpeta del repo, no en una carpeta cualquiera, y con la sesión de Claude ya iniciada.
+- **@claude no responde al comentario.** Andá a la pestaña Actions del repo y mirá si el workflow se disparó. Si no aparece, revisá que el archivo esté en `.github/workflows/` y que el evento (`issue_comment`) coincida con dónde comentaste.
+- **La Action corre pero falla con error de autenticación.** Verificá que el secreto se llame exactamente `ANTHROPIC_API_KEY` y que tu cuenta tenga crédito disponible.
+- **Claude abre el PR pero contra la rama equivocada.** Indicale en el comentario contra qué rama base querés el PR.
+- **Tarda mucho en arrancar.** La primera corrida levanta el runner desde cero; las siguientes son más rápidas.
+
+## Siguiente nivel
+
+- Configurá que @claude reaccione también a etiquetas o a aperturas de issue, no solo a comentarios.
+- Pedile revisiones automáticas de cada PR nuevo antes de fusionar.
+- Combinalo con la revisión cruzada de Codex (ver la enseñanza de Claude y Codex en equipo) para una segunda mirada sobre el código.

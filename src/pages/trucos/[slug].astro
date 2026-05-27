@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import CopyButton from '../../components/CopyButton.astro';
 import Comandos from '../../components/Comandos.astro';
@@ -11,6 +11,7 @@ export async function getStaticPaths() {
 
 const { item } = Astro.props;
 const d = item.data;
+const { Content } = await render(item);
 const desactualizada = d.revisarAntesDe && new Date() > d.revisarAntesDe;
 const fmt = (dt: Date) => dt.toLocaleDateString('es', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
@@ -34,6 +35,8 @@ const fmt = (dt: Date) => dt.toLocaleDateString('es', { year: 'numeric', month: 
 
     {d.ejemplo && <CopyButton texto={d.ejemplo} etiqueta="Ejemplo" />}
     <Comandos grupos={d.comandos} />
+
+    <div class="prosa"><Content /></div>
 
     {d.enlaces.length > 0 && (
       <>

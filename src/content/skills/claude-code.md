@@ -51,6 +51,49 @@ actualizado: 2026-05-27
 revisarAntesDe: 2026-09-27
 ---
 
-Claude Code convierte tareas de programación en una conversación. Ideal cuando querés
-construir o arreglar software sin escribir cada línea a mano. En Windows conviene instalar
-también [Git for Windows](https://git-scm.com/downloads/win) para que pueda usar Bash.
+Claude Code convierte tareas de programación en una conversación dentro de tu terminal. En vez de escribir cada línea, le explicás qué querés lograr y el agente lee tu proyecto, propone cambios, edita archivos y corre comandos. Le sirve a quien programa todos los días y quiere acelerar, pero también a quien sabe poco de código y necesita una mano que entienda el contexto completo del repositorio.
+
+## Cómo empezar, paso a paso
+
+1. Necesitás una cuenta paga de Anthropic (Pro, Max, Team o Enterprise). El plan gratis de Claude.ai no incluye Claude Code.
+2. Instalá con el método que prefieras. El instalador nativo se actualiza solo:
+
+```bash
+# Mac / Linux
+curl -fsSL https://claude.ai/install.sh | bash
+
+# Windows (PowerShell)
+irm https://claude.ai/install.ps1 | iex
+```
+
+3. Si preferís gestor de paquetes: `brew install --cask claude-code` en Mac o `winget install Anthropic.ClaudeCode` en Windows. Estas versiones no se autoactualizan, así que cada tanto corré `brew upgrade claude-code` o `winget upgrade Anthropic.ClaudeCode`.
+4. En Windows instalá también [Git for Windows](https://git-scm.com/downloads/win) para que Claude pueda usar Bash.
+5. Verificá que quedó bien y arrancá:
+
+```bash
+claude --version
+claude doctor
+claude
+```
+
+## Ejemplo real
+
+Abrís la terminal en la carpeta de tu proyecto, escribís `claude` y le pedís algo concreto:
+
+```text
+> Agregá una página de contacto con un formulario de nombre, email y mensaje.
+  Usá el mismo estilo que la página de inicio.
+```
+
+Claude lee tu estructura de archivos, te muestra el código que va a crear y te pide permiso antes de tocar nada. Después podés seguir la conversación: `corré los tests` o `el formulario no valida el email, arreglalo`.
+
+## Trucos y errores comunes
+
+- No uses `sudo npm install -g` para instalar: suele romper permisos. Usá el instalador nativo o el gestor de paquetes.
+- Si algo falla al iniciar, corré `claude doctor`: te diagnostica problemas de instalación y configuración.
+- Trabajá siempre dentro de un repo con control de versiones (git). Así revisás los cambios con `git diff` antes de aceptarlos.
+- Pedile cambios chicos y revisables en vez de tareas enormes de una sola vez. Es más fácil de controlar.
+
+## Cuándo conviene
+
+Conviene cuando querés que la IA trabaje sobre tu proyecto entero, no solo sobre el archivo abierto. Frente a un editor con autocompletado, Claude Code es mejor para tareas que cruzan varios archivos o que mezclan código y comandos de terminal. Es además la base sobre la que corren las skills y los MCPs.

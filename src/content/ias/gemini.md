@@ -50,6 +50,40 @@ actualizado: 2026-05-27
 revisarAntesDe: 2026-08-27
 ---
 
-Gemini cubre dos públicos con una sola marca: cualquiera lo usa gratis en la web, y quien
-programa tiene un agente de terminal de código abierto con capa gratuita. Empezá por la web
-si recién arrancás; pasá a la CLI cuando quieras automatizar.
+Gemini resuelve dos necesidades distintas con una sola marca. Para cualquiera, es un asistente gratis en la web para escribir, resumir o generar imágenes. Para quien programa, es un agente de terminal de código abierto que automatiza tareas de código. Empezá por la web si recién arrancás y pasá a la CLI cuando quieras meter la IA en tu flujo de trabajo.
+
+## Cómo sacarle el jugo, paso a paso
+
+1. Entrá a gemini.google.com con tu cuenta de Google. No instalás nada y ya podés escribir, pegar texto o pedir imágenes.
+2. Dale contexto claro y pedile formato concreto (lista, tabla, cantidad de palabras), igual que a cualquier asistente.
+3. Para imágenes, describí estilo, encuadre y proporción. Después pedile ediciones puntuales sobre el resultado.
+4. Si programás, probá el CLI sin instalar nada con `npx @google/gemini-cli`. Para usarlo seguido, instalalo global.
+5. Al iniciar el CLI, elegí "Login with Google" para la capa gratuita. Sirve para tareas reales sin configurar nada más.
+6. Si vas a integrar Gemini en una app propia, conseguí una API key gratis en Google AI Studio y guardala como variable de entorno.
+
+## Ejemplos para copiar
+
+```
+Resumí este texto en 5 bullets y después dame un titular
+para redes sociales. Tono claro, sin tecnicismos.
+
+[pegás tu texto]
+```
+
+```bash
+# Pedirle al agente que trabaje sobre tu proyecto desde la terminal
+gemini
+> Explicá qué hace este repositorio y listá los archivos principales
+```
+
+## Trucos y errores comunes
+
+- En la web, podés pedir que busque información actual; aun así, verificá datos sensibles.
+- El CLI lee tu carpeta de trabajo: abrilo dentro del proyecto que querés que entienda.
+- La capa gratuita del CLI tiene límites de pedidos por minuto y por día; si los volúmenes son altos, revisá la web oficial.
+- No confundas la web (chat) con la API (para apps): son accesos distintos con configuraciones distintas.
+- Como todo modelo, puede equivocarse; no des por ciertas fechas o cifras sin chequear.
+
+## Cuándo usar esta y cuándo otra
+
+Si ya vivís en el ecosistema de Google o querés generar imágenes sin pagar, Gemini en la web es práctico. Para automatizar tareas de código desde la terminal con una capa gratuita generosa, el Gemini CLI compite con Claude Code. Para respuestas con fuentes citadas, Perplexity sigue siendo más directo.

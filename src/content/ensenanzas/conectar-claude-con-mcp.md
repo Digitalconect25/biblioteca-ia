@@ -58,5 +58,24 @@ actualizado: 2026-05-27
 revisarAntesDe: 2026-09-27
 ---
 
-Seguridad primero: dale acceso solo a carpetas con las que estés cómodo. Una vez que entendés
-el patrón, podés sumar otros MCP (GitHub, búsqueda web, bases de datos) de la misma forma.
+Al terminar, Claude Desktop va a poder leer y organizar tus archivos locales sin que tengas que arrastrarlos al chat ni describir su contenido a mano. Es el primer paso para que Claude deje de ser un asistente que solo conversa y pase a ser uno que toca tus herramientas de verdad.
+
+## Qué tener en cuenta
+
+MCP es un estándar abierto: el mismo patrón que usás para el servidor de archivos te sirve para GitHub, bases de datos o búsqueda web. Lo importante es entender que cada servidor que agregás le da a Claude una capacidad nueva y un alcance nuevo.
+
+El archivo de configuración es JSON estricto: una coma de más o una llave sin cerrar y Claude Desktop no carga el servidor. Las rutas que ponés en `args` son las únicas carpetas que Claude va a poder ver y modificar; dale acceso solo a carpetas con las que estés cómodo, y nunca a la raíz de tu disco. La primera vez que usa `npx`, descarga el servidor, así que puede tardar unos segundos más de lo esperado.
+
+## Si algo falla
+
+- **`node --version` no devuelve nada.** No tenés Node instalado o no está en el PATH. Instalá la versión LTS desde nodejs.org y reabrí la terminal.
+- **No aparece el indicador de MCP tras reiniciar.** Cerrá Claude Desktop por completo (en Mac, también desde el menú de la barra superior, no solo la ventana) y volvé a abrirlo. Cerrar la ventana no alcanza.
+- **El JSON da error.** Pegá el contenido en un validador de JSON o pedile a Claude que lo revise. Lo más común son comas finales o comillas mal copiadas.
+- **Claude no encuentra tus archivos.** Verificá que reemplazaste `usuario` por tu nombre real y que la ruta existe tal cual está escrita, respetando mayúsculas.
+- **Pide permiso una y otra vez.** Es lo esperado: MCP confirma cada acción sensible. Leé qué va a hacer y aprobá; no es un error.
+
+## Siguiente nivel
+
+- Sumá el servidor de GitHub para que Claude lea y comente tus repos desde el mismo config.
+- Agregá un MCP de búsqueda web para que combine tus archivos con información actualizada.
+- Una vez cómodo con el patrón en Claude Desktop, llevá los mismos MCPs a Claude Code (ver la enseñanza de equipar Claude Code).
