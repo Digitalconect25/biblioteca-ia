@@ -9,7 +9,7 @@ interface Props {
   tags?: string[];
 }
 const { href, titulo, resumen, nivel, gratis = true, tipo, tags = [] } = Astro.props;
-const tipoLabel: Record<string, string> = { skill: 'Skill', mcp: 'MCP', ia: 'IA', truco: 'Truco' };
+const tipoLabel: Record<string, string> = { skill: 'Skill', mcp: 'MCP', ia: 'IA', truco: 'Truco', ensenanza: 'Enseñanza' };
 ---
 
 <a

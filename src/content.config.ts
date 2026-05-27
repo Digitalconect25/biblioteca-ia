@@ -111,4 +111,34 @@ const trucos = defineCollection({
   }),
 });
 
-export const collections = { skills, mcps, ias, rutas, trucos };
+// Enseñanzas: tutoriales paso a paso (cómo hacer / cómo aprender), con comandos por SO.
+const ensenanzas = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/ensenanzas' }),
+  schema: z.object({
+    titulo: z.string(),
+    nivel,
+    resumen: z.string().max(200, { message: "resumen: máximo 200 caracteres" }),
+    descripcion: z.string(),
+    objetivo: z.string(),
+    herramienta: z.string().optional(),
+    tiempo: z.string().optional(), // ej. "20 min"
+    requisitos: z.array(z.string()).default([]),
+    pasos: z
+      .array(
+        z.object({
+          titulo: z.string(),
+          detalle: z.string(),
+          windows: z.string().optional(),
+          mac: z.string().optional(),
+          comun: z.string().optional(),
+        })
+      )
+      .min(1, { message: "una enseñanza necesita al menos un paso" }),
+    enlaces: z.array(enlace).default([]),
+    tags: z.array(z.string()).default([]),
+    actualizado: z.coerce.date(),
+    revisarAntesDe: z.coerce.date().optional(),
+  }),
+});
+
+export const collections = { skills, mcps, ias, rutas, trucos, ensenanzas };

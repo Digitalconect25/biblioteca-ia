@@ -3,11 +3,12 @@ import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import FichaCard from '../../components/FichaCard.astro';
 
-const [skills, mcps, ias, trucos] = await Promise.all([
+const [skills, mcps, ias, trucos, ensenanzas] = await Promise.all([
   getCollection('skills'),
   getCollection('mcps'),
   getCollection('ias'),
   getCollection('trucos'),
+  getCollection('ensenanzas'),
 ]);
 
 type Tarjeta = {
@@ -20,12 +21,13 @@ const tarjetas: Tarjeta[] = [
   ...mcps.map((i) => ({ href: `/mcps/${i.id}/`, titulo: i.data.titulo, resumen: i.data.resumen, nivel: i.data.nivel, gratis: i.data.gratis, tipo: 'mcp', tags: i.data.tags })),
   ...ias.map((i) => ({ href: `/ias/${i.id}/`, titulo: i.data.titulo, resumen: i.data.resumen, nivel: i.data.nivel, gratis: i.data.gratis, tipo: 'ia', tags: i.data.tags })),
   ...trucos.map((i) => ({ href: `/trucos/${i.id}/`, titulo: i.data.titulo, resumen: i.data.resumen, nivel: i.data.nivel, gratis: true, tipo: 'truco', tags: i.data.tags })),
+  ...ensenanzas.map((i) => ({ href: `/ensenanzas/${i.id}/`, titulo: i.data.titulo, resumen: i.data.resumen, nivel: i.data.nivel, gratis: true, tipo: 'ensenanza', tags: i.data.tags })),
 ].sort((a, b) => a.titulo.localeCompare(b.titulo, 'es'));
 ---
 
 <Base titulo="Catálogo">
   <h1 class="titulo-pag">Catálogo</h1>
-  <p class="sub">Buscá y filtrá entre {tarjetas.length} fichas: IAs, skills, MCPs y trucos.</p>
+  <p class="sub">Buscá y filtrá entre {tarjetas.length} fichas: IAs, herramientas, MCPs, enseñanzas y trucos.</p>
 
   <label for="buscar" style="display:block;margin:.5rem 0 .25rem">Buscar</label>
   <input id="buscar" type="search" placeholder="Ej: claude, automatizar, buscar…"
@@ -37,6 +39,7 @@ const tarjetas: Tarjeta[] = [
       <button class="chip" data-dim="tipo" data-val="ia" aria-pressed="false">IAs</button>
       <button class="chip" data-dim="tipo" data-val="skill" aria-pressed="false">Skills</button>
       <button class="chip" data-dim="tipo" data-val="mcp" aria-pressed="false">MCPs</button>
+      <button class="chip" data-dim="tipo" data-val="ensenanza" aria-pressed="false">Enseñanzas</button>
       <button class="chip" data-dim="tipo" data-val="truco" aria-pressed="false">Trucos</button>
     </div>
     <div class="badges" role="group" aria-label="Filtrar por nivel" style="margin-top:.5rem">

@@ -7,6 +7,7 @@ const rutas = await getCollection('rutas');
 const skills = await getCollection('skills');
 const ias = await getCollection('ias');
 const trucos = await getCollection('trucos');
+const ensenanzas = await getCollection('ensenanzas');
 
 // Destacados: unos pocos ítems para mostrar el catálogo.
 const destacados = [
@@ -65,6 +66,29 @@ const destacados = [
             <strong>{r.data.titulo}</strong>
             <span style="color:var(--text-soft)">{r.data.resumen}</span>
             <span style="color:var(--text-soft);margin-top:auto">{r.data.pasos.length} pasos</span>
+          </a>
+        ))}
+      </div>
+    )}
+  </section>
+
+  <section id="aprender" aria-labelledby="h-aprender" style="margin-top:2rem">
+    <h2 id="h-aprender">Enseñanzas: aprendé a automatizar</h2>
+    <p class="sub">Tutoriales paso a paso, con comandos para Windows y Mac.</p>
+    {ensenanzas.length === 0 ? (
+      <div class="estado-vacio"><p>Pronto, tutoriales.</p></div>
+    ) : (
+      <div class="grid">
+        {ensenanzas.map((e) => (
+          <a class="card" href={`/ensenanzas/${e.id}/`}>
+            <div class="badges">
+              <span class="badge">enseñanza</span>
+              <span class={`badge nivel-${e.data.nivel}`}>{e.data.nivel}</span>
+              {e.data.tiempo && <span class="badge">⏱ {e.data.tiempo}</span>}
+            </div>
+            <strong>{e.data.titulo}</strong>
+            <span style="color:var(--text-soft)">{e.data.resumen}</span>
+            <span style="color:var(--text-soft);margin-top:auto">{e.data.pasos.length} pasos</span>
           </a>
         ))}
       </div>
