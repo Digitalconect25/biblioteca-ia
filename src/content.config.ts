@@ -93,4 +93,22 @@ const rutas = defineCollection({
   }),
 });
 
-export const collections = { skills, mcps, ias, rutas };
+// Trucos: consejos prácticos cortos para usar la IA mejor.
+const trucos = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/trucos' }),
+  schema: z.object({
+    titulo: z.string(),
+    nivel,
+    resumen: z.string().max(200, { message: "resumen: máximo 200 caracteres" }),
+    descripcion: z.string(),
+    herramienta: z.string().optional(), // a qué herramienta/IA aplica (opcional)
+    ejemplo: z.string().optional(),
+    comandos: z.array(grupoComandos).default([]),
+    enlaces: z.array(enlace).default([]),
+    tags: z.array(z.string()).default([]),
+    actualizado: z.coerce.date(),
+    revisarAntesDe: z.coerce.date().optional(),
+  }),
+});
+
+export const collections = { skills, mcps, ias, rutas, trucos };

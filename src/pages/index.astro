@@ -6,6 +6,7 @@ import FichaCard from '../components/FichaCard.astro';
 const rutas = await getCollection('rutas');
 const skills = await getCollection('skills');
 const ias = await getCollection('ias');
+const trucos = await getCollection('trucos');
 
 // Destacados: unos pocos ítems para mostrar el catálogo.
 const destacados = [
@@ -68,6 +69,28 @@ const destacados = [
         ))}
       </div>
     )}
+  </section>
+
+  <section id="trucos" aria-labelledby="h-trucos" style="margin-top:2rem">
+    <h2 id="h-trucos">Trucos</h2>
+    <p class="sub">Consejos cortos para sacarle más a la IA.</p>
+    {trucos.length === 0 ? (
+      <div class="estado-vacio"><p>Pronto más trucos.</p></div>
+    ) : (
+      <div class="grid">
+        {trucos.slice(0, 4).map((t) => (
+          <a class="card" href={`/trucos/${t.id}/`}>
+            <div class="badges">
+              <span class="badge">truco</span>
+              <span class={`badge nivel-${t.data.nivel}`}>{t.data.nivel}</span>
+            </div>
+            <strong>{t.data.titulo}</strong>
+            <span style="color:var(--text-soft)">{t.data.resumen}</span>
+          </a>
+        ))}
+      </div>
+    )}
+    <p style="margin-top:.75rem"><a href="/catalogo/?tipo=truco">Ver todos los trucos →</a></p>
   </section>
 
   <section aria-labelledby="h-destacados" style="margin-top:2rem">
