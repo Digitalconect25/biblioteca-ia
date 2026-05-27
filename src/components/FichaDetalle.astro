@@ -2,6 +2,7 @@
 import CopyButton from './CopyButton.astro';
 import Comandos from './Comandos.astro';
 import BotonAprendido from './BotonAprendido.astro';
+import BotonFavorito from './BotonFavorito.astro';
 
 interface Enlace { texto: string; url: string; }
 interface Grupo { titulo: string; windows?: string; mac?: string; comun?: string; nota?: string; }
@@ -56,7 +57,12 @@ const fmt = (d: Date) => d.toLocaleDateString('es', { year: 'numeric', month: 'l
     </p>
   )}
 
-  {itemKey && <p style="margin:1rem 0"><BotonAprendido itemKey={itemKey} /></p>}
+  {itemKey && (
+    <p style="margin:1rem 0;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+      <BotonAprendido itemKey={itemKey} />
+      <BotonFavorito itemKey={itemKey} />
+    </p>
+  )}
 
   <h2>Qué es</h2>
   <p>{descripcion}</p>

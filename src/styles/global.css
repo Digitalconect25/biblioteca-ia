@@ -110,6 +110,35 @@ h1 { line-height: 1.1; }
 :root[data-theme='dark'] .btn.marcar.marcado { color: var(--accent-soft); }
 .marcar-icono { font-weight: 700; }
 
+/* Corazón / favorito */
+.fav {
+  border: none; background: transparent; cursor: pointer;
+  font-size: 1.25rem; line-height: 1; color: var(--text-soft);
+  padding: 0.25rem 0.4rem; border-radius: 999px; min-width: 36px; min-height: 36px;
+  transition: transform 0.12s ease, color 0.12s ease;
+}
+.fav:hover { color: #e0245e; }
+.fav.fav-on { color: #e0245e; }
+.fav.fav-on:active { transform: scale(1.2); }
+
+/* Gate de inscripción al curso */
+.gate {
+  border: 1px solid var(--accent); border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--accent) 7%, var(--card));
+  padding: 1.5rem; margin: 1.5rem 0;
+}
+.gate h2 { margin-top: 0; }
+.gate-form { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.75rem; }
+.gate-form input {
+  flex: 1; min-width: 180px; padding: 0.6rem; min-height: 44px;
+  border-radius: var(--radius); border: 1px solid var(--border-strong);
+  background: var(--card); color: var(--text); font: inherit;
+}
+.gate-error { color: #ba1a1a; font-size: 0.9rem; margin: 0.5rem 0 0; }
+.cert-qr { margin-top: 1rem; }
+.cert-qr img { width: 104px; height: 104px; image-rendering: pixelated; }
+.cert-qr small { display: block; color: var(--text-soft); font-size: 0.7rem; margin-top: 0.25rem; }
+
 /* Barras de progreso (método de estudio) */
 .barra-prog {
   height: 8px; border-radius: 999px; background: var(--bg-soft);
@@ -151,8 +180,8 @@ h1 { line-height: 1.1; }
 .cert-otorga, .cert-texto { color: var(--text-soft); margin: 0.85rem 0 0.25rem; }
 .cert-nombre {
   font-family: var(--font-body); font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 700;
-  text-align: center; border: none; border-bottom: 2px solid var(--accent);
-  background: transparent; color: var(--text); width: 100%; max-width: 440px; padding: 0.25rem 0;
+  color: var(--text); display: inline-block; border-bottom: 2px solid var(--accent);
+  padding: 0.1rem 1.5rem 0.25rem; margin: 0.25rem auto;
 }
 .cert-curso { font-size: 1.4rem; font-weight: 700; color: var(--navy); margin: 0.4rem 0; }
 :root[data-theme='dark'] .cert-curso { color: var(--accent-soft); }

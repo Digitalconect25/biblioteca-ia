@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import CopyButton from '../../components/CopyButton.astro';
 import BotonAprendido from '../../components/BotonAprendido.astro';
+import BotonFavorito from '../../components/BotonFavorito.astro';
 
 export async function getStaticPaths() {
   const items = await getCollection('ensenanzas');
@@ -34,7 +35,10 @@ const fmt = (dt: Date) => dt.toLocaleDateString('es', { year: 'numeric', month: 
 
     <p>{d.descripcion}</p>
 
-    <p style="margin:1rem 0"><BotonAprendido itemKey={`ensenanzas/${item.id}`} /></p>
+    <p style="margin:1rem 0;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+      <BotonAprendido itemKey={`ensenanzas/${item.id}`} />
+      <BotonFavorito itemKey={`ensenanzas/${item.id}`} />
+    </p>
 
     <div class="grupo-comandos" style="background:var(--bg-soft)">
       <strong>🎯 Qué vas a lograr</strong>

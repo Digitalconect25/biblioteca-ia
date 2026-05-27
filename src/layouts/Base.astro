@@ -100,5 +100,30 @@ const anio = new Date().getFullYear();
         });
       })();
     </script>
+
+    <!-- Favoritos / me gusta (localStorage) -->
+    <script is:inline>
+      (function () {
+        var FKEY = 'bib-ia-favoritos';
+        function fload() { try { return JSON.parse(localStorage.getItem(FKEY) || '{}'); } catch (e) { return {}; } }
+        function fsave(m) { try { localStorage.setItem(FKEY, JSON.stringify(m)); } catch (e) {} }
+        function fpaint(b, on) {
+          b.setAttribute('aria-pressed', on ? 'true' : 'false');
+          b.classList.toggle('fav-on', on);
+          var i = b.querySelector('.fav-icono'); if (i) i.textContent = on ? '♥' : '♡';
+        }
+        var fmap = fload();
+        document.querySelectorAll('.fav').forEach(function (b) {
+          var k = b.getAttribute('data-key');
+          fpaint(b, !!fmap[k]);
+          b.addEventListener('click', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            var m = fload();
+            if (m[k]) { delete m[k]; } else { m[k] = true; }
+            fsave(m); fpaint(b, !!m[k]);
+          });
+        });
+      })();
+    </script>
   </body>
 </html>

@@ -4,6 +4,7 @@ import Base from '../../layouts/Base.astro';
 import CopyButton from '../../components/CopyButton.astro';
 import Comandos from '../../components/Comandos.astro';
 import BotonAprendido from '../../components/BotonAprendido.astro';
+import BotonFavorito from '../../components/BotonFavorito.astro';
 
 export async function getStaticPaths() {
   const items = await getCollection('trucos');
@@ -32,7 +33,10 @@ const fmt = (dt: Date) => dt.toLocaleDateString('es', { year: 'numeric', month: 
       <p class="aviso-stale">⚠️ Este truco pasó su fecha de revisión ({fmt(d.revisarAntesDe!)}). Puede haber cambiado.</p>
     )}
 
-    <p style="margin:1rem 0"><BotonAprendido itemKey={`trucos/${item.id}`} /></p>
+    <p style="margin:1rem 0;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+      <BotonAprendido itemKey={`trucos/${item.id}`} />
+      <BotonFavorito itemKey={`trucos/${item.id}`} />
+    </p>
 
     <p>{d.descripcion}</p>
 

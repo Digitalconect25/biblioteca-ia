@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection, getEntry, render } from 'astro:content';
+import BotonFavorito from '../../components/BotonFavorito.astro';
 
 export async function getStaticPaths() {
   const cursos = await getCollection('cursos');
@@ -47,80 +48,157 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
   <p>{d.descripcion}</p>
   <div class="prosa"><Content /></div>
 
-  <div data-keys={allKeys} id="curso"
-       style="border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--card);padding:1.1rem 1.3rem;margin:1.5rem 0">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
-      <strong>Tu progreso en este curso</strong>
-      <span id="curso-pct" class="badge">0%</span>
+  <!-- Gate: hay que inscribirse con nombre y apellido para empezar -->
+  <div class="gate" id="gate">
+    <h2>Inscribite para empezar</h2>
+    <p class="sub" style="margin:0">Ingresá tu nombre y apellido. Con eso arranca el curso y, al terminarlo, generás tu certificado.</p>
+    <div class="gate-form">
+      <input id="g-nombre" type="text" placeholder="Nombre" autocomplete="given-name" />
+      <input id="g-apellido" type="text" placeholder="Apellido" autocomplete="family-name" />
+      <button id="g-empezar" class="btn btn-primario" type="button">Empezar el curso</button>
     </div>
-    <div class="barra-prog"><span id="curso-bar"></span></div>
+    <p id="g-error" class="gate-error" hidden>Completá nombre y apellido para empezar.</p>
   </div>
 
-  <h2>Lecciones</h2>
-  <ul class="lista-estudio">
-    {lecciones.map((l, i) => (
-      <li>
-        <input type="checkbox" id={`chk-${l.key}`} data-key={l.key} />
-        <label for={`chk-${l.key}`} style="flex:1">
-          <span style="color:var(--text-soft);font-family:var(--font-mono);font-size:.8rem">{String(i + 1).padStart(2, '0')}</span>
-          {' '}<a href={l.href}>{l.titulo}</a>
-          <span class="item-tipo">{l.tipo}</span>
-        </label>
-      </li>
-    ))}
-  </ul>
-
-  <!-- Certificado (aparece al 100%) -->
-  <section id="certificado" class="certificado" hidden>
-    <div class="cert-inner">
-      <span class="eyebrow" style="margin:0 auto">Certificado de finalización</span>
-      <p class="cert-otorga">Otorgado a</p>
-      <input id="cert-nombre" class="cert-nombre" type="text" placeholder="Escribí tu nombre" aria-label="Tu nombre" />
-      <p class="cert-texto">por completar el curso</p>
-      <p class="cert-curso">{d.titulo}</p>
-      <p class="cert-pie">
-        <span>Academia de IA ConectaNex</span>
-        <span>{hoy}</span>
-      </p>
+  <!-- Contenido del curso (se revela tras inscribirse) -->
+  <div id="curso-contenido" hidden>
+    <div data-keys={allKeys} data-curso={d.titulo} id="curso"
+         style="border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--card);padding:1.1rem 1.3rem;margin:1.5rem 0">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+        <strong>Hola, <span id="alumno-nombre">alumno</span> · tu progreso</strong>
+        <span id="curso-pct" class="badge">0%</span>
+      </div>
+      <div class="barra-prog"><span id="curso-bar"></span></div>
     </div>
-    <button id="cert-print" class="btn btn-primario no-print" style="margin-top:1rem">Imprimir / Guardar PDF</button>
-  </section>
+
+    <h2>Lecciones</h2>
+    <ul class="lista-estudio">
+      {lecciones.map((l, i) => (
+        <li>
+          <input type="checkbox" id={`chk-${l.key}`} data-key={l.key} />
+          <label for={`chk-${l.key}`} style="flex:1">
+            <span style="color:var(--text-soft);font-family:var(--font-mono);font-size:.8rem">{String(i + 1).padStart(2, '0')}</span>
+            {' '}<a href={l.href}>{l.titulo}</a>
+            <span class="item-tipo">{l.tipo}</span>
+          </label>
+          <BotonFavorito itemKey={l.key} />
+        </li>
+      ))}
+    </ul>
+
+    <!-- Certificado (aparece al 100%) -->
+    <section id="certificado" class="certificado" hidden>
+      <div class="cert-inner">
+        <span class="eyebrow" style="margin:0 auto">Certificado de finalización</span>
+        <p class="cert-otorga">Otorgado a</p>
+        <p class="cert-nombre" id="cert-nombre">—</p>
+        <p class="cert-texto">por completar el curso</p>
+        <p class="cert-curso">{d.titulo}</p>
+        <div class="cert-qr" id="cert-qr"></div>
+        <p class="cert-pie">
+          <span>Academia de IA ConectaNex</span>
+          <span>{hoy}</span>
+        </p>
+      </div>
+      <button id="cert-print" class="btn btn-primario no-print" style="margin-top:1rem">Imprimir / Guardar PDF</button>
+    </section>
+  </div>
 </Base>
 
-<script is:inline>
+<script>
+  import * as qrmod from 'qrcode-generator';
+  const qrcode = (qrmod as any).default || (qrmod as any);
+
   (function () {
-    var KEY = 'bib-ia-progreso', NOMBRE = 'bib-ia-nombre';
+    var KEY = 'bib-ia-progreso', ALUMNO = 'bib-ia-alumno';
     function load() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } }
-    function save(m) { try { localStorage.setItem(KEY, JSON.stringify(m)); } catch (e) {} }
-    var map = load();
+    function save(m: any) { try { localStorage.setItem(KEY, JSON.stringify(m)); } catch (e) {} }
+    function loadAlumno() { try { return JSON.parse(localStorage.getItem(ALUMNO) || 'null'); } catch (e) { return null; } }
+
     var cont = document.getElementById('curso');
-    var keys = []; try { keys = JSON.parse(cont.getAttribute('data-keys') || '[]'); } catch (e) {}
-    var boxes = [].slice.call(document.querySelectorAll('input[type=checkbox][data-key]'));
+    if (!cont) return;
+    var keys: string[] = [];
+    try { keys = JSON.parse(cont.getAttribute('data-keys') || '[]'); } catch (e) {}
+    var cursoTitulo = cont.getAttribute('data-curso') || '';
+    var map = load();
+    var boxes = ([] as HTMLInputElement[]).slice.call(document.querySelectorAll('input[type=checkbox][data-key]'));
+    var gate = document.getElementById('gate');
+    var contenido = document.getElementById('curso-contenido');
     var cert = document.getElementById('certificado');
-    var nombre = document.getElementById('cert-nombre');
+
+    function qrInto(el: HTMLElement, text: string) {
+      try {
+        var qr = qrcode(0, 'M'); qr.addData(text); qr.make();
+        el.innerHTML = '<img alt="QR de verificación" src="' + qr.createDataURL(4, 8) + '" /><small>Escaneá para verificar</small>';
+      } catch (e) {}
+    }
+
+    function nombreCompleto() {
+      var a = loadAlumno();
+      return a && a.nombre ? (a.nombre + ' ' + (a.apellido || '')).trim() : '';
+    }
 
     function refresh() {
       var done = keys.filter(function (k) { return map[k]; }).length;
       var pct = keys.length ? Math.round((done * 100) / keys.length) : 0;
       var bar = document.getElementById('curso-bar'); if (bar) bar.style.width = pct + '%';
       var lbl = document.getElementById('curso-pct'); if (lbl) lbl.textContent = pct + '% · ' + done + '/' + keys.length;
-      boxes.forEach(function (b) { var li = b.closest('li'); if (li) li.classList.toggle('hecho', !!map[b.dataset.key]); });
-      if (cert) cert.hidden = pct !== 100;
+      boxes.forEach(function (b) { var li = b.closest('li'); if (li) li.classList.toggle('hecho', !!map[b.getAttribute('data-key') as string]); });
+      if (cert) {
+        var full = pct === 100;
+        cert.hidden = !full;
+        if (full) {
+          var nom = nombreCompleto();
+          var cn = document.getElementById('cert-nombre'); if (cn) cn.textContent = nom || 'Alumno';
+          var fecha = new Date().toLocaleDateString('es');
+          var url = location.origin + '/verificar/?n=' + encodeURIComponent(nom) + '&c=' + encodeURIComponent(cursoTitulo) + '&f=' + encodeURIComponent(fecha);
+          var qrEl = document.getElementById('cert-qr'); if (qrEl) qrInto(qrEl, url);
+        }
+      }
     }
+
+    function mostrarContenido() {
+      if (gate) gate.hidden = true;
+      if (contenido) contenido.hidden = false;
+      var a = loadAlumno();
+      var an = document.getElementById('alumno-nombre');
+      if (an && a && a.nombre) an.textContent = a.nombre;
+      refresh();
+    }
+
+    // Estado inicial: ¿ya inscripto?
+    var alumno = loadAlumno();
+    if (alumno && alumno.nombre && alumno.apellido) {
+      mostrarContenido();
+    } else if (gate) {
+      // prefill si había nombre suelto
+      gate.hidden = false;
+    }
+
+    // Inscripción
+    var btnEmpezar = document.getElementById('g-empezar');
+    if (btnEmpezar) btnEmpezar.addEventListener('click', function () {
+      var n = (document.getElementById('g-nombre') as HTMLInputElement);
+      var ap = (document.getElementById('g-apellido') as HTMLInputElement);
+      var err = document.getElementById('g-error');
+      if (!n.value.trim() || !ap.value.trim()) { if (err) err.hidden = false; return; }
+      if (err) err.hidden = true;
+      try { localStorage.setItem(ALUMNO, JSON.stringify({ nombre: n.value.trim(), apellido: ap.value.trim() })); } catch (e) {}
+      mostrarContenido();
+    });
+
+    // Progreso por lección
     boxes.forEach(function (b) {
-      b.checked = !!map[b.dataset.key];
+      b.checked = !!map[b.getAttribute('data-key') as string];
       b.addEventListener('change', function () {
         map = load();
-        if (b.checked) map[b.dataset.key] = true; else delete map[b.dataset.key];
+        var k = b.getAttribute('data-key') as string;
+        if (b.checked) map[k] = true; else delete map[k];
         save(map); refresh();
       });
     });
-    if (nombre) {
-      try { nombre.value = localStorage.getItem(NOMBRE) || ''; } catch (e) {}
-      nombre.addEventListener('input', function () { try { localStorage.setItem(NOMBRE, nombre.value); } catch (e) {} });
-    }
+
     var pr = document.getElementById('cert-print');
     if (pr) pr.addEventListener('click', function () { window.print(); });
-    refresh();
   })();
 </script>

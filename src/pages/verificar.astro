@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base titulo="Verificar certificado" descripcion="Verificación de un certificado de la Academia de IA ConectaNex.">
+  <span class="eyebrow">Verificación</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">Verificar certificado</h1>
+
+  <div id="resultado" style="margin-top:1.25rem">
+    <div class="estado-vacio">
+      <p>Escaneá el QR de un certificado para ver sus datos, o pegá el enlace de verificación.</p>
+    </div>
+  </div>
+
+  <p class="sub" style="margin-top:1.5rem;font-size:.85rem;max-width:62ch">
+    La Academia de IA ConectaNex es gratuita y abierta. El certificado acredita que la persona
+    completó el contenido del curso en esta plataforma. Los datos viajan dentro del propio enlace
+    del QR (nombre, curso y fecha); no se guardan en un servidor.
+  </p>
+</Base>
+
+<script is:inline>
+  (function () {
+    var p = new URLSearchParams(location.search);
+    var n = p.get('n'), c = p.get('c'), f = p.get('f');
+    var cont = document.getElementById('resultado');
+    if (!cont) return;
+    if (n && c) {
+      cont.innerHTML =
+        '<div style="border:2px solid var(--accent);border-radius:var(--radius-lg);background:var(--card);padding:1.5rem;text-align:center">' +
+        '<p class="eyebrow" style="margin:0 auto">Certificado válido</p>' +
+        '<p style="color:var(--text-soft);margin:1rem 0 .25rem">Otorgado a</p>' +
+        '<p style="font-size:1.6rem;font-weight:700;margin:.25rem 0">' + escapeHtml(n) + '</p>' +
+        '<p style="color:var(--text-soft);margin:.75rem 0 .25rem">por completar el curso</p>' +
+        '<p style="font-size:1.2rem;font-weight:700;color:var(--accent-ink);margin:.25rem 0">' + escapeHtml(c) + '</p>' +
+        (f ? '<p class="sub" style="margin-top:1rem;font-family:var(--font-mono);font-size:.8rem">Fecha: ' + escapeHtml(f) + '</p>' : '') +
+        '<p class="sub" style="margin-top:.5rem;font-family:var(--font-mono);font-size:.75rem">Academia de IA ConectaNex</p>' +
+        '</div>';
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function (ch) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+      });
+    }
+  })();
+</script>

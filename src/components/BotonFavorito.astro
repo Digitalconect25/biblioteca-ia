@@ -1,0 +1,7 @@
+---
+interface Props { itemKey: string; }
+const { itemKey } = Astro.props;
+---
+<button class="fav" type="button" data-key={itemKey} aria-pressed="false" title="Me gusta / guardar en favoritos" aria-label="Me gusta">
+  <span class="fav-icono" aria-hidden="true">♡</span>
+</button>
