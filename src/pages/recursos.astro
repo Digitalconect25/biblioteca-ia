@@ -1,0 +1,83 @@
+---
+import Base from '../layouts/Base.astro';
+
+type Repo = { nombre: string; url: string; desc: string };
+type Grupo = { titulo: string; intro: string; repos: Repo[] };
+
+// Lista curada de repositorios de valor en GitHub para aprender y construir con IA.
+// Verificada contra GitHub. Al revisar, confirmá que los repos siguen activos.
+const grupos: Grupo[] = [
+  {
+    titulo: 'Aprender IA y prompting',
+    intro: 'Cursos y guías gratuitas, de cero a avanzado.',
+    repos: [
+      { nombre: 'microsoft/generative-ai-for-beginners', url: 'https://github.com/microsoft/generative-ai-for-beginners', desc: 'Curso gratuito de Microsoft para empezar en IA generativa, con lecciones y ejercicios.' },
+      { nombre: 'anthropics/courses', url: 'https://github.com/anthropics/courses', desc: 'Cursos educativos de Anthropic: prompting, uso de herramientas y más.' },
+      { nombre: 'anthropics/prompt-eng-interactive-tutorial', url: 'https://github.com/anthropics/prompt-eng-interactive-tutorial', desc: 'Tutorial interactivo paso a paso para escribir mejores prompts.' },
+      { nombre: 'dair-ai/Prompt-Engineering-Guide', url: 'https://github.com/dair-ai/Prompt-Engineering-Guide', desc: 'Guía completa de ingeniería de prompts, con técnicas y ejemplos.' },
+      { nombre: 'f/awesome-chatgpt-prompts', url: 'https://github.com/f/awesome-chatgpt-prompts', desc: 'Enorme colección de prompts de ejemplo para inspirarte y reutilizar.' },
+      { nombre: 'mlabonne/llm-course', url: 'https://github.com/mlabonne/llm-course', desc: 'Curso para entender por dentro cómo funcionan los modelos de lenguaje.' },
+    ],
+  },
+  {
+    titulo: 'Recetas y ejemplos de código',
+    intro: 'Para quien programa: ejemplos listos para construir con las APIs.',
+    repos: [
+      { nombre: 'anthropics/claude-cookbooks', url: 'https://github.com/anthropics/claude-cookbooks', desc: 'Recetas y notebooks oficiales para construir con Claude.' },
+      { nombre: 'anthropics/claude-quickstarts', url: 'https://github.com/anthropics/claude-quickstarts', desc: 'Proyectos de inicio rápido para arrancar con la API de Claude.' },
+      { nombre: 'openai/openai-cookbook', url: 'https://github.com/openai/openai-cookbook', desc: 'Ejemplos y guías oficiales para usar la API de OpenAI.' },
+    ],
+  },
+  {
+    titulo: 'Listas "awesome" (catálogos de la comunidad)',
+    intro: 'Índices mantenidos por la comunidad para descubrir herramientas y recursos.',
+    repos: [
+      { nombre: 'Hannibal046/Awesome-LLM', url: 'https://github.com/Hannibal046/Awesome-LLM', desc: 'Recopilación de modelos, papers y recursos sobre LLMs.' },
+      { nombre: 'modelcontextprotocol/servers', url: 'https://github.com/modelcontextprotocol/servers', desc: 'Servidores MCP de referencia para conectar agentes a herramientas.' },
+      { nombre: 'punkpeye/awesome-mcp-servers', url: 'https://github.com/punkpeye/awesome-mcp-servers', desc: 'Lista curada de servidores MCP de la comunidad.' },
+    ],
+  },
+  {
+    titulo: 'Herramientas y agentes para construir',
+    intro: 'Proyectos de código abierto para automatizar y crear apps con IA.',
+    repos: [
+      { nombre: 'ollama/ollama', url: 'https://github.com/ollama/ollama', desc: 'Ejecutá modelos de pesos abiertos en tu propia PC, sin la nube.' },
+      { nombre: 'langchain-ai/langchain', url: 'https://github.com/langchain-ai/langchain', desc: 'Framework popular para construir aplicaciones con modelos de lenguaje.' },
+      { nombre: 'danielmiessler/fabric', url: 'https://github.com/danielmiessler/fabric', desc: 'Colección de "patrones" (prompts reutilizables) para usar IA desde la terminal.' },
+      { nombre: 'abi/screenshot-to-code', url: 'https://github.com/abi/screenshot-to-code', desc: 'Convierte una captura de pantalla en código de una página web.' },
+      { nombre: 'Significant-Gravitas/AutoGPT', url: 'https://github.com/Significant-Gravitas/AutoGPT', desc: 'Plataforma para crear y ejecutar agentes de IA autónomos.' },
+    ],
+  },
+];
+---
+
+<Base titulo="Recursos: repositorios de GitHub" descripcion="Lista curada de repositorios de GitHub de valor para aprender y construir con IA.">
+  <article data-pagefind-body>
+    <h1 class="titulo-pag">Repositorios de GitHub de valor</h1>
+    <p class="sub" style="max-width:65ch">
+      Una selección de repositorios abiertos para aprender IA, escribir mejores prompts y
+      construir tus propios proyectos. Todos son gratuitos y mantenidos por la comunidad o por
+      las empresas que crean las herramientas.
+    </p>
+
+    {grupos.map((g) => (
+      <section style="margin-top:2rem">
+        <h2>{g.titulo}</h2>
+        <p class="sub">{g.intro}</p>
+        <div class="grid">
+          {g.repos.map((r) => (
+            <a class="card" href={r.url} rel="noopener noreferrer" target="_blank">
+              <div class="badges"><span class="badge">repo</span></div>
+              <strong style="word-break:break-word">{r.nombre}</strong>
+              <span style="color:var(--text-soft)">{r.desc}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
+
+    <p class="sub" style="margin-top:2rem">
+      ¿Conocés un repositorio que debería estar acá? Mirá cómo <a href="/aportar/">aportar</a>.
+    </p>
+  </article>
+</Base>
