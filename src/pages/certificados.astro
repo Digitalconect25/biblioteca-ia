@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+
+export const prerender = false;
+
+const { supabase, user } = Astro.locals;
+if (!user) return Astro.redirect('/login?redirect=/certificados');
+
+const { data: certs } = await supabase
+  .from('certificates')
+  .select('codigo, emitido_en, url_pdf, course:courses(slug, titulo)')
+  .order('emitido_en', { ascending: false });
+
+const certificados = (certs ?? []).map((c: any) => {
+  const curso = Array.isArray(c.course) ? c.course[0] : c.course;
+  return {
+    codigo: c.codigo,
+    fecha: c.emitido_en ? new Date(c.emitido_en).toLocaleDateString('es') : '',
+    titulo: curso?.titulo || 'Curso',
+    slug: curso?.slug || '',
+    // Si no hay PDF guardado, el diploma se ve/imprime en la página del curso.
+    enlace: c.url_pdf || (curso?.slug ? `/cursos/${curso.slug}/` : '#'),
+  };
+});
+---
+
+<Base titulo="Mis certificados" descripcion="Tus certificados de finalización de la Academia de IA ConectaNex.">
+  <span class="eyebrow">Tu panel</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">Mis certificados</h1>
+  <p class="sub" style="max-width:60ch">Los cursos que finalizaste y aprobaste. <a href="/dashboard/">Volver al panel</a></p>
+
+  {certificados.length === 0 ? (
+    <div class="etapa" style="max-width:560px;margin-top:1.25rem">
+      <p style="margin:0 0 .75rem">Todavía no tenés certificados. Completá las lecciones de un curso y aprobá su examen (80%) para obtener el tuyo.</p>
+      <a class="btn btn-primario" href="/cursos/">Ver cursos</a>
+    </div>
+  ) : (
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:1.25rem">
+      {certificados.map((c) => (
+        <a class="card" href={c.enlace}>
+          <div class="badges"><span class="badge gratis">🎓 Certificado</span></div>
+          <strong>{c.titulo}</strong>
+          <span class="sub">Emitido el {c.fecha}</span>
+          <span class="sub" style="font-family:var(--font-mono);font-size:.75rem">Código: {c.codigo}</span>
+          <span class="sub">Ver y descargar tu diploma →</span>
+        </a>
+      ))}
+    </div>
+  )}
+</Base>

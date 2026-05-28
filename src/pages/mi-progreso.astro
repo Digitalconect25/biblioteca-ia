@@ -1,0 +1,71 @@
+---
+import Base from '../layouts/Base.astro';
+
+export const prerender = false;
+
+const { supabase, user } = Astro.locals;
+if (!user) return Astro.redirect('/login?redirect=/mi-progreso');
+
+// Todos los cursos publicados + las estadísticas del usuario.
+const [{ data: courses }, { data: lessons }, { data: prog }, { data: exams }, { data: certs }] =
+  await Promise.all([
+    supabase.from('courses').select('id, slug, titulo, orden').eq('publicado', true).order('orden'),
+    supabase.from('lessons').select('id, course_id'),
+    supabase.from('lesson_progress').select('lesson_id').eq('completada', true),
+    supabase.from('exam_attempts').select('course_id').eq('aprobado', true),
+    supabase.from('certificates').select('course_id, codigo'),
+  ]);
+
+const lessonsByCourse: Record<string, string[]> = {};
+for (const l of lessons ?? []) (lessonsByCourse[l.course_id] ??= []).push(l.id);
+const doneSet = new Set((prog ?? []).map((p: any) => p.lesson_id));
+const examOk = new Set((exams ?? []).map((e: any) => e.course_id));
+const certByCourse = new Map((certs ?? []).map((c: any) => [c.course_id, c.codigo]));
+
+const filas = (courses ?? []).map((c: any) => {
+  const ids = lessonsByCourse[c.id] ?? [];
+  const done = ids.filter((id) => doneSet.has(id)).length;
+  return {
+    slug: c.slug,
+    titulo: c.titulo,
+    total: ids.length,
+    done,
+    pct: ids.length ? Math.round((done * 100) / ids.length) : 0,
+    examen: examOk.has(c.id),
+    certificado: certByCourse.get(c.id) || null,
+  };
+});
+---
+
+<Base titulo="Mi progreso" descripcion="Detalle de tu avance por curso: lecciones, exámenes y certificados.">
+  <span class="eyebrow">Tu panel</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">Mi progreso</h1>
+  <p class="sub" style="max-width:60ch">Tu avance en cada curso. <a href="/dashboard/">Volver al panel</a></p>
+
+  <div style="overflow-x:auto;margin-top:1.25rem">
+    <table style="width:100%;border-collapse:collapse;min-width:560px">
+      <thead>
+        <tr style="text-align:left;border-bottom:2px solid var(--border-strong)">
+          <th style="padding:.6rem .5rem">Curso</th>
+          <th style="padding:.6rem .5rem">Lecciones</th>
+          <th style="padding:.6rem .5rem">Examen</th>
+          <th style="padding:.6rem .5rem">Certificado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {filas.map((f) => (
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:.6rem .5rem"><a href={`/cursos/${f.slug}/`}>{f.titulo}</a></td>
+            <td style="padding:.6rem .5rem">{f.done}/{f.total} <span class="sub">({f.pct}%)</span></td>
+            <td style="padding:.6rem .5rem">{f.examen ? '✓ Aprobado' : '—'}</td>
+            <td style="padding:.6rem .5rem">
+              {f.certificado
+                ? <a href="/certificados/">🎓 Obtenido</a>
+                : <span class="sub">—</span>}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</Base>

@@ -37,6 +37,7 @@ const lecciones = (
 const allKeys = JSON.stringify(lecciones.map((l) => l.key));
 const examen = examenes[curso.id]?.preguntas ?? [];
 const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long', day: 'numeric' });
+const volver = encodeURIComponent(`/cursos/${curso.id}/`);
 ---
 
 <Base titulo={d.titulo} descripcion={d.resumen}>
@@ -53,16 +54,14 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
   <p>{d.descripcion}</p>
   <div class="prosa"><Content /></div>
 
-  <!-- Gate: hay que inscribirse con nombre y apellido para empezar -->
-  <div class="gate" id="gate">
-    <h2>Inscribite para empezar</h2>
-    <p class="sub" style="margin:0">Ingresá tu nombre y apellido. Con eso arranca el curso y, al terminarlo, generás tu certificado.</p>
-    <div class="gate-form">
-      <input id="g-nombre" type="text" placeholder="Nombre" autocomplete="given-name" />
-      <input id="g-apellido" type="text" placeholder="Apellido" autocomplete="family-name" />
-      <button id="g-empezar" class="btn btn-primario" type="button">Empezar el curso</button>
+  <!-- Gate: hay que iniciar sesión para guardar progreso y obtener el certificado -->
+  <div class="gate" id="gate" hidden>
+    <h2>Iniciá sesión para empezar</h2>
+    <p class="sub" style="margin:0 0 .85rem">Creá tu cuenta gratis o iniciá sesión: así guardamos tu progreso y, al terminar, generás tu certificado a tu nombre.</p>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+      <a class="btn btn-primario" href={`/login?redirect=${volver}`}>Iniciar sesión</a>
+      <a class="btn" href={`/registro?redirect=${volver}`}>Crear cuenta</a>
     </div>
-    <p id="g-error" class="gate-error" hidden>Completá nombre y apellido para empezar.</p>
   </div>
 
   <!-- Contenido del curso (se revela tras inscribirse) -->
@@ -137,167 +136,210 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
 
 <script>
   import * as qrmod from 'qrcode-generator';
+  import { supabaseBrowser } from '../../lib/supabase/client';
   const qrcode = (qrmod as any).default || (qrmod as any);
 
-  (function () {
-    var BIB = (window as any).BIB;
-    function load() { return BIB.get('progreso', '{}'); }
-    function save(m: any) { BIB.set('progreso', m); }
-    function loadAlumno() { return BIB.active(); }
-
-    var cont = document.getElementById('curso');
+  (async function () {
+    const cont = document.getElementById('curso');
     if (!cont) return;
-    var keys: string[] = [];
-    try { keys = JSON.parse(cont.getAttribute('data-keys') || '[]'); } catch (e) {}
-    var cursoTitulo = cont.getAttribute('data-curso') || '';
-    var map = load();
-    var boxes = ([] as HTMLInputElement[]).slice.call(document.querySelectorAll('input[type=checkbox][data-key]'));
-    var gate = document.getElementById('gate');
-    var contenido = document.getElementById('curso-contenido');
-    var cert = document.getElementById('certificado');
-    var examenEl = document.getElementById('examen');
-    var slug = cont.getAttribute('data-slug') || '';
-    var hasExam = cont.getAttribute('data-examen') === '1';
-    function loadEx() { return BIB.get('examenes', '{}'); }
-    function saveEx(m: any) { BIB.set('examenes', m); }
-    function examAprobado() { var e = loadEx()[slug]; return !!(e && e.passed); }
+    const slug = cont.getAttribute('data-slug') || '';
+    const cursoTitulo = cont.getAttribute('data-curso') || '';
+    const hasExam = cont.getAttribute('data-examen') === '1';
+
+    const gate = document.getElementById('gate');
+    const contenido = document.getElementById('curso-contenido');
+    const cert = document.getElementById('certificado');
+    const examenEl = document.getElementById('examen');
+    const boxes = Array.from(
+      document.querySelectorAll('input[type=checkbox][data-key]'),
+    ) as HTMLInputElement[];
+    const keys = boxes.map((b) => b.getAttribute('data-key') as string);
 
     function qrInto(el: HTMLElement, text: string) {
       try {
-        var qr = qrcode(0, 'M'); qr.addData(text); qr.make();
+        const qr = qrcode(0, 'M'); qr.addData(text); qr.make();
         el.innerHTML = '<img alt="QR de verificación" src="' + qr.createDataURL(4, 8) + '" /><small>Escaneá para verificar</small>';
       } catch (e) {}
     }
 
-    function nombreCompleto() {
-      var a = loadAlumno();
-      return a && a.nombre ? (a.nombre + ' ' + (a.apellido || '')).trim() : '';
+    // ¿Hay sesión? Si no, mostramos el gate de login y salimos.
+    const { data: { session } } = await supabaseBrowser.auth.getSession();
+    if (!session) {
+      if (gate) gate.hidden = false;
+      if (contenido) contenido.hidden = true;
+      return;
+    }
+    const nombre = (session.user.user_metadata?.nombre as string) || '';
+
+    if (gate) gate.hidden = true;
+    if (contenido) contenido.hidden = false;
+    const an = document.getElementById('alumno-nombre');
+    if (an) an.textContent = (nombre.split(' ')[0]) || 'alumno';
+
+    // Mapear cada lección (ref "col/id") a su uuid en la BD.
+    const refToId: Record<string, string> = {};
+    const idToRef: Record<string, string> = {};
+    const lessonIds: string[] = [];
+    const { data: curso } = await supabaseBrowser.from('courses').select('id').eq('slug', slug).single();
+    if (curso) {
+      const { data: lessons } = await supabaseBrowser.from('lessons').select('id, ref').eq('course_id', curso.id);
+      for (const l of lessons ?? []) {
+        if (!l.ref) continue;
+        refToId[l.ref] = l.id; idToRef[l.id] = l.ref; lessonIds.push(l.id);
+      }
+    }
+
+    // Lecciones ya completadas por el usuario.
+    const doneRefs = new Set<string>();
+    if (lessonIds.length) {
+      const { data: prog } = await supabaseBrowser
+        .from('lesson_progress').select('lesson_id, completada').in('lesson_id', lessonIds);
+      for (const p of prog ?? []) if (p.completada && idToRef[p.lesson_id]) doneRefs.add(idToRef[p.lesson_id]);
+    }
+
+    // Examen aprobado / certificado emitido.
+    let examOk = false;
+    let certCodigo: string | null = null;
+    if (curso) {
+      const { data: crt } = await supabaseBrowser
+        .from('certificates').select('codigo').eq('course_id', curso.id).maybeSingle();
+      if (crt) { certCodigo = crt.codigo; examOk = true; }
+      else {
+        const { data: at } = await supabaseBrowser
+          .from('exam_attempts').select('aprobado').eq('course_id', curso.id).eq('aprobado', true).limit(1);
+        examOk = !!(at && at.length);
+      }
     }
 
     function refresh() {
-      var doneL = keys.filter(function (k) { return map[k]; }).length;
-      var leccionesListas = keys.length ? doneL === keys.length : true;
-      var examOk = hasExam ? examAprobado() : false;
-      // Finalización = lecciones + examen aprobado (el examen es la unidad final).
-      var unitsTotal = keys.length + (hasExam ? 1 : 0);
-      var unitsDone = doneL + (examOk ? 1 : 0);
-      var pct = unitsTotal ? Math.round((unitsDone * 100) / unitsTotal) : 0;
-      var bar = document.getElementById('curso-bar'); if (bar) bar.style.width = pct + '%';
-      var lbl = document.getElementById('curso-pct'); if (lbl) lbl.textContent = pct + '% completado';
-      boxes.forEach(function (b) { var li = b.closest('li'); if (li) li.classList.toggle('hecho', !!map[b.getAttribute('data-key') as string]); });
+      const doneL = keys.filter((k) => doneRefs.has(k)).length;
+      const leccionesListas = keys.length ? doneL === keys.length : true;
+      const unitsTotal = keys.length + (hasExam ? 1 : 0);
+      const unitsDone = doneL + (examOk ? 1 : 0);
+      const pct = unitsTotal ? Math.round((unitsDone * 100) / unitsTotal) : 0;
+      const bar = document.getElementById('curso-bar'); if (bar) bar.style.width = pct + '%';
+      const lbl = document.getElementById('curso-pct'); if (lbl) lbl.textContent = pct + '% completado';
+      boxes.forEach((b) => { const li = b.closest('li'); if (li) li.classList.toggle('hecho', doneRefs.has(b.getAttribute('data-key') as string)); });
 
-      var msg = document.getElementById('curso-msg');
+      const msg = document.getElementById('curso-msg');
       if (msg) {
         if (pct === 100) msg.textContent = '✓ Curso finalizado. Tu certificado está abajo.';
         else if (leccionesListas && hasExam && !examOk) msg.textContent = 'Lecciones completas. Aprobá el examen (80%) para finalizar el curso.';
         else msg.textContent = doneL + ' de ' + keys.length + ' lecciones completadas' + (hasExam ? ' · después rendís el examen' : '');
       }
 
-      // El examen aparece una vez completaste las lecciones.
       if (examenEl) examenEl.hidden = !leccionesListas;
 
-      // El certificado: si hay examen, exige aprobarlo; si no, basta completar lecciones.
-      var certListo = hasExam ? examOk : leccionesListas;
+      const certListo = hasExam ? examOk : leccionesListas;
       if (cert) {
         cert.hidden = !certListo;
         if (certListo) {
-          var nom = nombreCompleto();
-          var cn = document.getElementById('cert-nombre'); if (cn) cn.textContent = nom || 'Alumno';
-          var fecha = new Date().toLocaleDateString('es');
-          var url = location.origin + '/verificar/?n=' + encodeURIComponent(nom) + '&c=' + encodeURIComponent(cursoTitulo) + '&f=' + encodeURIComponent(fecha);
-          var qrEl = document.getElementById('cert-qr'); if (qrEl) qrInto(qrEl, url);
+          const cn = document.getElementById('cert-nombre'); if (cn) cn.textContent = nombre || 'Alumno';
+          const fecha = new Date().toLocaleDateString('es');
+          const url = location.origin + '/verificar/?n=' + encodeURIComponent(nombre) +
+            '&c=' + encodeURIComponent(cursoTitulo) + '&f=' + encodeURIComponent(fecha) +
+            (certCodigo ? '&codigo=' + encodeURIComponent(certCodigo) : '');
+          const qrEl = document.getElementById('cert-qr');
+          if (qrEl && !qrEl.getAttribute('data-done')) { qrInto(qrEl, url); qrEl.setAttribute('data-done', '1'); }
         }
       }
     }
 
-    function mostrarContenido() {
-      if (gate) gate.hidden = true;
-      if (contenido) contenido.hidden = false;
-      var a = loadAlumno();
-      var an = document.getElementById('alumno-nombre');
-      if (an && a && a.nombre) an.textContent = a.nombre;
-      map = load();
-      boxes.forEach(function (b) { b.checked = !!map[b.getAttribute('data-key') as string]; });
-      refresh();
-    }
-
-    // Estado inicial: ¿hay un alumno activo (sesión iniciada)?
-    if (loadAlumno()) {
-      mostrarContenido();
-    } else if (gate) {
-      gate.hidden = false;
-    }
-
-    // Inscripción / inicio de sesión del alumno
-    var btnEmpezar = document.getElementById('g-empezar');
-    if (btnEmpezar) btnEmpezar.addEventListener('click', function () {
-      var n = (document.getElementById('g-nombre') as HTMLInputElement);
-      var ap = (document.getElementById('g-apellido') as HTMLInputElement);
-      var err = document.getElementById('g-error');
-      if (!n.value.trim() || !ap.value.trim()) { if (err) err.hidden = false; return; }
-      if (err) err.hidden = true;
-      BIB.register(n.value.trim(), ap.value.trim());
-      mostrarContenido();
-    });
-
-    // Progreso por lección
-    boxes.forEach(function (b) {
-      b.checked = !!map[b.getAttribute('data-key') as string];
-      b.addEventListener('change', function () {
-        map = load();
-        var k = b.getAttribute('data-key') as string;
-        if (b.checked) map[k] = true; else delete map[k];
-        save(map); refresh();
-        document.dispatchEvent(new CustomEvent('progreso-cambio'));
+    // Progreso por lección → /api/progreso (el user_id lo pone el servidor).
+    boxes.forEach((b) => {
+      const k = b.getAttribute('data-key') as string;
+      b.checked = doneRefs.has(k);
+      b.addEventListener('change', async () => {
+        const lessonId = refToId[k];
+        if (!lessonId) return;
+        const marcar = b.checked;
+        b.disabled = true;
+        try {
+          const res = await fetch('/api/progreso', {
+            method: 'POST', headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ lesson_id: lessonId, completada: marcar }),
+          });
+          if (!res.ok) throw new Error();
+          if (marcar) doneRefs.add(k); else doneRefs.delete(k);
+          refresh();
+          document.dispatchEvent(new CustomEvent('progreso-cambio'));
+        } catch {
+          b.checked = !marcar; // revertir si falló
+        } finally {
+          b.disabled = false;
+        }
       });
     });
 
-    // Examen: corregir y desbloquear certificado al aprobar (80%)
-    var formEx = document.getElementById('examen-form');
-    var btnCorregir = document.getElementById('examen-corregir');
-    var btnReintentar = document.getElementById('examen-reintentar');
-    var resEx = document.getElementById('examen-resultado');
-    var preguntas = formEx ? ([] as Element[]).slice.call(formEx.querySelectorAll('.pregunta')) : [];
+    // Examen → /api/examen (se califica en el servidor y emite el certificado).
+    const formEx = document.getElementById('examen-form');
+    const btnCorregir = document.getElementById('examen-corregir') as HTMLButtonElement | null;
+    const btnReintentar = document.getElementById('examen-reintentar') as HTMLButtonElement | null;
+    const resEx = document.getElementById('examen-resultado');
+    const preguntas = formEx ? Array.from(formEx.querySelectorAll('.pregunta')) : [];
 
-    if (btnCorregir && formEx) btnCorregir.addEventListener('click', function () {
-      var correctas = 0;
-      preguntas.forEach(function (fs) {
-        var c = parseInt(fs.getAttribute('data-c') || '-1', 10);
-        var sel = fs.querySelector('input[type=radio]:checked') as HTMLInputElement | null;
+    if (btnCorregir && formEx) btnCorregir.addEventListener('click', async () => {
+      const respuestas = preguntas.map((fs) => {
+        const sel = fs.querySelector('input[type=radio]:checked') as HTMLInputElement | null;
+        return sel ? parseInt(sel.value, 10) : -1;
+      });
+      btnCorregir.disabled = true; btnCorregir.textContent = 'Corrigiendo…';
+      let out: any = null;
+      try {
+        const res = await fetch('/api/examen', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ curso: slug, respuestas }),
+        });
+        out = await res.json();
+        if (!res.ok) out = { error: out?.error };
+      } catch { out = { error: 'red' }; }
+      btnCorregir.disabled = false; btnCorregir.textContent = 'Rendir examen';
+
+      if (!out || out.error) {
+        if (resEx) {
+          resEx.hidden = false; resEx.className = 'examen-resultado reprob';
+          resEx.innerHTML = '<strong>No se pudo enviar el examen.</strong> Probá de nuevo en un momento.';
+        }
+        return;
+      }
+
+      // Marcado visual por pregunta (sólo UX; la nota la da el servidor).
+      preguntas.forEach((fs, i) => {
+        const c = parseInt(fs.getAttribute('data-c') || '-1', 10);
         fs.classList.remove('correcta', 'incorrecta');
-        if (!sel) { fs.classList.add('incorrecta'); return; }
-        if (parseInt(sel.value, 10) === c) { correctas++; fs.classList.add('correcta'); }
-        else fs.classList.add('incorrecta');
+        fs.classList.add(respuestas[i] === c ? 'correcta' : 'incorrecta');
       });
-      var total = preguntas.length;
-      var pct = total ? Math.round((correctas * 100) / total) : 0;
-      var passed = pct >= 80;
+
+      const passed = !!out.aprobado;
       if (resEx) {
         resEx.hidden = false;
         resEx.className = 'examen-resultado ' + (passed ? 'aprob' : 'reprob');
         resEx.innerHTML = '<strong>' + (passed ? '¡Aprobaste! 🎉' : 'Todavía no llegás') + '</strong> · ' +
-          correctas + '/' + total + ' (' + pct + '%). ' +
+          out.correctas + '/' + out.total + ' (' + out.puntaje + '%). ' +
           (passed ? 'Tu certificado quedó desbloqueado abajo.' : 'Necesitás 80%. Repasá lo marcado en rojo y reintentá.');
       }
       if (passed) {
-        var m = loadEx(); m[slug] = { score: correctas, total: total, passed: true, date: new Date().toISOString() }; saveEx(m);
-        if (btnCorregir) (btnCorregir as HTMLElement).hidden = true;
+        examOk = true;
+        if (out.certificado) certCodigo = out.certificado.codigo;
+        btnCorregir.hidden = true;
         document.dispatchEvent(new CustomEvent('examen-aprobado'));
         refresh();
         if (cert) cert.scrollIntoView({ behavior: 'smooth' });
       }
-      if (btnReintentar) (btnReintentar as HTMLElement).hidden = false;
+      if (btnReintentar) btnReintentar.hidden = false;
     });
 
-    if (btnReintentar && formEx) btnReintentar.addEventListener('click', function () {
+    if (btnReintentar && formEx) btnReintentar.addEventListener('click', () => {
       (formEx as HTMLFormElement).reset();
-      preguntas.forEach(function (fs) { fs.classList.remove('correcta', 'incorrecta'); });
+      preguntas.forEach((fs) => fs.classList.remove('correcta', 'incorrecta'));
       if (resEx) resEx.hidden = true;
-      if (btnCorregir) (btnCorregir as HTMLElement).hidden = false;
-      (btnReintentar as HTMLElement).hidden = true;
+      if (btnCorregir) btnCorregir.hidden = false;
+      btnReintentar.hidden = true;
     });
 
-    var pr = document.getElementById('cert-print');
-    if (pr) pr.addEventListener('click', function () { window.print(); });
+    const pr = document.getElementById('cert-print');
+    if (pr) pr.addEventListener('click', () => window.print());
+
+    refresh();
   })();
 </script>

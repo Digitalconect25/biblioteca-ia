@@ -1,0 +1,96 @@
+---
+import Base from '../layouts/Base.astro';
+
+export const prerender = false;
+
+const { supabase, user } = Astro.locals;
+// El middleware ya redirige si no hay sesión; este guard es defensa en profundidad.
+if (!user) return Astro.redirect('/login?redirect=/dashboard');
+
+const nombre = (user.user_metadata?.nombre as string) || user.email || 'alumno';
+
+// Cursos en los que el usuario está inscrito.
+const { data: enrolls } = await supabase
+  .from('enrollments')
+  .select('fecha_inicio, course:courses(id, slug, titulo, orden)')
+  .order('fecha_inicio', { ascending: true });
+
+type Curso = { id: string; slug: string; titulo: string; orden: number };
+const cursosInscritos = (enrolls ?? [])
+  .map((e: any) => (Array.isArray(e.course) ? e.course[0] : e.course))
+  .filter(Boolean) as Curso[];
+
+const courseIds = cursosInscritos.map((c) => c.id);
+
+// Lecciones de esos cursos + lecciones completadas por el usuario.
+const lessonsByCourse: Record<string, string[]> = {};
+const doneSet = new Set<string>();
+if (courseIds.length) {
+  const { data: lessons } = await supabase
+    .from('lessons')
+    .select('id, course_id')
+    .in('course_id', courseIds);
+  for (const l of lessons ?? []) (lessonsByCourse[l.course_id] ??= []).push(l.id);
+
+  const allLessonIds = Object.values(lessonsByCourse).flat();
+  if (allLessonIds.length) {
+    const { data: prog } = await supabase
+      .from('lesson_progress')
+      .select('lesson_id')
+      .eq('completada', true)
+      .in('lesson_id', allLessonIds);
+    for (const p of prog ?? []) doneSet.add(p.lesson_id);
+  }
+}
+
+const cursos = cursosInscritos
+  .map((c) => {
+    const ids = lessonsByCourse[c.id] ?? [];
+    const done = ids.filter((id) => doneSet.has(id)).length;
+    return {
+      slug: c.slug,
+      titulo: c.titulo,
+      orden: c.orden ?? 0,
+      total: ids.length,
+      done,
+      pct: ids.length ? Math.round((done * 100) / ids.length) : 0,
+    };
+  })
+  .sort((a, b) => a.orden - b.orden);
+
+const finalizados = cursos.filter((c) => c.total > 0 && c.done === c.total).length;
+---
+
+<Base titulo="Mi panel" descripcion="Tu panel de alumno: cursos inscritos y tu avance.">
+  <span class="eyebrow">Tu panel</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">Hola, {nombre.split(' ')[0]} 👋</h1>
+  <p class="sub" style="max-width:60ch">Tus cursos y tu avance. <a href="/mi-progreso/">Ver progreso detallado</a> · <a href="/certificados/">Mis certificados</a></p>
+
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin:1.25rem 0">
+    <div class="card" style="text-align:center"><strong style="font-size:2rem">{cursos.length}</strong><span class="sub">cursos inscritos</span></div>
+    <div class="card" style="text-align:center"><strong style="font-size:2rem">{finalizados}</strong><span class="sub">finalizados</span></div>
+  </div>
+
+  <h2>Tus cursos</h2>
+  {cursos.length === 0 ? (
+    <div class="etapa" style="max-width:560px">
+      <p style="margin:0 0 .75rem">Todavía no empezaste ningún curso.</p>
+      <a class="btn btn-primario" href="/cursos/">Explorar cursos</a>
+    </div>
+  ) : (
+    <div>
+      {cursos.map((c) => (
+        <div style="border:1px solid var(--border);border-radius:var(--radius);padding:.85rem 1.1rem;margin-bottom:.6rem">
+          <div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:center">
+            <a href={`/cursos/${c.slug}/`} style="font-weight:600">{c.titulo}</a>
+            {c.pct === 100
+              ? <span class="badge gratis">✓ Finalizado</span>
+              : <span class="badge">{c.pct}%</span>}
+          </div>
+          <div class="barra-prog" style="margin:.4rem 0 0"><span style={`width:${c.pct}%`}></span></div>
+          <p class="sub" style="margin:.35rem 0 0;font-size:.8rem">{c.done} de {c.total} lecciones</p>
+        </div>
+      ))}
+    </div>
+  )}
+</Base>
