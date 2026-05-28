@@ -6,7 +6,7 @@ import vercel from '@astrojs/vercel';
 // Pagefind); solo las rutas con sesión (login, dashboard, api, etc.) se marcan
 // con `export const prerender = false` para renderizarse on-demand en Vercel.
 export default defineConfig({
-  site: 'https://biblioteca-ia.vercel.app',
+  site: 'https://academia.conectanex.com',
   output: 'static',
   adapter: vercel(),
   build: {

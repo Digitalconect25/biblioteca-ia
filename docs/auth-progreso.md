@@ -49,9 +49,11 @@ Si cambian los cursos en Markdown, regeneralo con `node scripts/gen-seed.mjs`.
 
 Authentication → URL Configuration:
 
-- **Site URL:** `https://biblioteca-ia.vercel.app`
-- **Redirect URLs:** agregá tu dominio y local para confirmación de correo y
-  reset de contraseña:
+- **Site URL:** `https://academia.conectanex.com`
+- **Redirect URLs:** agregá tu dominio (y el de Vercel + local) para confirmación
+  de correo y reset de contraseña:
+  - `https://academia.conectanex.com/login`
+  - `https://academia.conectanex.com/actualizar-password`
   - `https://biblioteca-ia.vercel.app/login`
   - `https://biblioteca-ia.vercel.app/actualizar-password`
   - `http://localhost:4321/login`
