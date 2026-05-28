@@ -1,0 +1,167 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import examenesData from '../data/examenes.json';
+
+const examenes = examenesData as Record<string, { preguntas: unknown[] }>;
+const cursos = (await getCollection('cursos')).sort((a, b) => (a.data.orden ?? 0) - (b.data.orden ?? 0));
+const cursosInfo = cursos.map((c) => ({
+  id: c.id,
+  titulo: c.data.titulo,
+  href: `/cursos/${c.id}/`,
+  keys: c.data.lecciones.map((l) => `${l.col}/${l.id}`),
+  examen: !!examenes[c.id],
+}));
+
+// Lookup de todo el contenido para resolver favoritos (key -> titulo + href)
+const cols: [string, string][] = [
+  ['ias', 'ias'], ['skills', 'skills'], ['mcps', 'mcps'], ['trucos', 'trucos'], ['ensenanzas', 'ensenanzas'],
+];
+const lookup: Record<string, { t: string; h: string }> = {};
+for (const [col] of cols) {
+  const entries = await getCollection(col as any);
+  for (const e of entries as any[]) {
+    lookup[`${col}/${e.id}`] = { t: e.data.titulo, h: `/${col}/${e.id}/` };
+  }
+}
+---
+
+<Base titulo="Mi panel" descripcion="Tu panel de alumno: tus datos, cursos, certificados y favoritos.">
+  <span class="eyebrow">Mi panel</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">Panel del alumno</h1>
+  <p class="sub" style="max-width:62ch">Todo tu progreso vive en este navegador, sin cuenta. Registrá tus datos: van en tu diploma.</p>
+
+  <!-- Registro / datos del alumno -->
+  <section class="etapa" style="margin-top:1.25rem">
+    <h2 style="margin-top:0">Tus datos</h2>
+    <p class="sub" style="margin:0">Estos datos aparecen en tu certificado. El logo es opcional.</p>
+    <div class="gate-form">
+      <input id="p-nombre" type="text" placeholder="Nombre" autocomplete="given-name" />
+      <input id="p-apellido" type="text" placeholder="Apellido" autocomplete="family-name" />
+    </div>
+    <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-top:.85rem">
+      <label class="btn" for="p-logo" style="cursor:pointer">📷 Subir logo para el diploma</label>
+      <input id="p-logo" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden />
+      <img id="p-logo-preview" alt="Logo" style="max-height:48px;max-width:160px;display:none;border:1px solid var(--border);border-radius:8px;padding:4px;background:#fff" />
+      <button id="p-logo-quitar" class="btn" type="button" hidden>Quitar logo</button>
+    </div>
+    <div style="margin-top:.85rem;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+      <button id="p-guardar" class="btn btn-primario" type="button">Guardar datos</button>
+      <span id="p-ok" class="sub" style="color:var(--ok)" hidden>Guardado ✓</span>
+    </div>
+    <p id="p-logo-error" class="gate-error" hidden>El logo es muy pesado (máx ~600 KB). Probá con una imagen más liviana.</p>
+  </section>
+
+  <!-- Resumen -->
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin:1.25rem 0">
+    <div class="card" style="text-align:center"><strong id="st-fin" style="font-size:2rem">0</strong><span class="sub">cursos finalizados</span></div>
+    <div class="card" style="text-align:center"><strong id="st-prog" style="font-size:2rem">0</strong><span class="sub">en progreso</span></div>
+    <div class="card" style="text-align:center"><strong id="st-fav" style="font-size:2rem">0</strong><span class="sub">favoritos</span></div>
+  </div>
+
+  <!-- Cursos -->
+  <h2>Tus cursos</h2>
+  <div>
+    {cursosInfo.map((c) => (
+      <div class="panel-curso" data-keys={JSON.stringify(c.keys)} data-slug={c.id} data-examen={c.examen ? '1' : '0'}
+           style="border:1px solid var(--border);border-radius:var(--radius);padding:.85rem 1.1rem;margin-bottom:.6rem">
+        <div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:center">
+          <a href={c.href} style="font-weight:600">{c.titulo}</a>
+          <span class="badge estado">Sin empezar</span>
+        </div>
+        <div class="barra-prog" style="margin:.4rem 0 0"><span></span></div>
+      </div>
+    ))}
+  </div>
+
+  <!-- Certificados -->
+  <h2 style="margin-top:2rem">Tus certificados</h2>
+  <div id="certs" class="grid"></div>
+  <p id="certs-vacio" class="sub">Todavía no tenés certificados. Completá un curso (lecciones + examen) para obtener el tuyo.</p>
+
+  <!-- Favoritos -->
+  <h2 style="margin-top:2rem">Tus favoritos</h2>
+  <div id="favs"></div>
+  <p id="favs-vacio" class="sub">Marcá contenidos con ♥ para guardarlos acá.</p>
+
+  <script type="application/json" id="lookup" set:html={JSON.stringify(lookup)}></script>
+</Base>
+
+<script is:inline>
+  (function () {
+    function L(k, d) { try { return JSON.parse(localStorage.getItem(k) || d); } catch (e) { return JSON.parse(d); } }
+    var alumno = L('bib-ia-alumno', 'null') || {};
+    var prog = L('bib-ia-progreso', '{}');
+    var exam = L('bib-ia-examenes', '{}');
+    var favs = L('bib-ia-favoritos', '{}');
+    var lookup = {}; try { lookup = JSON.parse(document.getElementById('lookup').textContent || '{}'); } catch (e) {}
+
+    // Datos
+    var n = document.getElementById('p-nombre'), ap = document.getElementById('p-apellido');
+    if (n) n.value = alumno.nombre || '';
+    if (ap) ap.value = alumno.apellido || '';
+    var logo = null; try { logo = localStorage.getItem('bib-ia-logo'); } catch (e) {}
+    var prev = document.getElementById('p-logo-preview'), quitar = document.getElementById('p-logo-quitar');
+    function pintarLogo() {
+      if (logo) { prev.src = logo; prev.style.display = ''; quitar.hidden = false; }
+      else { prev.style.display = 'none'; quitar.hidden = true; }
+    }
+    pintarLogo();
+
+    document.getElementById('p-logo').addEventListener('change', function (e) {
+      var f = e.target.files && e.target.files[0]; if (!f) return;
+      if (f.size > 600 * 1024) { document.getElementById('p-logo-error').hidden = false; return; }
+      document.getElementById('p-logo-error').hidden = true;
+      var r = new FileReader();
+      r.onload = function () { logo = r.result; try { localStorage.setItem('bib-ia-logo', logo); } catch (err) {} pintarLogo(); };
+      r.readAsDataURL(f);
+    });
+    quitar.addEventListener('click', function () { logo = null; try { localStorage.removeItem('bib-ia-logo'); } catch (e) {} pintarLogo(); });
+
+    document.getElementById('p-guardar').addEventListener('click', function () {
+      var data = { nombre: (n.value || '').trim(), apellido: (ap.value || '').trim() };
+      try { localStorage.setItem('bib-ia-alumno', JSON.stringify(data)); } catch (e) {}
+      var ok = document.getElementById('p-ok'); if (ok) { ok.hidden = false; setTimeout(function () { ok.hidden = true; }, 2000); }
+    });
+
+    // Cursos + stats + certificados
+    var fin = 0, enprog = 0, certs = document.getElementById('certs'), certsVacio = document.getElementById('certs-vacio');
+    document.querySelectorAll('.panel-curso').forEach(function (row) {
+      var keys = []; try { keys = JSON.parse(row.getAttribute('data-keys') || '[]'); } catch (e) {}
+      var hasExam = row.getAttribute('data-examen') === '1';
+      var slug = row.getAttribute('data-slug') || '';
+      var a = row.querySelector('a'); var titulo = a ? a.textContent : slug; var href = a ? a.getAttribute('href') : '#';
+      var doneL = keys.filter(function (k) { return prog[k]; }).length;
+      var examOk = hasExam && exam[slug] && exam[slug].passed;
+      var unitsTotal = keys.length + (hasExam ? 1 : 0);
+      var unitsDone = doneL + (examOk ? 1 : 0);
+      var pct = unitsTotal ? Math.round((unitsDone * 100) / unitsTotal) : 0;
+      var bar = row.querySelector('.barra-prog > span'); if (bar) bar.style.width = pct + '%';
+      var est = row.querySelector('.estado');
+      if (pct === 100) { fin++; if (est) { est.textContent = '✓ Finalizado'; est.classList.add('gratis'); }
+        if (certs) { var card = document.createElement('a'); card.className = 'card'; card.href = href;
+          card.innerHTML = '<div class="badges"><span class="badge gratis">🎓 Certificado</span></div><strong>' + titulo + '</strong><span class="sub">Ver y descargar tu diploma →</span>'; certs.appendChild(card); } }
+      else if (pct > 0) { enprog++; if (est) est.textContent = pct + '% · en progreso'; }
+      else { if (est) est.textContent = 'Sin empezar'; }
+    });
+    var f1 = document.getElementById('st-fin'); if (f1) f1.textContent = String(fin);
+    var f2 = document.getElementById('st-prog'); if (f2) f2.textContent = String(enprog);
+    if (certs && certs.children.length > 0 && certsVacio) certsVacio.hidden = true;
+
+    // Favoritos
+    var favKeys = Object.keys(favs).filter(function (k) { return favs[k]; });
+    var fav2 = document.getElementById('st-fav'); if (fav2) fav2.textContent = String(favKeys.length);
+    var favsEl = document.getElementById('favs'), favsVacio = document.getElementById('favs-vacio');
+    if (favKeys.length && favsEl) {
+      favsVacio.hidden = true;
+      var ul = document.createElement('ul'); ul.className = 'lista-estudio';
+      favKeys.forEach(function (k) {
+        var info = lookup[k]; var li = document.createElement('li');
+        if (info) li.innerHTML = '<span>♥</span> <a href="' + info.h + '">' + info.t + '</a>';
+        else li.innerHTML = '<span>♥</span> ' + k;
+        ul.appendChild(li);
+      });
+      favsEl.appendChild(ul);
+    }
+  })();
+</script>
