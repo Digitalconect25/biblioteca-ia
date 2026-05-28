@@ -51,6 +51,7 @@
 {"nombre":"Webflow","url":"https://webflow.com","desc":"Constructor web visual con funciones de IA.","cat":"web"},
 {"nombre":"Durable","url":"https://durable.co","desc":"Genera un sitio web de negocio en segundos.","cat":"web"},
 {"nombre":"Replit","url":"https://replit.com","desc":"Entorno de desarrollo con agente de IA (Agent).","cat":"web"},
+{"nombre":"Render","url":"https://render.com","desc":"Plataforma cloud para desplegar apps, sitios, cron y bases de datos, con auto-deploy desde Git.","cat":"web"},
 {"nombre":"GitHub Copilot","url":"https://github.com/features/copilot","desc":"Asistente de programación en editores y terminal.","cat":"codigo"},
 {"nombre":"Cursor","url":"https://cursor.com","desc":"Editor de código con IA integrada y agente.","cat":"codigo"},
 {"nombre":"Claude Code","url":"https://claude.com/claude-code","desc":"Agente de Anthropic que programa en tu terminal.","cat":"codigo"},

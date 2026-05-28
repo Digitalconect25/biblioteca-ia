@@ -61,5 +61,23 @@
       { "p": "Google Illuminate convierte papers académicos en...", "o": ["Una conversación en audio que los explica", "Un PDF cifrado", "Una imagen", "Una hoja de cálculo"], "c": 0 },
       { "p": "¿Qué necesitás para usar estas herramientas de Google?", "o": ["Una tarjeta de crédito", "Pagar una suscripción mensual", "Solo una cuenta de Google, gratis", "Instalar programas pesados"], "c": 2 }
     ]
+  },
+  "automatizar-whatsapp-negocios": {
+    "preguntas": [
+      { "p": "¿Cuál es la vía oficial y directa de Meta para automatizar WhatsApp?", "o": ["WhatsApp Cloud API", "Twilio", "Un bot pirata", "WATI"], "c": 0 },
+      { "p": "La \"ventana de 24 horas\" de WhatsApp significa que...", "o": ["El número se borra cada día", "Fuera de ese plazo solo podés iniciar conversación con plantillas aprobadas", "Solo funciona de noche", "No podés recibir mensajes"], "c": 1 },
+      { "p": "¿Qué es un BSP como 360dialog?", "o": ["Un proveedor oficial de soluciones de WhatsApp Business", "Un antivirus", "Un modelo de IA", "Una red social"], "c": 0 },
+      { "p": "Si NO querés programar, ¿qué te conviene para automatizar WhatsApp?", "o": ["Escribir la API a mano en C", "Una plataforma no-code como WATI o respond.io", "Nada, es imposible sin programar", "Un teléfono viejo"], "c": 1 },
+      { "p": "Twilio te sirve principalmente para...", "o": ["Editar fotos", "Acceder a la API de WhatsApp (y otros canales) con SDKs, vía un proveedor", "Crear logos", "Hostear tu web"], "c": 1 }
+    ]
+  },
+  "automatizar-con-render": {
+    "preguntas": [
+      { "p": "¿Qué es Render?", "o": ["Un editor de video", "Una plataforma cloud para desplegar apps, sitios, workers, cron y bases de datos", "Un modelo de imágenes", "Un navegador"], "c": 1 },
+      { "p": "Por defecto, el auto-deploy de Render se dispara...", "o": ["Una vez por mes", "En cada push al branch conectado", "Solo manualmente", "Nunca"], "c": 1 },
+      { "p": "La infraestructura como código en Render se define en...", "o": ["Un archivo render.yaml (blueprint)", "Un PDF", "La BIOS", "Un tweet"], "c": 0 },
+      { "p": "Para correr una tarea programada en Render usás...", "o": ["Un Cron Job", "Una impresora", "Un static site", "Un email"], "c": 0 },
+      { "p": "¿Cuál NO es un tipo de servicio de Render?", "o": ["Web service", "Cron job", "Background worker", "Servidor de juegos gratis ilimitado"], "c": 3 }
+    ]
   }
 }
