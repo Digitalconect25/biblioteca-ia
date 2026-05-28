@@ -133,9 +133,8 @@ const total = planRes.reduce((n, e) => n + e.items.length, 0);
 
 <script is:inline>
   (function () {
-    var KEY = 'bib-ia-progreso';
-    function load() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } }
-    function save(m) { try { localStorage.setItem(KEY, JSON.stringify(m)); } catch (e) {} }
+    function load() { return window.BIB.get('progreso', '{}'); }
+    function save(m) { window.BIB.set('progreso', m); }
     var map = load();
     var boxes = [].slice.call(document.querySelectorAll('input[type=checkbox][data-key]'));
 

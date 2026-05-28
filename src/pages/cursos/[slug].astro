@@ -140,10 +140,10 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
   const qrcode = (qrmod as any).default || (qrmod as any);
 
   (function () {
-    var KEY = 'bib-ia-progreso', ALUMNO = 'bib-ia-alumno';
-    function load() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } }
-    function save(m: any) { try { localStorage.setItem(KEY, JSON.stringify(m)); } catch (e) {} }
-    function loadAlumno() { try { return JSON.parse(localStorage.getItem(ALUMNO) || 'null'); } catch (e) { return null; } }
+    var BIB = (window as any).BIB;
+    function load() { return BIB.get('progreso', '{}'); }
+    function save(m: any) { BIB.set('progreso', m); }
+    function loadAlumno() { return BIB.active(); }
 
     var cont = document.getElementById('curso');
     if (!cont) return;
@@ -158,9 +158,8 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
     var examenEl = document.getElementById('examen');
     var slug = cont.getAttribute('data-slug') || '';
     var hasExam = cont.getAttribute('data-examen') === '1';
-    var EXKEY = 'bib-ia-examenes';
-    function loadEx() { try { return JSON.parse(localStorage.getItem(EXKEY) || '{}'); } catch (e) { return {}; } }
-    function saveEx(m: any) { try { localStorage.setItem(EXKEY, JSON.stringify(m)); } catch (e) {} }
+    function loadEx() { return BIB.get('examenes', '{}'); }
+    function saveEx(m: any) { BIB.set('examenes', m); }
     function examAprobado() { var e = loadEx()[slug]; return !!(e && e.passed); }
 
     function qrInto(el: HTMLElement, text: string) {
@@ -217,19 +216,19 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
       var a = loadAlumno();
       var an = document.getElementById('alumno-nombre');
       if (an && a && a.nombre) an.textContent = a.nombre;
+      map = load();
+      boxes.forEach(function (b) { b.checked = !!map[b.getAttribute('data-key') as string]; });
       refresh();
     }
 
-    // Estado inicial: ¿ya inscripto?
-    var alumno = loadAlumno();
-    if (alumno && alumno.nombre && alumno.apellido) {
+    // Estado inicial: ¿hay un alumno activo (sesión iniciada)?
+    if (loadAlumno()) {
       mostrarContenido();
     } else if (gate) {
-      // prefill si había nombre suelto
       gate.hidden = false;
     }
 
-    // Inscripción
+    // Inscripción / inicio de sesión del alumno
     var btnEmpezar = document.getElementById('g-empezar');
     if (btnEmpezar) btnEmpezar.addEventListener('click', function () {
       var n = (document.getElementById('g-nombre') as HTMLInputElement);
@@ -237,7 +236,7 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
       var err = document.getElementById('g-error');
       if (!n.value.trim() || !ap.value.trim()) { if (err) err.hidden = false; return; }
       if (err) err.hidden = true;
-      try { localStorage.setItem(ALUMNO, JSON.stringify({ nombre: n.value.trim(), apellido: ap.value.trim() })); } catch (e) {}
+      BIB.register(n.value.trim(), ap.value.trim());
       mostrarContenido();
     });
 

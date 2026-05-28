@@ -46,9 +46,8 @@ const totalLecciones = conKeys.reduce((n, c) => n + c.keys.length, 0);
 
 <script is:inline>
   (function () {
-    var map, ex;
-    try { map = JSON.parse(localStorage.getItem('bib-ia-progreso') || '{}'); } catch (e) { map = {}; }
-    try { ex = JSON.parse(localStorage.getItem('bib-ia-examenes') || '{}'); } catch (e) { ex = {}; }
+    var map = window.BIB.get('progreso', '{}');
+    var ex = window.BIB.get('examenes', '{}');
     document.querySelectorAll('.curso-card').forEach(function (card) {
       var keys = [];
       try { keys = JSON.parse(card.getAttribute('data-keys') || '[]'); } catch (e) {}

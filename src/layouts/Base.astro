@@ -34,6 +34,31 @@ const anio = new Date().getFullYear();
         } catch (e) {}
       })();
     </script>
+    <!-- Sistema de alumnos: cada perfil tiene su propio progreso (namespacing en localStorage) -->
+    <script is:inline>
+      (function () {
+        function ls(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+        function sls(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+        var BIB = {
+          activeId: ls('bib-ia-activo') || '',
+          key: function (name) { return this.activeId ? ('bib-ia-u-' + this.activeId + '-' + name) : ('bib-ia-' + name); },
+          get: function (name, def) { try { return JSON.parse(ls(this.key(name)) || def); } catch (e) { return JSON.parse(def); } },
+          set: function (name, val) { sls(this.key(name), JSON.stringify(val)); },
+          remove: function (name) { try { localStorage.removeItem(this.key(name)); } catch (e) {} },
+          students: function () { try { return JSON.parse(ls('bib-ia-estudiantes') || '[]'); } catch (e) { return []; } },
+          saveStudents: function (a) { sls('bib-ia-estudiantes', JSON.stringify(a)); },
+          active: function () { var id = this.activeId; return this.students().filter(function (s) { return s.id === id; })[0] || null; },
+          setActive: function (id) { this.activeId = id; sls('bib-ia-activo', id); },
+          register: function (nombre, apellido) {
+            var list = this.students();
+            var id = 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+            list.push({ id: id, nombre: nombre, apellido: apellido, creado: new Date().toISOString() });
+            this.saveStudents(list); this.setActive(id); return id;
+          }
+        };
+        window.BIB = BIB;
+      })();
+    </script>
   </head>
   <body>
     <header class="sitio">
@@ -74,11 +99,9 @@ const anio = new Date().getFullYear();
     <!-- Progreso de estudio (localStorage, sin backend) -->
     <script is:inline>
       (function () {
-        var KEY = 'bib-ia-progreso';
         window.bibProgreso = {
-          load: function () { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } },
-          save: function (m) { try { localStorage.setItem(KEY, JSON.stringify(m)); } catch (e) {} },
-          KEY: KEY
+          load: function () { return window.BIB.get('progreso', '{}'); },
+          save: function (m) { window.BIB.set('progreso', m); }
         };
         function paint(btn, on) {
           btn.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -106,9 +129,8 @@ const anio = new Date().getFullYear();
     <!-- Favoritos / me gusta (localStorage) -->
     <script is:inline>
       (function () {
-        var FKEY = 'bib-ia-favoritos';
-        function fload() { try { return JSON.parse(localStorage.getItem(FKEY) || '{}'); } catch (e) { return {}; } }
-        function fsave(m) { try { localStorage.setItem(FKEY, JSON.stringify(m)); } catch (e) {} }
+        function fload() { return window.BIB.get('favoritos', '{}'); }
+        function fsave(m) { window.BIB.set('favoritos', m); }
         function fpaint(b, on) {
           b.setAttribute('aria-pressed', on ? 'true' : 'false');
           b.classList.toggle('fav-on', on);
@@ -132,14 +154,13 @@ const anio = new Date().getFullYear();
     <!-- Gamificación: XP, niveles, logros, racha, confeti -->
     <script is:inline>
       (function () {
-        function J(k, d) { try { return JSON.parse(localStorage.getItem(k) || d); } catch (e) { return JSON.parse(d); } }
         var RANKS = ['Novato', 'Aprendiz', 'Practicante', 'Avanzado', 'Experto', 'Maestro', 'Leyenda IA'];
 
         function stats() {
-          var prog = J('bib-ia-progreso', '{}');
-          var exam = J('bib-ia-examenes', '{}');
-          var favs = J('bib-ia-favoritos', '{}');
-          var racha = J('bib-ia-racha', '{}');
+          var prog = window.BIB.get('progreso', '{}');
+          var exam = window.BIB.get('examenes', '{}');
+          var favs = window.BIB.get('favoritos', '{}');
+          var racha = window.BIB.get('racha', '{}');
           var nProg = Object.keys(prog).filter(function (k) { return prog[k]; }).length;
           var passed = 0, perfect = 0;
           Object.keys(exam).forEach(function (k) { var e = exam[k]; if (e && e.passed) { passed++; if (e.score === e.total) perfect++; } });
@@ -163,13 +184,13 @@ const anio = new Date().getFullYear();
         }
 
         function actualizarRacha() {
-          var r = J('bib-ia-racha', '{}');
+          var r = window.BIB.get('racha', '{}');
           var hoy = new Date().toISOString().slice(0, 10);
           if (r.fecha === hoy) return;
           var ayer = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
           r.dias = (r.fecha === ayer) ? (r.dias || 0) + 1 : 1;
           r.fecha = hoy;
-          try { localStorage.setItem('bib-ia-racha', JSON.stringify(r)); } catch (e) {}
+          window.BIB.set('racha', r);
         }
 
         function confetti() {
@@ -196,10 +217,10 @@ const anio = new Date().getFullYear();
 
         function checkLogros(celebrar) {
           var s = stats();
-          var prev = J('bib-ia-logros', '[]');
+          var prev = window.BIB.get('logros', '[]');
           var ahora = s.logros.filter(function (l) { return l.ok; }).map(function (l) { return l.id; });
           var nuevos = ahora.filter(function (id) { return prev.indexOf(id) === -1; });
-          try { localStorage.setItem('bib-ia-logros', JSON.stringify(ahora)); } catch (e) {}
+          window.BIB.set('logros', ahora);
           if (celebrar && nuevos.length) {
             confetti();
             nuevos.forEach(function (id, idx) {

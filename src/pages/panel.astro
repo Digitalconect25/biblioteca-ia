@@ -29,7 +29,7 @@ for (const [col] of cols) {
 <Base titulo="Mi panel" descripcion="Tu panel de alumno: tus datos, cursos, certificados y favoritos.">
   <span class="eyebrow">Mi panel</span>
   <h1 class="titulo-pag" style="margin-top:1rem">Panel del alumno</h1>
-  <p class="sub" style="max-width:62ch">Todo tu progreso vive en este navegador, sin cuenta. Registrá tus datos: van en tu diploma.</p>
+  <p class="sub" style="max-width:62ch">Todo tu progreso vive en este navegador, sin cuenta. Registrate con tu nombre y apellido (van en tu diploma): cada alumno tiene su propio avance y podés cambiar de alumno cuando quieras.</p>
 
   <!-- Nivel y logros -->
   <section class="gami-card" style="margin-top:1.25rem">
@@ -45,17 +45,37 @@ for (const [col] of cols) {
     <div class="logros" id="g-logros"></div>
   </section>
 
-  <!-- Registro / datos del alumno -->
+  <!-- Cuenta / alumnos -->
   <section class="etapa" style="margin-top:1.25rem">
-    <h2 style="margin-top:0">Tus datos</h2>
-    <p class="sub" style="margin:0">Tu nombre y apellido aparecen en tu certificado. El logo de la Academia ya viene en todos los diplomas.</p>
-    <div class="gate-form">
-      <input id="p-nombre" type="text" placeholder="Nombre" autocomplete="given-name" />
-      <input id="p-apellido" type="text" placeholder="Apellido" autocomplete="family-name" />
+    <h2 style="margin-top:0">Tu cuenta</h2>
+    <p class="sub" style="margin:0 0 .75rem">Cada alumno tiene su propio progreso. Podés cambiar de alumno o registrar uno nuevo (varios alumnos en este mismo dispositivo).</p>
+
+    <div id="cuenta-activa" hidden>
+      <p style="margin:0 0 .5rem">Alumno activo: <strong id="activo-nombre">—</strong></p>
+      <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+        <label class="sub" for="sel-alumno">Cambiar de alumno:</label>
+        <select id="sel-alumno" style="padding:.5rem;min-height:40px;border-radius:var(--radius);border:1px solid var(--border-strong);background:var(--card);color:var(--text)"></select>
+        <button id="btn-nuevo" class="btn" type="button">+ Nuevo alumno</button>
+      </div>
+      <div style="margin-top:.85rem">
+        <p class="sub" style="margin:0 0 .35rem">Editar tu nombre (aparece en el certificado):</p>
+        <div class="gate-form" style="margin:0">
+          <input id="p-nombre" type="text" placeholder="Nombre" autocomplete="given-name" />
+          <input id="p-apellido" type="text" placeholder="Apellido" autocomplete="family-name" />
+          <button id="p-guardar" class="btn btn-primario" type="button">Guardar</button>
+        </div>
+        <span id="p-ok" class="sub" style="color:var(--ok)" hidden>Guardado ✓</span>
+      </div>
     </div>
-    <div style="margin-top:.85rem;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
-      <button id="p-guardar" class="btn btn-primario" type="button">Guardar datos</button>
-      <span id="p-ok" class="sub" style="color:var(--ok)" hidden>Guardado ✓</span>
+
+    <div id="cuenta-registro" hidden>
+      <p style="margin:0 0 .5rem"><strong>Registrate para empezar</strong></p>
+      <div class="gate-form" style="margin:0">
+        <input id="r-nombre" type="text" placeholder="Nombre" autocomplete="given-name" />
+        <input id="r-apellido" type="text" placeholder="Apellido" autocomplete="family-name" />
+        <button id="r-crear" class="btn btn-primario" type="button">Crear alumno</button>
+      </div>
+      <p id="r-error" class="gate-error" hidden>Completá nombre y apellido.</p>
     </div>
   </section>
 
@@ -96,21 +116,60 @@ for (const [col] of cols) {
 
 <script is:inline>
   (function () {
-    function L(k, d) { try { return JSON.parse(localStorage.getItem(k) || d); } catch (e) { return JSON.parse(d); } }
-    var alumno = L('bib-ia-alumno', 'null') || {};
-    var prog = L('bib-ia-progreso', '{}');
-    var exam = L('bib-ia-examenes', '{}');
-    var favs = L('bib-ia-favoritos', '{}');
+    var BIB = window.BIB;
+    var prog = BIB.get('progreso', '{}');
+    var exam = BIB.get('examenes', '{}');
+    var favs = BIB.get('favoritos', '{}');
     var lookup = {}; try { lookup = JSON.parse(document.getElementById('lookup').textContent || '{}'); } catch (e) {}
 
-    // Datos
-    var n = document.getElementById('p-nombre'), ap = document.getElementById('p-apellido');
-    if (n) n.value = alumno.nombre || '';
-    if (ap) ap.value = alumno.apellido || '';
+    // ---- Cuenta / alumnos ----
+    function nombreCompleto(s) { return ((s.nombre || '') + ' ' + (s.apellido || '')).trim(); }
+    function renderCuenta() {
+      var activo = BIB.active();
+      var elActiva = document.getElementById('cuenta-activa');
+      var elReg = document.getElementById('cuenta-registro');
+      if (activo) {
+        elActiva.hidden = false; elReg.hidden = true;
+        document.getElementById('activo-nombre').textContent = nombreCompleto(activo) || 'Alumno';
+        var sel = document.getElementById('sel-alumno'); sel.innerHTML = '';
+        BIB.students().forEach(function (s) {
+          var o = document.createElement('option'); o.value = s.id; o.textContent = nombreCompleto(s) || s.id;
+          if (s.id === BIB.activeId) o.selected = true; sel.appendChild(o);
+        });
+        var nn = document.getElementById('p-nombre'), aa = document.getElementById('p-apellido');
+        if (nn) nn.value = activo.nombre || ''; if (aa) aa.value = activo.apellido || '';
+      } else { elActiva.hidden = true; elReg.hidden = false; }
+    }
+    renderCuenta();
 
-    document.getElementById('p-guardar').addEventListener('click', function () {
-      var data = { nombre: (n.value || '').trim(), apellido: (ap.value || '').trim() };
-      try { localStorage.setItem('bib-ia-alumno', JSON.stringify(data)); } catch (e) {}
+    var sel = document.getElementById('sel-alumno');
+    if (sel) sel.addEventListener('change', function () { BIB.setActive(sel.value); location.reload(); });
+
+    var btnNuevo = document.getElementById('btn-nuevo');
+    if (btnNuevo) btnNuevo.addEventListener('click', function () {
+      document.getElementById('cuenta-activa').hidden = true;
+      document.getElementById('cuenta-registro').hidden = false;
+      var rn = document.getElementById('r-nombre'); if (rn) rn.focus();
+    });
+
+    var rCrear = document.getElementById('r-crear');
+    if (rCrear) rCrear.addEventListener('click', function () {
+      var rn = document.getElementById('r-nombre'), ra = document.getElementById('r-apellido'), re = document.getElementById('r-error');
+      if (!rn.value.trim() || !ra.value.trim()) { if (re) re.hidden = false; return; }
+      BIB.register(rn.value.trim(), ra.value.trim()); location.reload();
+    });
+
+    var pg = document.getElementById('p-guardar');
+    if (pg) pg.addEventListener('click', function () {
+      var activo = BIB.active(); if (!activo) return;
+      var nn = document.getElementById('p-nombre'), aa = document.getElementById('p-apellido');
+      var list = BIB.students();
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === activo.id) { list[i].nombre = (nn.value || '').trim(); list[i].apellido = (aa.value || '').trim(); }
+      }
+      BIB.saveStudents(list);
+      document.getElementById('activo-nombre').textContent = ((nn.value || '') + ' ' + (aa.value || '')).trim();
+      if (sel) { var op = sel.querySelector('option[value="' + activo.id + '"]'); if (op) op.textContent = ((nn.value || '') + ' ' + (aa.value || '')).trim(); }
       var ok = document.getElementById('p-ok'); if (ok) { ok.hidden = false; setTimeout(function () { ok.hidden = true; }, 2000); }
     });
 
@@ -156,7 +215,7 @@ for (const [col] of cols) {
 
     // Nivel, XP, racha y logros
     var RANKS = ['Novato', 'Aprendiz', 'Practicante', 'Avanzado', 'Experto', 'Maestro', 'Leyenda IA'];
-    var racha = L('bib-ia-racha', '{}');
+    var racha = BIB.get('racha', '{}');
     var nProg = Object.keys(prog).filter(function (k) { return prog[k]; }).length;
     var passed = 0, perfect = 0;
     Object.keys(exam).forEach(function (k) { var e = exam[k]; if (e && e.passed) { passed++; if (e.score === e.total) perfect++; } });
