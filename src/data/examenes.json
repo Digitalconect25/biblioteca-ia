@@ -1,0 +1,65 @@
+{
+  "fundamentos-de-ia": {
+    "preguntas": [
+      { "p": "¿Qué conviene hacer para que una IA te dé una mejor respuesta?", "o": ["Escribir lo más corto posible", "Darle contexto: rol, objetivo y para quién es", "Usar solo mayúsculas", "No darle ningún detalle"], "c": 1 },
+      { "p": "¿Qué es una \"skill\" en el contexto de los agentes de IA?", "o": ["Un tipo de tarjeta gráfica", "Un paquete de instrucciones que le enseña al agente a hacer una tarea", "Un modelo de pago", "Un navegador web"], "c": 1 },
+      { "p": "¿Para qué sirve un MCP (Model Context Protocol)?", "o": ["Para acelerar internet", "Es un estándar para conectar la IA con herramientas y datos externos", "Para editar imágenes", "Para guardar contraseñas"], "c": 1 },
+      { "p": "Si la IA te da un dato importante (una fecha, un precio), ¿qué deberías hacer?", "o": ["Confiar siempre, nunca se equivoca", "Verificarlo en la fuente oficial, porque puede inventar", "Borrarlo", "Repetir la pregunta diez veces"], "c": 1 },
+      { "p": "¿Cuál de estas es una IA conversacional?", "o": ["Photoshop", "Excel", "Claude", "Git"], "c": 2 }
+    ]
+  },
+  "ia-en-el-dia-a-dia": {
+    "preguntas": [
+      { "p": "¿Qué herramienta es mejor para investigar con fuentes citadas?", "o": ["Midjourney", "Perplexity", "Blender", "Photoshop"], "c": 1 },
+      { "p": "NotebookLM responde principalmente...", "o": ["Con información de toda la web", "Solo con los documentos que vos le subís, citándolos", "Inventando datos", "Con noticias de hoy"], "c": 1 },
+      { "p": "Para una tarea compleja, ¿qué conviene pedirle a la IA?", "o": ["Que responda todo de un saque sin pensar", "Que trabaje paso a paso o arme un plan primero", "Que use menos palabras", "Que no explique nada"], "c": 1 },
+      { "p": "Claude Code y Cursor sirven principalmente para...", "o": ["Editar videos", "Programar (asistente/agente de código)", "Generar música", "Hacer planillas"], "c": 1 },
+      { "p": "Si una respuesta casi sirve, ¿qué es lo mejor?", "o": ["Empezar el prompt de cero", "Pedir ajustes sobre lo que ya dio (iterar)", "Cambiar de IA siempre", "Abandonar la tarea"], "c": 1 }
+    ]
+  },
+  "automatizar-con-claude": {
+    "preguntas": [
+      { "p": "¿Qué hace el MCP de sistema de archivos (filesystem)?", "o": ["Da al agente acceso controlado a leer y escribir archivos en carpetas que autorizás", "Borra todo tu disco", "Sube tus archivos a internet", "Apaga la computadora"], "c": 0 },
+      { "p": "¿Dónde se configura un MCP en Claude Desktop?", "o": ["En el panel de control de Windows", "En el archivo claude_desktop_config.json", "En la BIOS", "En tu correo"], "c": 1 },
+      { "p": "¿Para qué sirve un archivo de instrucciones como CLAUDE.md?", "o": ["Para guardar contraseñas", "Para darle reglas estables al agente y resultados consistentes", "Para acelerar el wifi", "Para nada"], "c": 1 },
+      { "p": "La GitHub Action de Claude (claude-code-action) permite...", "o": ["Que @claude actúe en issues y PRs automáticamente", "Borrar repositorios", "Crear cuentas falsas", "Minar cripto"], "c": 0 },
+      { "p": "Antes de darle a un MCP acceso a tus carpetas, conviene...", "o": ["Darle acceso a todo el disco", "Limitar el acceso solo a las carpetas con las que estés cómodo", "Compartir tu API key en público", "Desactivar los permisos del sistema"], "c": 1 }
+    ]
+  },
+  "ingenieria-de-prompts": {
+    "preguntas": [
+      { "p": "¿Qué suele incluir un prompt bien armado?", "o": ["Solo una palabra", "Rol, objetivo, contexto, tarea, formato y restricciones", "Muchos signos de exclamación", "Tu contraseña"], "c": 1 },
+      { "p": "Dar ejemplos de entrada y salida dentro del prompt se llama...", "o": ["Few-shot (aprendizaje con ejemplos)", "Spam", "Hackeo", "Resumen"], "c": 0 },
+      { "p": "Pedir \"pensá paso a paso\" es una técnica de...", "o": ["Cadena de pensamiento (chain of thought)", "Compresión de archivos", "Diseño gráfico", "Encriptación"], "c": 0 },
+      { "p": "Para que la respuesta salga en un formato exacto, conviene...", "o": ["No decir nada sobre el formato", "Especificar el formato de salida y dar un ejemplo", "Pedir que sea sorpresa", "Usar otro idioma"], "c": 1 },
+      { "p": "Asignarle un rol o persona a la IA sirve para...", "o": ["Que tarde más", "Orientar el tono y el conocimiento de la respuesta", "Gastar más tokens sin motivo", "Cambiar el idioma"], "c": 1 }
+    ]
+  },
+  "diseno-de-imagenes-con-ia": {
+    "preguntas": [
+      { "p": "¿Qué IA de imágenes es conocida por renderizar bien el TEXTO dentro de la imagen?", "o": ["Ideogram", "Excel", "Notion", "Slack"], "c": 0 },
+      { "p": "En un prompt de imagen, ¿qué conviene describir?", "o": ["Solo el color", "Estilo, encuadre, luz y el sujeto", "Tu nombre", "La hora"], "c": 1 },
+      { "p": "FLUX (Black Forest Labs) se destaca por...", "o": ["No existir", "Tener modelos de pesos abiertos", "Ser una hoja de cálculo", "Editar audio"], "c": 1 },
+      { "p": "Nano Banana es el modelo de imagen de...", "o": ["Microsoft", "Google (Gemini)", "Adobe", "Apple"], "c": 1 },
+      { "p": "¿Cuál de estas NO es una herramienta de generación de imágenes?", "o": ["Midjourney", "Ideogram", "Perplexity", "FLUX"], "c": 2 }
+    ]
+  },
+  "crear-webs-con-ia": {
+    "preguntas": [
+      { "p": "¿Qué hace v0 de Vercel?", "o": ["Genera interfaces/UI (React) a partir de texto", "Edita fotos", "Manda emails", "Crea música"], "c": 0 },
+      { "p": "¿Cuál es el flujo típico para crear una web con IA?", "o": ["Deploy → código → idea", "Idea/copy → diseño → código → deploy", "Solo escribir código a mano", "No hay flujo"], "c": 1 },
+      { "p": "¿Con qué se suele hacer el deploy gratis de un sitio estático?", "o": ["Vercel", "Word", "Photoshop", "WhatsApp"], "c": 0 },
+      { "p": "Lovable y Bolt permiten...", "o": ["Crear apps/webs full-stack desde una descripción", "Editar videos 4K", "Diseñar logos a mano", "Nada de eso"], "c": 0 },
+      { "p": "Para editar a fondo el código de tu proyecto con un agente, usás...", "o": ["Una calculadora", "Claude Code o Cursor", "Un reproductor de música", "Un PDF"], "c": 1 }
+    ]
+  },
+  "herramientas-gratis-google": {
+    "preguntas": [
+      { "p": "¿Qué puede generar NotebookLM a partir de tus documentos?", "o": ["Un podcast con dos voces que los debaten", "Una factura", "Un videojuego", "Una planilla de Excel"], "c": 0 },
+      { "p": "Google AI Studio te permite obtener...", "o": ["Una tarjeta de crédito", "Una clave de API gratis para usar Gemini", "Un dominio web", "Una cuenta de banco"], "c": 1 },
+      { "p": "¿Para qué sirve Google Stitch?", "o": ["Para coser ropa", "Para generar interfaces de app (pantallas y código) desde texto", "Para editar audio", "Para enviar correos"], "c": 1 },
+      { "p": "Google Illuminate convierte papers académicos en...", "o": ["Una conversación en audio que los explica", "Un PDF cifrado", "Una imagen", "Una hoja de cálculo"], "c": 0 },
+      { "p": "¿Qué necesitás para usar estas herramientas de Google?", "o": ["Una tarjeta de crédito", "Pagar una suscripción mensual", "Solo una cuenta de Google, gratis", "Instalar programas pesados"], "c": 2 }
+    ]
+  }
+}

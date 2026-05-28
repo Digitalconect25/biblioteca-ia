@@ -2,11 +2,15 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection, getEntry, render } from 'astro:content';
 import BotonFavorito from '../../components/BotonFavorito.astro';
+import examenesData from '../../data/examenes.json';
 
 export async function getStaticPaths() {
   const cursos = await getCollection('cursos');
   return cursos.map((curso) => ({ params: { slug: curso.id }, props: { curso } }));
 }
+
+type Pregunta = { p: string; o: string[]; c: number };
+const examenes = examenesData as Record<string, { preguntas: Pregunta[] }>;
 
 const colLabel: Record<string, string> = {
   ias: 'IA', skills: 'Herramienta', mcps: 'MCP', trucos: 'Truco', ensenanzas: 'Enseñanza',
@@ -31,6 +35,7 @@ const lecciones = (
   )
 ).filter(Boolean) as { key: string; href: string; titulo: string; tipo: string }[];
 const allKeys = JSON.stringify(lecciones.map((l) => l.key));
+const examen = examenes[curso.id]?.preguntas ?? [];
 const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 
@@ -62,7 +67,7 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
 
   <!-- Contenido del curso (se revela tras inscribirse) -->
   <div id="curso-contenido" hidden>
-    <div data-keys={allKeys} data-curso={d.titulo} id="curso"
+    <div data-keys={allKeys} data-curso={d.titulo} data-slug={curso.id} data-examen={examen.length > 0 ? '1' : '0'} id="curso"
          style="border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--card);padding:1.1rem 1.3rem;margin:1.5rem 0">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
         <strong>Hola, <span id="alumno-nombre">alumno</span> · tu progreso</strong>
@@ -86,7 +91,30 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
       ))}
     </ul>
 
-    <!-- Certificado (aparece al 100%) -->
+    <!-- Examen (aparece al completar las lecciones) -->
+    {examen.length > 0 && (
+      <section id="examen" hidden>
+        <h2>Examen del curso</h2>
+        <p class="sub">Respondé las {examen.length} preguntas. Necesitás 80% para aprobar y desbloquear tu certificado.</p>
+        <form id="examen-form">
+          {examen.map((q, qi) => (
+            <fieldset class="pregunta" data-c={q.c}>
+              <legend><strong>{qi + 1}.</strong> {q.p}</legend>
+              {q.o.map((op, oi) => (
+                <label class="opcion"><input type="radio" name={`q${qi}`} value={String(oi)} /> <span>{op}</span></label>
+              ))}
+            </fieldset>
+          ))}
+        </form>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem">
+          <button id="examen-corregir" class="btn btn-primario" type="button">Rendir examen</button>
+          <button id="examen-reintentar" class="btn" type="button" hidden>Reintentar</button>
+        </div>
+        <div id="examen-resultado" class="examen-resultado" hidden></div>
+      </section>
+    )}
+
+    <!-- Certificado (aparece tras aprobar) -->
     <section id="certificado" class="certificado" hidden>
       <div class="cert-inner">
         <span class="eyebrow" style="margin:0 auto">Certificado de finalización</span>
@@ -125,6 +153,13 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
     var gate = document.getElementById('gate');
     var contenido = document.getElementById('curso-contenido');
     var cert = document.getElementById('certificado');
+    var examenEl = document.getElementById('examen');
+    var slug = cont.getAttribute('data-slug') || '';
+    var hasExam = cont.getAttribute('data-examen') === '1';
+    var EXKEY = 'bib-ia-examenes';
+    function loadEx() { try { return JSON.parse(localStorage.getItem(EXKEY) || '{}'); } catch (e) { return {}; } }
+    function saveEx(m: any) { try { localStorage.setItem(EXKEY, JSON.stringify(m)); } catch (e) {} }
+    function examAprobado() { var e = loadEx()[slug]; return !!(e && e.passed); }
 
     function qrInto(el: HTMLElement, text: string) {
       try {
@@ -144,10 +179,16 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
       var bar = document.getElementById('curso-bar'); if (bar) bar.style.width = pct + '%';
       var lbl = document.getElementById('curso-pct'); if (lbl) lbl.textContent = pct + '% · ' + done + '/' + keys.length;
       boxes.forEach(function (b) { var li = b.closest('li'); if (li) li.classList.toggle('hecho', !!map[b.getAttribute('data-key') as string]); });
+
+      var leccionesListas = pct === 100;
+      // El examen aparece una vez completaste las lecciones.
+      if (examenEl) examenEl.hidden = !leccionesListas;
+
+      // El certificado: si hay examen, exige aprobarlo; si no, basta completar lecciones.
+      var certListo = hasExam ? examAprobado() : leccionesListas;
       if (cert) {
-        var full = pct === 100;
-        cert.hidden = !full;
-        if (full) {
+        cert.hidden = !certListo;
+        if (certListo) {
           var nom = nombreCompleto();
           var cn = document.getElementById('cert-nombre'); if (cn) cn.textContent = nom || 'Alumno';
           var fecha = new Date().toLocaleDateString('es');
@@ -196,6 +237,50 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
         if (b.checked) map[k] = true; else delete map[k];
         save(map); refresh();
       });
+    });
+
+    // Examen: corregir y desbloquear certificado al aprobar (80%)
+    var formEx = document.getElementById('examen-form');
+    var btnCorregir = document.getElementById('examen-corregir');
+    var btnReintentar = document.getElementById('examen-reintentar');
+    var resEx = document.getElementById('examen-resultado');
+    var preguntas = formEx ? ([] as Element[]).slice.call(formEx.querySelectorAll('.pregunta')) : [];
+
+    if (btnCorregir && formEx) btnCorregir.addEventListener('click', function () {
+      var correctas = 0;
+      preguntas.forEach(function (fs) {
+        var c = parseInt(fs.getAttribute('data-c') || '-1', 10);
+        var sel = fs.querySelector('input[type=radio]:checked') as HTMLInputElement | null;
+        fs.classList.remove('correcta', 'incorrecta');
+        if (!sel) { fs.classList.add('incorrecta'); return; }
+        if (parseInt(sel.value, 10) === c) { correctas++; fs.classList.add('correcta'); }
+        else fs.classList.add('incorrecta');
+      });
+      var total = preguntas.length;
+      var pct = total ? Math.round((correctas * 100) / total) : 0;
+      var passed = pct >= 80;
+      if (resEx) {
+        resEx.hidden = false;
+        resEx.className = 'examen-resultado ' + (passed ? 'aprob' : 'reprob');
+        resEx.innerHTML = '<strong>' + (passed ? '¡Aprobaste! 🎉' : 'Todavía no llegás') + '</strong> · ' +
+          correctas + '/' + total + ' (' + pct + '%). ' +
+          (passed ? 'Tu certificado quedó desbloqueado abajo.' : 'Necesitás 80%. Repasá lo marcado en rojo y reintentá.');
+      }
+      if (passed) {
+        var m = loadEx(); m[slug] = { score: correctas, total: total, passed: true, date: new Date().toISOString() }; saveEx(m);
+        if (btnCorregir) (btnCorregir as HTMLElement).hidden = true;
+        refresh();
+        if (cert) cert.scrollIntoView({ behavior: 'smooth' });
+      }
+      if (btnReintentar) (btnReintentar as HTMLElement).hidden = false;
+    });
+
+    if (btnReintentar && formEx) btnReintentar.addEventListener('click', function () {
+      (formEx as HTMLFormElement).reset();
+      preguntas.forEach(function (fs) { fs.classList.remove('correcta', 'incorrecta'); });
+      if (resEx) resEx.hidden = true;
+      if (btnCorregir) (btnCorregir as HTMLElement).hidden = false;
+      (btnReintentar as HTMLElement).hidden = true;
     });
 
     var pr = document.getElementById('cert-print');
