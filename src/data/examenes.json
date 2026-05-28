@@ -79,5 +79,14 @@
       { "p": "Para correr una tarea programada en Render usás...", "o": ["Un Cron Job", "Una impresora", "Un static site", "Un email"], "c": 0 },
       { "p": "¿Cuál NO es un tipo de servicio de Render?", "o": ["Web service", "Cron job", "Background worker", "Servidor de juegos gratis ilimitado"], "c": 3 }
     ]
+  },
+  "automatizar-finanzas-con-claude": {
+    "preguntas": [
+      { "p": "¿Qué hace distinto a los agentes financieros de Claude?", "o": ["Solo responden preguntas por chat", "Trabajan dentro de Excel, PowerPoint y Word: leen y modifican tus archivos", "Solo sirven para imágenes", "Necesitan que copies y pegues todo"], "c": 1 },
+      { "p": "¿Cómo se instalan los agentes financieros de Claude?", "o": ["Como plugins en Claude (Cowork o Code)", "Comprando un servidor", "Imprimiéndolos", "No se pueden instalar"], "c": 0 },
+      { "p": "El agente de cierre de mes principalmente...", "o": ["Borra tus libros", "Ejecuta la checklist de cierre, prepara asientos y arma el informe", "Manda emails", "Diseña logos"], "c": 1 },
+      { "p": "Antes de automatizar todo tu flujo, lo recomendable es...", "o": ["Confiar a ciegas", "Probar una tarea acotada sobre una copia y revisar el resultado", "Subir datos confidenciales sin permiso", "No revisar nada"], "c": 1 },
+      { "p": "¿Qué NO reemplaza Claude en finanzas?", "o": ["La velocidad", "Tu criterio profesional, tu firma y tu responsabilidad legal", "El armado de presentaciones", "El cálculo de fórmulas"], "c": 1 }
+    ]
   }
 }
