@@ -1,12 +1,15 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
+import examenesData from '../../data/examenes.json';
 
+const examenes = examenesData as Record<string, { preguntas: unknown[] }>;
 const cursos = (await getCollection('cursos')).sort((a, b) => (a.data.orden ?? 0) - (b.data.orden ?? 0));
 const conKeys = cursos.map((c) => ({
   id: c.id,
   data: c.data,
   keys: c.data.lecciones.map((l) => `${l.col}/${l.id}`),
+  examen: !!examenes[c.id],
 }));
 const totalLecciones = conKeys.reduce((n, c) => n + c.keys.length, 0);
 ---
@@ -21,16 +24,17 @@ const totalLecciones = conKeys.reduce((n, c) => n + c.keys.length, 0);
 
   <div class="grid" style="margin-top:1.5rem">
     {conKeys.map((c) => (
-      <a class="card curso-card" href={`/cursos/${c.id}/`} data-keys={JSON.stringify(c.keys)}>
+      <a class="card curso-card" href={`/cursos/${c.id}/`} data-keys={JSON.stringify(c.keys)} data-slug={c.id} data-examen={c.examen ? '1' : '0'}>
         <div class="badges">
           <span class={`badge nivel-${c.data.nivel}`}>{c.data.nivel}</span>
           {c.data.duracion && <span class="badge">⏱ {c.data.duracion}</span>}
-          <span class="badge curso-estado" hidden>✓ Completado</span>
+          {c.examen && <span class="badge">📝 examen</span>}
+          <span class="badge curso-estado" hidden>✓ Finalizado</span>
         </div>
         <strong style="font-size:1.15rem">{c.data.titulo}</strong>
         <span style="color:var(--text-soft)">{c.data.resumen}</span>
         <div class="barra-prog" style="margin-top:auto"><span></span></div>
-        <span class="sub curso-pct" style="font-size:.85rem">0 de {c.keys.length} lecciones</span>
+        <span class="sub curso-pct" style="font-size:.85rem">0% completado</span>
       </a>
     ))}
   </div>
@@ -42,15 +46,22 @@ const totalLecciones = conKeys.reduce((n, c) => n + c.keys.length, 0);
 
 <script is:inline>
   (function () {
-    var KEY = 'bib-ia-progreso';
-    var map; try { map = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { map = {}; }
+    var map, ex;
+    try { map = JSON.parse(localStorage.getItem('bib-ia-progreso') || '{}'); } catch (e) { map = {}; }
+    try { ex = JSON.parse(localStorage.getItem('bib-ia-examenes') || '{}'); } catch (e) { ex = {}; }
     document.querySelectorAll('.curso-card').forEach(function (card) {
       var keys = [];
       try { keys = JSON.parse(card.getAttribute('data-keys') || '[]'); } catch (e) {}
-      var done = keys.filter(function (k) { return map[k]; }).length;
-      var pct = keys.length ? Math.round((done * 100) / keys.length) : 0;
+      var hasExam = card.getAttribute('data-examen') === '1';
+      var slug = card.getAttribute('data-slug') || '';
+      var doneL = keys.filter(function (k) { return map[k]; }).length;
+      var examOk = hasExam && ex[slug] && ex[slug].passed;
+      var unitsTotal = keys.length + (hasExam ? 1 : 0);
+      var unitsDone = doneL + (examOk ? 1 : 0);
+      var pct = unitsTotal ? Math.round((unitsDone * 100) / unitsTotal) : 0;
       var bar = card.querySelector('.barra-prog > span'); if (bar) bar.style.width = pct + '%';
-      var lbl = card.querySelector('.curso-pct'); if (lbl) lbl.textContent = done + ' de ' + keys.length + ' lecciones · ' + pct + '%';
+      var lbl = card.querySelector('.curso-pct');
+      if (lbl) lbl.textContent = pct + '% completado' + (pct < 100 ? ' · ' + doneL + '/' + keys.length + ' lecciones' : '');
       if (pct === 100) { var e = card.querySelector('.curso-estado'); if (e) e.hidden = false; }
     });
   })();

@@ -70,10 +70,11 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
     <div data-keys={allKeys} data-curso={d.titulo} data-slug={curso.id} data-examen={examen.length > 0 ? '1' : '0'} id="curso"
          style="border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--card);padding:1.1rem 1.3rem;margin:1.5rem 0">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
-        <strong>Hola, <span id="alumno-nombre">alumno</span> · tu progreso</strong>
+        <strong>Hola, <span id="alumno-nombre">alumno</span> · finalización del curso</strong>
         <span id="curso-pct" class="badge">0%</span>
       </div>
       <div class="barra-prog"><span id="curso-bar"></span></div>
+      <p class="sub" id="curso-msg" style="margin:.5rem 0 0;font-size:.85rem"></p>
     </div>
 
     <h2>Lecciones</h2>
@@ -174,18 +175,29 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
     }
 
     function refresh() {
-      var done = keys.filter(function (k) { return map[k]; }).length;
-      var pct = keys.length ? Math.round((done * 100) / keys.length) : 0;
+      var doneL = keys.filter(function (k) { return map[k]; }).length;
+      var leccionesListas = keys.length ? doneL === keys.length : true;
+      var examOk = hasExam ? examAprobado() : false;
+      // Finalización = lecciones + examen aprobado (el examen es la unidad final).
+      var unitsTotal = keys.length + (hasExam ? 1 : 0);
+      var unitsDone = doneL + (examOk ? 1 : 0);
+      var pct = unitsTotal ? Math.round((unitsDone * 100) / unitsTotal) : 0;
       var bar = document.getElementById('curso-bar'); if (bar) bar.style.width = pct + '%';
-      var lbl = document.getElementById('curso-pct'); if (lbl) lbl.textContent = pct + '% · ' + done + '/' + keys.length;
+      var lbl = document.getElementById('curso-pct'); if (lbl) lbl.textContent = pct + '% completado';
       boxes.forEach(function (b) { var li = b.closest('li'); if (li) li.classList.toggle('hecho', !!map[b.getAttribute('data-key') as string]); });
 
-      var leccionesListas = pct === 100;
+      var msg = document.getElementById('curso-msg');
+      if (msg) {
+        if (pct === 100) msg.textContent = '✓ Curso finalizado. Tu certificado está abajo.';
+        else if (leccionesListas && hasExam && !examOk) msg.textContent = 'Lecciones completas. Aprobá el examen (80%) para finalizar el curso.';
+        else msg.textContent = doneL + ' de ' + keys.length + ' lecciones completadas' + (hasExam ? ' · después rendís el examen' : '');
+      }
+
       // El examen aparece una vez completaste las lecciones.
       if (examenEl) examenEl.hidden = !leccionesListas;
 
       // El certificado: si hay examen, exige aprobarlo; si no, basta completar lecciones.
-      var certListo = hasExam ? examAprobado() : leccionesListas;
+      var certListo = hasExam ? examOk : leccionesListas;
       if (cert) {
         cert.hidden = !certListo;
         if (certListo) {

@@ -10,6 +10,7 @@ descripcion: >
   saber qué herramienta usar para cada necesidad y cómo lograr el resultado que buscás.
 lecciones:
   - { col: trucos, id: prompts-de-imagen }
+  - { col: ias, id: canva }
   - { col: ias, id: midjourney }
   - { col: ias, id: gpt-image }
   - { col: ias, id: nano-banana }
