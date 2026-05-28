@@ -31,6 +31,20 @@ for (const [col] of cols) {
   <h1 class="titulo-pag" style="margin-top:1rem">Panel del alumno</h1>
   <p class="sub" style="max-width:62ch">Todo tu progreso vive en este navegador, sin cuenta. Registrá tus datos: van en tu diploma.</p>
 
+  <!-- Nivel y logros -->
+  <section class="gami-card" style="margin-top:1.25rem">
+    <div class="gami-top">
+      <div>
+        <span class="gami-rank">Nivel: <span id="g-rank">Novato</span></span>
+        <div class="gami-xp" id="g-xp">0 XP</div>
+      </div>
+      <div class="gami-racha" id="g-racha">🔥 0 días de racha</div>
+    </div>
+    <div class="barra-prog" style="margin:.5rem 0 .25rem"><span id="g-bar"></span></div>
+    <p class="sub" id="g-next" style="margin:0;font-size:.8rem"></p>
+    <div class="logros" id="g-logros"></div>
+  </section>
+
   <!-- Registro / datos del alumno -->
   <section class="etapa" style="margin-top:1.25rem">
     <h2 style="margin-top:0">Tus datos</h2>
@@ -163,5 +177,40 @@ for (const [col] of cols) {
       });
       favsEl.appendChild(ul);
     }
+
+    // Nivel, XP, racha y logros
+    var RANKS = ['Novato', 'Aprendiz', 'Practicante', 'Avanzado', 'Experto', 'Maestro', 'Leyenda IA'];
+    var racha = L('bib-ia-racha', '{}');
+    var nProg = Object.keys(prog).filter(function (k) { return prog[k]; }).length;
+    var passed = 0, perfect = 0;
+    Object.keys(exam).forEach(function (k) { var e = exam[k]; if (e && e.passed) { passed++; if (e.score === e.total) perfect++; } });
+    var dias = racha.dias || 0;
+    var xp = nProg * 10 + passed * 50 + favKeys.length * 2;
+    var nivel = Math.min(Math.floor(xp / 200), RANKS.length - 1);
+    var rk = document.getElementById('g-rank'); if (rk) rk.textContent = RANKS[nivel];
+    var xpEl = document.getElementById('g-xp'); if (xpEl) xpEl.textContent = xp + ' XP';
+    var rEl = document.getElementById('g-racha'); if (rEl) rEl.textContent = '🔥 ' + dias + (dias === 1 ? ' día' : ' días') + ' de racha';
+    var bEl = document.getElementById('g-bar'); if (bEl) bEl.style.width = Math.round(((xp - nivel * 200) / 200) * 100) + '%';
+    var nx = document.getElementById('g-next');
+    if (nx) nx.textContent = nivel < RANKS.length - 1 ? ('Te faltan ' + (200 - (xp - nivel * 200)) + ' XP para ' + RANKS[nivel + 1]) : '¡Nivel máximo! Sos una Leyenda IA.';
+
+    var logros = [
+      { n: 'Primeros pasos', i: '🌱', ok: nProg >= 1 },
+      { n: 'Curioso', i: '🔎', ok: nProg >= 5 },
+      { n: 'Estudioso', i: '📚', ok: nProg >= 15 },
+      { n: 'Maestría', i: '🧠', ok: nProg >= 30 },
+      { n: 'Primer examen', i: '✅', ok: passed >= 1 },
+      { n: 'Nota perfecta', i: '💯', ok: perfect >= 1 },
+      { n: 'Graduado', i: '🎓', ok: passed >= 3 },
+      { n: 'Fan de la IA', i: '❤️', ok: favKeys.length >= 5 },
+      { n: 'En racha', i: '🔥', ok: dias >= 3 },
+      { n: 'Imparable', i: '⚡', ok: dias >= 7 }
+    ];
+    var gl = document.getElementById('g-logros');
+    if (gl) logros.forEach(function (l) {
+      var d = document.createElement('div'); d.className = 'logro ' + (l.ok ? 'ok' : 'locked');
+      d.innerHTML = '<span class="icono">' + l.i + '</span><span class="nombre">' + l.n + '</span>';
+      gl.appendChild(d);
+    });
   })();
 </script>

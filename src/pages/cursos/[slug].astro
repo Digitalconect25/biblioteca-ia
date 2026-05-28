@@ -251,6 +251,7 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
         var k = b.getAttribute('data-key') as string;
         if (b.checked) map[k] = true; else delete map[k];
         save(map); refresh();
+        document.dispatchEvent(new CustomEvent('progreso-cambio'));
       });
     });
 
@@ -284,6 +285,7 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
       if (passed) {
         var m = loadEx(); m[slug] = { score: correctas, total: total, passed: true, date: new Date().toISOString() }; saveEx(m);
         if (btnCorregir) (btnCorregir as HTMLElement).hidden = true;
+        document.dispatchEvent(new CustomEvent('examen-aprobado'));
         refresh();
         if (cert) cert.scrollIntoView({ behavior: 'smooth' });
       }

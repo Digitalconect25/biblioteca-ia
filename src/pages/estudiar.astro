@@ -167,6 +167,7 @@ const total = planRes.reduce((n, e) => n + e.items.length, 0);
         if (b.checked) map[b.dataset.key] = true; else delete map[b.dataset.key];
         save(map);
         refresh();
+        document.dispatchEvent(new CustomEvent('progreso-cambio'));
       });
     });
     refresh();

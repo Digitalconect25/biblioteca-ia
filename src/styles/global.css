@@ -203,6 +203,39 @@ h1 { line-height: 1.1; }
   border-top: 1px solid var(--border); padding-top: 1rem;
 }
 
+/* Gamificación: toast + logros + XP */
+.bib-toast {
+  position: fixed; right: 1rem; bottom: 1rem; z-index: 9998;
+  background: var(--navy-deep); color: #eef2f8;
+  border: 1px solid var(--accent); border-radius: var(--radius);
+  padding: 0.8rem 1.1rem; max-width: 320px; font-size: 0.92rem;
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.4);
+  transform: translateY(140%); opacity: 0; transition: transform 0.35s ease, opacity 0.35s ease;
+}
+.bib-toast.show { transform: translateY(0); opacity: 1; }
+
+.gami-card {
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--card)), var(--card));
+  padding: 1.25rem 1.4rem;
+}
+.gami-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.gami-rank { font-size: 1.3rem; font-weight: 700; }
+.gami-xp { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-soft); }
+.gami-racha { font-family: var(--font-mono); }
+
+.logros { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.75rem; margin-top: 1rem; }
+.logro {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 0.85rem 0.6rem; text-align: center; background: var(--card);
+}
+.logro .icono { font-size: 1.8rem; display: block; }
+.logro .nombre { font-size: 0.78rem; color: var(--text-soft); margin-top: 0.25rem; display: block; }
+.logro.ok { border-color: var(--accent); }
+.logro.ok .icono { filter: none; }
+.logro.locked { opacity: 0.45; }
+.logro.locked .icono { filter: grayscale(1); }
+
 @media print {
   body * { visibility: hidden; }
   #certificado, #certificado * { visibility: visible; }

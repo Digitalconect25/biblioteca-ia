@@ -123,8 +123,100 @@ const anio = new Date().getFullYear();
             var m = fload();
             if (m[k]) { delete m[k]; } else { m[k] = true; }
             fsave(m); fpaint(b, !!m[k]);
+            document.dispatchEvent(new CustomEvent('progreso-cambio'));
           });
         });
+      })();
+    </script>
+
+    <!-- Gamificación: XP, niveles, logros, racha, confeti -->
+    <script is:inline>
+      (function () {
+        function J(k, d) { try { return JSON.parse(localStorage.getItem(k) || d); } catch (e) { return JSON.parse(d); } }
+        var RANKS = ['Novato', 'Aprendiz', 'Practicante', 'Avanzado', 'Experto', 'Maestro', 'Leyenda IA'];
+
+        function stats() {
+          var prog = J('bib-ia-progreso', '{}');
+          var exam = J('bib-ia-examenes', '{}');
+          var favs = J('bib-ia-favoritos', '{}');
+          var racha = J('bib-ia-racha', '{}');
+          var nProg = Object.keys(prog).filter(function (k) { return prog[k]; }).length;
+          var passed = 0, perfect = 0;
+          Object.keys(exam).forEach(function (k) { var e = exam[k]; if (e && e.passed) { passed++; if (e.score === e.total) perfect++; } });
+          var nFav = Object.keys(favs).filter(function (k) { return favs[k]; }).length;
+          var dias = racha.dias || 0;
+          var xp = nProg * 10 + passed * 50 + nFav * 2;
+          var nivel = Math.min(Math.floor(xp / 200), RANKS.length - 1);
+          var logros = [
+            { id: 'inicio', n: 'Primeros pasos', i: '🌱', ok: nProg >= 1 },
+            { id: 'curioso', n: 'Curioso', i: '🔎', ok: nProg >= 5 },
+            { id: 'estudioso', n: 'Estudioso', i: '📚', ok: nProg >= 15 },
+            { id: 'maestria', n: 'Maestría', i: '🧠', ok: nProg >= 30 },
+            { id: 'examen1', n: 'Primer examen', i: '✅', ok: passed >= 1 },
+            { id: 'perfecto', n: 'Nota perfecta', i: '💯', ok: perfect >= 1 },
+            { id: 'graduado', n: 'Graduado', i: '🎓', ok: passed >= 3 },
+            { id: 'fan', n: 'Fan de la IA', i: '❤️', ok: nFav >= 5 },
+            { id: 'racha3', n: 'En racha', i: '🔥', ok: dias >= 3 },
+            { id: 'racha7', n: 'Imparable', i: '⚡', ok: dias >= 7 }
+          ];
+          return { xp: xp, nivel: nivel, rank: RANKS[nivel], xpNivel: xp - nivel * 200, xpSube: 200, dias: dias, logros: logros };
+        }
+
+        function actualizarRacha() {
+          var r = J('bib-ia-racha', '{}');
+          var hoy = new Date().toISOString().slice(0, 10);
+          if (r.fecha === hoy) return;
+          var ayer = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+          r.dias = (r.fecha === ayer) ? (r.dias || 0) + 1 : 1;
+          r.fecha = hoy;
+          try { localStorage.setItem('bib-ia-racha', JSON.stringify(r)); } catch (e) {}
+        }
+
+        function confetti() {
+          var c = document.createElement('canvas');
+          c.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999';
+          c.width = innerWidth; c.height = innerHeight; document.body.appendChild(c);
+          var ctx = c.getContext('2d'); var P = [];
+          var cols = ['#06b6d4', '#57dffe', '#0f172a', '#1f7a3d', '#e0245e', '#ffbb33'];
+          for (var i = 0; i < 130; i++) P.push({ x: Math.random() * c.width, y: -20 - Math.random() * c.height * 0.3, r: 4 + Math.random() * 7, vy: 2 + Math.random() * 4, vx: -2 + Math.random() * 4, col: cols[i % cols.length], rot: Math.random() * 6 });
+          var t0 = Date.now();
+          (function loop() {
+            ctx.clearRect(0, 0, c.width, c.height);
+            P.forEach(function (p) { p.x += p.vx; p.y += p.vy; p.vy += 0.05; p.rot += 0.1; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.col; ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 0.6); ctx.restore(); });
+            if (Date.now() - t0 < 2600) requestAnimationFrame(loop); else c.remove();
+          })();
+        }
+
+        function toast(msg) {
+          var t = document.createElement('div'); t.className = 'bib-toast'; t.innerHTML = msg;
+          document.body.appendChild(t);
+          requestAnimationFrame(function () { t.classList.add('show'); });
+          setTimeout(function () { t.classList.remove('show'); setTimeout(function () { t.remove(); }, 400); }, 3800);
+        }
+
+        function checkLogros(celebrar) {
+          var s = stats();
+          var prev = J('bib-ia-logros', '[]');
+          var ahora = s.logros.filter(function (l) { return l.ok; }).map(function (l) { return l.id; });
+          var nuevos = ahora.filter(function (id) { return prev.indexOf(id) === -1; });
+          try { localStorage.setItem('bib-ia-logros', JSON.stringify(ahora)); } catch (e) {}
+          if (celebrar && nuevos.length) {
+            confetti();
+            nuevos.forEach(function (id, idx) {
+              var l = s.logros.filter(function (x) { return x.id === id; })[0];
+              setTimeout(function () { toast('🏅 ¡Logro desbloqueado! ' + l.i + ' <strong>' + l.n + '</strong>'); }, idx * 600);
+            });
+          }
+        }
+
+        window.bibGami = { stats: stats, confetti: confetti, toast: toast };
+
+        // Inicial: sin celebrar (fija baseline)
+        checkLogros(false);
+        // Al estudiar (marcar lección/favorito): suma racha y revisa logros
+        document.addEventListener('progreso-cambio', function () { actualizarRacha(); checkLogros(true); });
+        // Al aprobar un examen: confeti + racha + logros
+        document.addEventListener('examen-aprobado', function () { actualizarRacha(); confetti(); checkLogros(true); });
       })();
     </script>
   </body>
