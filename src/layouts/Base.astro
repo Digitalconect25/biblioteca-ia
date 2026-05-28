@@ -66,13 +66,17 @@ const anio = new Date().getFullYear();
         <a class="marca" href="/">🎓 Academia IA <span style="color:var(--text-soft);font-weight:500">· ConectaNex</span></a>
         <nav aria-label="Principal">
           <a href="/cursos/">Cursos</a>
-          <a href="/panel/">Mi panel</a>
           <a href="/herramientas/">IAs</a>
           <a href="/catalogo/">Catálogo</a>
           <a href="/repos/">Repos</a>
           <a href="/aportar/">Aportar</a>
         </nav>
         <span class="crecer"></span>
+        <!-- Estado de sesión: por defecto invitado; el script lo actualiza si hay sesión. -->
+        <div id="nav-auth" class="nav-auth">
+          <a href="/login/">Iniciar sesión</a>
+          <a class="btn btn-primario" href="/registro/">Registrarse</a>
+        </div>
         <button id="toggle-tema" class="btn" type="button" aria-label="Cambiar tema claro/oscuro">
           <span aria-hidden="true">🌓</span> Tema
         </button>
@@ -239,6 +243,38 @@ const anio = new Date().getFullYear();
         // Al aprobar un examen: confeti + racha + logros
         document.addEventListener('examen-aprobado', function () { actualizarRacha(); confetti(); checkLogros(true); });
       })();
+    </script>
+
+    <!-- Nav consciente de sesión (el sitio es estático: se resuelve en el cliente) -->
+    <script>
+      import { supabaseBrowser } from '../lib/supabase/client';
+
+      const cont = document.getElementById('nav-auth');
+
+      function link(href: string, text: string, primario = false) {
+        const a = document.createElement('a');
+        a.href = href;
+        a.textContent = text;
+        if (primario) a.className = 'btn btn-primario';
+        return a;
+      }
+
+      function pintar(session: any) {
+        if (!cont) return;
+        cont.replaceChildren();
+        if (session) {
+          const nombre = (((session.user.user_metadata || {}).nombre as string) || '').split(' ')[0] || 'alumno';
+          const saludo = document.createElement('span');
+          saludo.className = 'nav-saludo';
+          saludo.textContent = 'Hola, ' + nombre;
+          cont.append(saludo, link('/dashboard/', 'Dashboard'), link('/logout', 'Cerrar sesión'));
+        } else {
+          cont.append(link('/login/', 'Iniciar sesión'), link('/registro/', 'Registrarse', true));
+        }
+      }
+
+      supabaseBrowser.auth.getSession().then(({ data }) => pintar(data.session));
+      supabaseBrowser.auth.onAuthStateChange((_e, session) => pintar(session));
     </script>
   </body>
 </html>

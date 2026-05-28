@@ -271,6 +271,14 @@ header.sitio .marca {
   display: inline-flex; align-items: center; gap: 0.4rem; font-size: 1.05rem;
 }
 header.sitio .crecer { flex: 1; }
+header.sitio .nav-auth {
+  display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+}
+header.sitio .nav-auth a:not(.btn) {
+  color: var(--text-soft); text-decoration: none; font-weight: 500; font-size: 0.95rem;
+}
+header.sitio .nav-auth a:not(.btn):hover { color: var(--text); }
+header.sitio .nav-auth .nav-saludo { color: var(--text); font-weight: 600; font-size: 0.95rem; }
 
 footer.sitio {
   border-top: 1px solid var(--border);
