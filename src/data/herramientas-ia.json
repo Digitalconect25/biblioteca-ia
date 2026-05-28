@@ -73,6 +73,7 @@
 {"nombre":"Elicit","url":"https://elicit.com","desc":"Asistente de investigación académica con IA.","cat":"investigacion"},
 {"nombre":"Gamma","url":"https://gamma.app","desc":"Genera presentaciones, docs y webs desde texto.","cat":"productividad"},
 {"nombre":"Notion","url":"https://www.notion.so","desc":"Espacio de trabajo con IA integrada.","cat":"productividad"},
+{"nombre":"Obsidian","url":"https://obsidian.md","desc":"Notas en texto plano y local; conectable a Claude por MCP como segundo cerebro.","cat":"productividad"},
 {"nombre":"Zapier","url":"https://zapier.com","desc":"Automatización entre apps con IA.","cat":"automatizacion"},
 {"nombre":"Make","url":"https://www.make.com","desc":"Automatización visual de flujos de trabajo.","cat":"automatizacion"},
 {"nombre":"n8n","url":"https://n8n.io","desc":"Automatización de workflows open-source.","cat":"automatizacion"},
