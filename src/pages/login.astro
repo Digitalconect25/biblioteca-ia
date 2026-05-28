@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+
+export const prerender = false;
+
+// Si ya hay sesión, no tiene sentido mostrar el login.
+if (Astro.locals.user) return Astro.redirect('/dashboard');
+
+// Destino tras iniciar sesión. Solo rutas internas (evita open-redirect).
+const raw = Astro.url.searchParams.get('redirect') || '/dashboard';
+const destino = raw.startsWith('/') && !raw.startsWith('//') ? raw : '/dashboard';
+---
+
+<Base titulo="Iniciar sesión" descripcion="Accedé a tu cuenta de la Academia de IA ConectaNex.">
+  <span class="eyebrow">Tu cuenta</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">Iniciar sesión</h1>
+  <p class="sub" style="max-width:52ch">Entrá con tu correo y contraseña para ver tu progreso y certificados.</p>
+
+  <form id="form-login" class="gate-form" style="margin-top:1.25rem;max-width:420px;flex-direction:column;align-items:stretch" data-destino={destino}>
+    <input id="email" type="email" placeholder="Tu correo" autocomplete="email" required />
+    <input id="password" type="password" placeholder="Tu contraseña" autocomplete="current-password" required />
+    <button id="btn-login" class="btn btn-primario" type="submit">Entrar</button>
+  </form>
+  <p id="login-error" class="gate-error" hidden></p>
+
+  <p class="sub" style="margin-top:1.25rem">
+    ¿No tenés cuenta? <a href="/registro/">Registrate</a> ·
+    <a href="/recuperar-password/">Olvidé mi contraseña</a>
+  </p>
+</Base>
+
+<script>
+  import { supabaseBrowser } from '../lib/supabase/client';
+
+  const form = document.getElementById('form-login') as HTMLFormElement;
+  const errorEl = document.getElementById('login-error') as HTMLParagraphElement;
+  const btn = document.getElementById('btn-login') as HTMLButtonElement;
+  const destino = form.dataset.destino || '/dashboard';
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.hidden = true;
+    btn.disabled = true;
+    btn.textContent = 'Entrando…';
+
+    const email = (document.getElementById('email') as HTMLInputElement).value.trim();
+    const password = (document.getElementById('password') as HTMLInputElement).value;
+
+    const { error } = await supabaseBrowser.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      errorEl.textContent =
+        error.message === 'Invalid login credentials'
+          ? 'Correo o contraseña incorrectos.'
+          : error.message === 'Email not confirmed'
+            ? 'Confirmá tu correo antes de entrar (revisá tu bandeja).'
+            : 'No se pudo iniciar sesión. Probá de nuevo.';
+      errorEl.hidden = false;
+      btn.disabled = false;
+      btn.textContent = 'Entrar';
+      return;
+    }
+    window.location.href = destino;
+  });
+</script>

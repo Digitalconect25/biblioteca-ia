@@ -1,0 +1,75 @@
+---
+import Base from '../layouts/Base.astro';
+
+export const prerender = false;
+
+if (Astro.locals.user) return Astro.redirect('/dashboard');
+---
+
+<Base titulo="Crear cuenta" descripcion="Registrate gratis en la Academia de IA ConectaNex y guardá tu progreso.">
+  <span class="eyebrow">Tu cuenta</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">Crear cuenta</h1>
+  <p class="sub" style="max-width:52ch">Gratis. Tu nombre aparece en los certificados que obtengas.</p>
+
+  <form id="form-registro" class="gate-form" style="margin-top:1.25rem;max-width:420px;flex-direction:column;align-items:stretch">
+    <input id="nombre" type="text" placeholder="Tu nombre y apellido" autocomplete="name" required />
+    <input id="email" type="email" placeholder="Tu correo" autocomplete="email" required />
+    <input id="password" type="password" placeholder="Contraseña (mínimo 6 caracteres)" autocomplete="new-password" minlength="6" required />
+    <button id="btn-registro" class="btn btn-primario" type="submit">Crear cuenta</button>
+  </form>
+  <p id="registro-error" class="gate-error" hidden></p>
+
+  <div id="registro-ok" class="etapa" hidden style="margin-top:1.25rem;max-width:520px">
+    <h2 style="margin-top:0">¡Casi listo! 📬</h2>
+    <p class="sub" style="margin:0">Te enviamos un correo para confirmar tu cuenta. Abrí el enlace y después <a href="/login/">iniciá sesión</a>.</p>
+  </div>
+
+  <p class="sub" style="margin-top:1.25rem">¿Ya tenés cuenta? <a href="/login/">Iniciá sesión</a></p>
+</Base>
+
+<script>
+  import { supabaseBrowser } from '../lib/supabase/client';
+
+  const form = document.getElementById('form-registro') as HTMLFormElement;
+  const errorEl = document.getElementById('registro-error') as HTMLParagraphElement;
+  const okEl = document.getElementById('registro-ok') as HTMLDivElement;
+  const btn = document.getElementById('btn-registro') as HTMLButtonElement;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.hidden = true;
+    btn.disabled = true;
+    btn.textContent = 'Creando…';
+
+    const nombre = (document.getElementById('nombre') as HTMLInputElement).value.trim();
+    const email = (document.getElementById('email') as HTMLInputElement).value.trim();
+    const password = (document.getElementById('password') as HTMLInputElement).value;
+
+    const { data, error } = await supabaseBrowser.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { nombre },
+        emailRedirectTo: `${window.location.origin}/login/`,
+      },
+    });
+
+    if (error) {
+      errorEl.textContent = error.message.includes('already registered')
+        ? 'Ese correo ya tiene una cuenta. Probá iniciar sesión.'
+        : 'No se pudo crear la cuenta. Revisá los datos e intentá de nuevo.';
+      errorEl.hidden = false;
+      btn.disabled = false;
+      btn.textContent = 'Crear cuenta';
+      return;
+    }
+
+    // Si las confirmaciones por correo están activas no hay sesión todavía.
+    if (data.session) {
+      window.location.href = '/dashboard';
+    } else {
+      form.hidden = true;
+      okEl.hidden = false;
+    }
+  });
+</script>
