@@ -1,0 +1,102 @@
+---
+import Base from '../layouts/Base.astro';
+import datos from '../data/herramientas-ia.json';
+
+type Herr = { nombre: string; url: string; desc: string; cat: string };
+const items = datos as Herr[];
+
+const catLabel: Record<string, string> = {
+  asistentes: 'Asistentes / chat',
+  busqueda: 'Búsqueda',
+  redaccion: 'Redacción',
+  diseno: 'Diseño e imágenes',
+  video: 'Video',
+  audio: 'Audio y voz',
+  seo: 'SEO',
+  web: 'Web / construcción',
+  codigo: 'Código y desarrollo',
+  datos: 'Datos y análisis',
+  'bases-de-datos': 'Bases de datos',
+  investigacion: 'Investigación',
+  productividad: 'Productividad',
+  automatizacion: 'Automatización',
+};
+const orden = Object.keys(catLabel);
+const categorias = Array.from(new Set(items.map((i) => i.cat))).sort(
+  (a, b) => orden.indexOf(a) - orden.indexOf(b)
+);
+const sorted = items.slice().sort((a, b) => {
+  const d = orden.indexOf(a.cat) - orden.indexOf(b.cat);
+  return d !== 0 ? d : a.nombre.localeCompare(b.nombre, 'es');
+});
+---
+
+<Base titulo="Biblioteca de IAs" descripcion="Directorio de herramientas de IA por tipo: diseño, redacción, SEO, web, datos y más.">
+  <span class="eyebrow">Directorio</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">Biblioteca de IAs</h1>
+  <p class="sub" style="max-width:64ch">
+    {items.length} herramientas de IA organizadas por tipo, con enlace al sitio oficial.
+    Cada enlace fue verificado. Filtrá por categoría o buscá lo que necesites.
+  </p>
+
+  <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-top:1rem">
+    <input id="buscar" type="search" placeholder="Ej: imagen, voz, seo, base de datos…"
+           style="flex:1;min-width:240px;padding:.6rem;border-radius:var(--radius);border:1px solid var(--border-strong);background:var(--card);color:var(--text);min-height:44px" />
+    <select id="cat" style="padding:.6rem;border-radius:var(--radius);border:1px solid var(--border-strong);background:var(--card);color:var(--text);min-height:44px">
+      <option value="">Todas las categorías</option>
+      {categorias.map((c) => <option value={c}>{catLabel[c] ?? c}</option>)}
+    </select>
+  </div>
+
+  <div id="grid" class="grid" style="margin-top:1.25rem">
+    {sorted.map((h) => (
+      <a class="card celda" href={h.url} target="_blank" rel="noopener noreferrer"
+         data-cat={h.cat} data-texto={`${h.nombre} ${h.desc} ${catLabel[h.cat] ?? h.cat}`.toLowerCase()}>
+        <div class="badges"><span class="badge">{catLabel[h.cat] ?? h.cat}</span></div>
+        <strong>{h.nombre}</strong>
+        <span style="color:var(--text-soft)">{h.desc}</span>
+        <span style="color:var(--accent-ink);margin-top:auto;font-size:.85rem">Abrir sitio oficial →</span>
+      </a>
+    ))}
+  </div>
+
+  <div id="vacio" class="estado-vacio" hidden>
+    <p>No encontramos herramientas con esos criterios.</p>
+    <button id="vacio-limpiar" class="btn">Quitar filtros</button>
+  </div>
+
+  <p class="sub" style="margin-top:1.5rem;font-size:.85rem">
+    ¿Falta alguna o un enlace dejó de andar? Avisá desde <a href="/aportar/">Aportar</a>.
+    Las herramientas cambian seguido: verificá precios y funciones en el sitio oficial.
+  </p>
+</Base>
+
+<script is:inline>
+  (function () {
+    var q = '', cat = '';
+    var celdas = Array.prototype.slice.call(document.querySelectorAll('.celda'));
+    var vacio = document.getElementById('vacio');
+    var grid = document.getElementById('grid');
+    var input = document.getElementById('buscar');
+    var sel = document.getElementById('cat');
+    function norm(s) { return (s || '').normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+    function leer() { var p = new URLSearchParams(location.search); cat = p.get('cat') || ''; q = p.get('q') || ''; if (input) input.value = q; if (sel) sel.value = cat; }
+    function escribir() { var p = new URLSearchParams(); if (cat) p.set('cat', cat); if (q) p.set('q', q); var s = p.toString(); history.replaceState(null, '', s ? '?' + s : location.pathname); }
+    function aplicar() {
+      var qn = norm(q.toLowerCase()), vis = 0;
+      celdas.forEach(function (c) {
+        var ok = true;
+        if (cat && c.dataset.cat !== cat) ok = false;
+        if (ok && qn) ok = norm(c.dataset.texto).indexOf(qn) !== -1;
+        c.style.display = ok ? '' : 'none'; if (ok) vis++;
+      });
+      if (vacio) vacio.hidden = vis !== 0;
+      if (grid) grid.style.display = vis === 0 ? 'none' : '';
+      escribir();
+    }
+    input && input.addEventListener('input', function () { q = input.value; aplicar(); });
+    sel && sel.addEventListener('change', function () { cat = sel.value; aplicar(); });
+    document.getElementById('vacio-limpiar') && document.getElementById('vacio-limpiar').addEventListener('click', function () { q = ''; cat = ''; if (input) input.value = ''; if (sel) sel.value = ''; aplicar(); });
+    leer(); aplicar();
+  })();
+</script>
