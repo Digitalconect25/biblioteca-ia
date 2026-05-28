@@ -48,22 +48,15 @@ for (const [col] of cols) {
   <!-- Registro / datos del alumno -->
   <section class="etapa" style="margin-top:1.25rem">
     <h2 style="margin-top:0">Tus datos</h2>
-    <p class="sub" style="margin:0">Estos datos aparecen en tu certificado. El logo es opcional.</p>
+    <p class="sub" style="margin:0">Tu nombre y apellido aparecen en tu certificado. El logo de la Academia ya viene en todos los diplomas.</p>
     <div class="gate-form">
       <input id="p-nombre" type="text" placeholder="Nombre" autocomplete="given-name" />
       <input id="p-apellido" type="text" placeholder="Apellido" autocomplete="family-name" />
-    </div>
-    <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-top:.85rem">
-      <label class="btn" for="p-logo" style="cursor:pointer">📷 Subir logo para el diploma</label>
-      <input id="p-logo" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden />
-      <img id="p-logo-preview" alt="Logo" style="max-height:48px;max-width:160px;display:none;border:1px solid var(--border);border-radius:8px;padding:4px;background:#fff" />
-      <button id="p-logo-quitar" class="btn" type="button" hidden>Quitar logo</button>
     </div>
     <div style="margin-top:.85rem;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
       <button id="p-guardar" class="btn btn-primario" type="button">Guardar datos</button>
       <span id="p-ok" class="sub" style="color:var(--ok)" hidden>Guardado ✓</span>
     </div>
-    <p id="p-logo-error" class="gate-error" hidden>El logo es muy pesado (máx ~600 KB). Probá con una imagen más liviana.</p>
   </section>
 
   <!-- Resumen -->
@@ -114,23 +107,6 @@ for (const [col] of cols) {
     var n = document.getElementById('p-nombre'), ap = document.getElementById('p-apellido');
     if (n) n.value = alumno.nombre || '';
     if (ap) ap.value = alumno.apellido || '';
-    var logo = null; try { logo = localStorage.getItem('bib-ia-logo'); } catch (e) {}
-    var prev = document.getElementById('p-logo-preview'), quitar = document.getElementById('p-logo-quitar');
-    function pintarLogo() {
-      if (logo) { prev.src = logo; prev.style.display = ''; quitar.hidden = false; }
-      else { prev.style.display = 'none'; quitar.hidden = true; }
-    }
-    pintarLogo();
-
-    document.getElementById('p-logo').addEventListener('change', function (e) {
-      var f = e.target.files && e.target.files[0]; if (!f) return;
-      if (f.size > 600 * 1024) { document.getElementById('p-logo-error').hidden = false; return; }
-      document.getElementById('p-logo-error').hidden = true;
-      var r = new FileReader();
-      r.onload = function () { logo = r.result; try { localStorage.setItem('bib-ia-logo', logo); } catch (err) {} pintarLogo(); };
-      r.readAsDataURL(f);
-    });
-    quitar.addEventListener('click', function () { logo = null; try { localStorage.removeItem('bib-ia-logo'); } catch (e) {} pintarLogo(); });
 
     document.getElementById('p-guardar').addEventListener('click', function () {
       var data = { nombre: (n.value || '').trim(), apellido: (ap.value || '').trim() };

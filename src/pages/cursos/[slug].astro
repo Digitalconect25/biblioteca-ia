@@ -118,7 +118,7 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
     <!-- Certificado (aparece tras aprobar) -->
     <section id="certificado" class="certificado" hidden>
       <div class="cert-inner">
-        <img id="cert-logo" class="cert-logo" alt="Logo" hidden />
+        <img class="cert-logo" src="/logo-academia.svg" alt="Academia de IA ConectaNex" />
         <span class="eyebrow" style="margin:0 auto">Certificado de finalización</span>
         <p class="cert-otorga">Otorgado a</p>
         <p class="cert-nombre" id="cert-nombre">—</p>
@@ -204,8 +204,6 @@ const hoy = new Date().toLocaleDateString('es', { year: 'numeric', month: 'long'
         if (certListo) {
           var nom = nombreCompleto();
           var cn = document.getElementById('cert-nombre'); if (cn) cn.textContent = nom || 'Alumno';
-          var logoEl = document.getElementById('cert-logo') as HTMLImageElement | null;
-          if (logoEl) { var lg = null; try { lg = localStorage.getItem('bib-ia-logo'); } catch (e) {} if (lg) { logoEl.src = lg; logoEl.hidden = false; } else { logoEl.hidden = true; } }
           var fecha = new Date().toLocaleDateString('es');
           var url = location.origin + '/verificar/?n=' + encodeURIComponent(nom) + '&c=' + encodeURIComponent(cursoTitulo) + '&f=' + encodeURIComponent(fecha);
           var qrEl = document.getElementById('cert-qr'); if (qrEl) qrInto(qrEl, url);
