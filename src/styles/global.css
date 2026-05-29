@@ -304,6 +304,14 @@ header.sitio .nav-auth .nav-saludo { color: var(--text); font-weight: 600; font-
 }
 .hero-sub { color: #b9cdd6; font-size: 1.12rem; max-width: 52ch; margin-top: 0.75rem; }
 .hero-cta { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+.hero-stats {
+  list-style: none; padding: 1.1rem 0 0; margin: 1.25rem 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex; flex-wrap: wrap; gap: 1.5rem;
+  font-size: 0.9rem; color: #9fb4bf;
+}
+.hero-stats li { display: flex; align-items: baseline; gap: 0.35rem; }
+.hero-stats strong { color: #fff; font-size: 1.15rem; font-weight: 700; }
 .hero .btn:not(.btn-primario) {
   color: #eaf6fb; background: transparent; border-color: rgba(255, 255, 255, 0.35);
 }
@@ -325,6 +333,27 @@ header.sitio .nav-auth .nav-saludo { color: var(--text); font-weight: 600; font-
     -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
             mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
   }
+}
+
+/* Login a dos columnas: formulario + imagen */
+.auth-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+.auth-media-col { display: flex; justify-content: center; }
+.auth-media-col img {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 44px rgba(37, 99, 235, 0.28));
+}
+@media (max-width: 760px) {
+  .auth-split { grid-template-columns: 1fr; gap: 1.5rem; }
+  .auth-media-col { display: none; }
 }
 
 footer.sitio {

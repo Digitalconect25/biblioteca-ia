@@ -10,6 +10,9 @@ const trucos = await getCollection('trucos');
 const ensenanzas = await getCollection('ensenanzas');
 const cursos = (await getCollection('cursos')).sort((a, b) => (a.data.orden ?? 0) - (b.data.orden ?? 0));
 
+const cursosTotal = cursos.length;
+const leccionesTotal = cursos.reduce((n, c) => n + (c.data.lecciones?.length ?? 0), 0);
+
 // Destacados: unos pocos ítems para mostrar el catálogo.
 const destacados = [
   ...ias.slice(0, 2).map((i) => ({ href: `/ias/${i.id}/`, titulo: i.data.titulo, resumen: i.data.resumen, nivel: i.data.nivel, gratis: i.data.gratis, tipo: 'ia', tags: i.data.tags })),
@@ -32,6 +35,12 @@ const destacados = [
         <a class="btn btn-primario" href="/estudiar/">Empezar el plan de estudio</a>
         <a class="btn" href="/catalogo/">Ver catálogo completo</a>
       </p>
+      <ul class="hero-stats" aria-label="Lo que incluye la academia">
+        <li><strong>{cursosTotal}</strong> cursos</li>
+        <li><strong>{leccionesTotal}</strong> lecciones</li>
+        <li><strong>Certificado</strong> al aprobar</li>
+        <li><strong>100%</strong> gratis</li>
+      </ul>
     </div>
     <div class="hero-media">
       <img
