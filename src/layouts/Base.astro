@@ -38,6 +38,33 @@ const ogImage = new URL('/hero-academia.jpg', Astro.site).href;
     <meta name="twitter:title" content={tituloCompleto} />
     <meta name="twitter:description" content={descripcion} />
     <meta name="twitter:image" content={ogImage} />
+
+    <!-- Datos estructurados: organización y sitio (Schema.org) -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'EducationalOrganization',
+      name: 'Academia de IA ConectaNex',
+      alternateName: 'ConectaNex · Academia de IA',
+      url: 'https://academia.conectanex.com',
+      logo: 'https://academia.conectanex.com/logo-academia.svg',
+      image: ogImage,
+      description: 'Academia gratis y en español para aprender inteligencia artificial, de cero a avanzado, con cursos certificados.',
+      founder: { '@type': 'Person', name: 'Yinmy Lazaro Carrazana' },
+      inLanguage: 'es',
+      sameAs: ['https://github.com/Digitalconect25/biblioteca-ia'],
+    })} />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'Academia de IA ConectaNex',
+      url: 'https://academia.conectanex.com',
+      inLanguage: 'es',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: 'https://academia.conectanex.com/catalogo/?q={search_term_string}',
+        'query-input': 'required name=search_term_string',
+      },
+    })} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -130,6 +157,7 @@ const ogImage = new URL('/hero-academia.jpg', Astro.site).href;
       </div>
       <p>Academia de IA ConectaNex · Fundada por Yinmy Lazaro Carrazana · {anio}</p>
       <p style="font-size:.85rem;margin:.25rem 0 0">Gratuita y abierta. Hecha con Astro.</p>
+      <p style="font-size:.85rem;margin:.5rem 0 0"><a href="/privacidad/">Privacidad</a> · <a href="/aportar/">Contacto</a></p>
     </footer>
 
     <script is:inline>

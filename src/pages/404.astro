@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base titulo="Página no encontrada" descripcion="La página que buscás no existe en la Academia de IA ConectaNex.">
+  <section class="error-404">
+    <span class="error-404-num">404</span>
+    <h1 class="titulo-pag" style="margin-top:0">Esa página no existe</h1>
+    <p class="sub" style="max-width:52ch;margin-top:0.5rem">
+      El enlace está roto o la página se movió. Probá desde el inicio o explorá la academia desde acá:
+    </p>
+    <p class="error-404-cta">
+      <a class="btn btn-primario" href="/">Volver al inicio</a>
+      <a class="btn" href="/cursos/">Ver cursos</a>
+      <a class="btn" href="/catalogo/">Explorar catálogo</a>
+    </p>
+  </section>
+</Base>
+
+<style>
+  .error-404 {
+    text-align: center;
+    padding: 3rem 1rem 4rem;
+    max-width: 720px;
+    margin: 2rem auto;
+  }
+  .error-404-num {
+    display: inline-block;
+    font-family: var(--font-mono, 'JetBrains Mono'), monospace;
+    font-size: clamp(4rem, 14vw, 7rem);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent), #2563eb);
+    -webkit-background-clip: text;
+            background-clip: text;
+    color: transparent;
+    margin-bottom: 0.5rem;
+  }
+  .error-404-cta {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+</style>

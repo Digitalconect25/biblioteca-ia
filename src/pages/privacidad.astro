@@ -1,0 +1,79 @@
+---
+import Base from '../layouts/Base.astro';
+const actualizado = '2026-05-30';
+---
+
+<Base titulo="Privacidad" descripcion="Cómo trata la Academia de IA ConectaNex los datos personales de sus alumnos y visitantes.">
+  <span class="eyebrow">Legal</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">Política de privacidad</h1>
+  <p class="sub" style="max-width:62ch">
+    En la Academia de IA ConectaNex tratamos tus datos con el mínimo necesario para que la plataforma funcione,
+    sin compartirlos con terceros y sin fines comerciales. Esta página explica qué guardamos, por qué y qué podés hacer.
+  </p>
+
+  <section class="legal" style="max-width:64ch;margin-top:1.5rem">
+    <h2>1. Quién es el responsable</h2>
+    <p>
+      Academia de IA ConectaNex, fundada por <strong>Yinmy Lazaro Carrazana</strong>.
+      Para cualquier consulta sobre privacidad escribinos por el <a href="/aportar/">formulario de contacto</a>.
+    </p>
+
+    <h2>2. Qué datos guardamos</h2>
+    <ul>
+      <li><strong>Cuenta:</strong> nombre y correo (los ingresás vos al registrarte) y una contraseña cifrada.</li>
+      <li><strong>Progreso del curso:</strong> lecciones completadas, intentos de examen y certificados emitidos.</li>
+      <li><strong>Mensajes de contacto:</strong> si usás el formulario, guardamos nombre, correo y mensaje (más IP y user-agent para auditar abuso).</li>
+      <li><strong>Sesión:</strong> una cookie de sesión necesaria para que sigas logueado.</li>
+      <li><strong>Localmente en tu navegador:</strong> tus favoritos y avance del plan de estudio (no salen de tu dispositivo).</li>
+    </ul>
+
+    <h2>3. Para qué los usamos</h2>
+    <ul>
+      <li>Darte acceso a tu cuenta y guardar tu progreso.</li>
+      <li>Emitir tu certificado cuando aprobás un curso.</li>
+      <li>Responderte si nos escribís.</li>
+      <li>Auditar y prevenir abuso (rate-limit, RLS, validaciones).</li>
+    </ul>
+    <p>
+      <strong>No vendemos tus datos. No los compartimos con terceros para publicidad.</strong>
+      No corremos rastreadores de marketing en el sitio.
+    </p>
+
+    <h2>4. Dónde se guardan</h2>
+    <p>
+      Los datos de la academia viven en Supabase (PostgreSQL administrado en la UE) con
+      Row Level Security: cada usuario solo accede a sus propios registros. El sitio se sirve
+      desde Vercel (CDN global). La conexión es HTTPS de punta a punta.
+    </p>
+
+    <h2>5. Cuánto tiempo</h2>
+    <ul>
+      <li>Mientras tu cuenta esté activa, conservamos progreso y certificados.</li>
+      <li>Mensajes del formulario: hasta 24 meses, después se borran salvo que estén vinculados a una consulta sin resolver.</li>
+    </ul>
+
+    <h2>6. Tus derechos</h2>
+    <p>
+      Podés pedirnos en cualquier momento <strong>ver, exportar, corregir o borrar</strong> tus datos personales.
+      Escribinos por el formulario de contacto y te respondemos.
+    </p>
+
+    <h2>7. Cookies</h2>
+    <p>
+      Usamos solo cookies funcionales: una para la sesión (httpOnly, SameSite=Lax) y otra para guardar
+      el tema visual (claro/oscuro) que elegiste. No usamos cookies de publicidad ni de análisis externo.
+    </p>
+
+    <h2>8. Cambios</h2>
+    <p>
+      Si actualizamos esta política, vas a ver la nueva fecha más abajo. Última actualización: <strong>{actualizado}</strong>.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .legal h2 { margin-top: 1.75rem; font-size: 1.15rem; }
+  .legal p, .legal ul { color: var(--text-soft); }
+  .legal ul { padding-left: 1.2rem; }
+  .legal li { margin: 0.35rem 0; }
+</style>
