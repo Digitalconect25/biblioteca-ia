@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { originPermitido } from '../../lib/seguridad';
 
 export const prerender = false;
 
@@ -15,6 +16,8 @@ const esUuid = (v: unknown): v is string =>
 // Marca/desmarca una lección como completada para el usuario de la sesión.
 // El user_id SIEMPRE sale de la sesión, nunca del cuerpo del request.
 export const POST: APIRoute = async ({ request, locals }) => {
+  if (!originPermitido(request)) return json({ error: 'Origin no permitido' }, 403);
+
   const { user, supabase } = locals;
   if (!user || !supabase) return json({ error: 'No autenticado' }, 401);
 

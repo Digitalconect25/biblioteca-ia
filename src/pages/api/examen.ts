@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import examenesData from '../../data/examenes.json';
+import { originPermitido } from '../../lib/seguridad';
 
 export const prerender = false;
 
@@ -35,6 +36,8 @@ function pasaRateLimit(userId: string): boolean {
 // Registra un intento de examen (calificado en el servidor) y, si aprueba (>=80%),
 // emite el certificado del curso. Nunca confía en el puntaje del cliente.
 export const POST: APIRoute = async ({ request, locals }) => {
+  if (!originPermitido(request)) return json({ error: 'Origin no permitido' }, 403);
+
   const { user, supabase } = locals;
   if (!user || !supabase) return json({ error: 'No autenticado' }, 401);
 

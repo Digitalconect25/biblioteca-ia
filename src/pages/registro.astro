@@ -14,7 +14,7 @@ if (Astro.locals.user) return Astro.redirect('/dashboard');
   <form id="form-registro" class="gate-form" style="margin-top:1.25rem;max-width:420px;flex-direction:column;align-items:stretch">
     <input id="nombre" type="text" placeholder="Tu nombre y apellido" autocomplete="name" required />
     <input id="email" type="email" placeholder="Tu correo" autocomplete="email" required />
-    <input id="password" type="password" placeholder="Contraseña (mínimo 6 caracteres)" autocomplete="new-password" minlength="6" required />
+    <input id="password" type="password" placeholder="Contraseña (mínimo 8 caracteres, mezclá letras y números)" autocomplete="new-password" minlength="8" required />
     <button id="btn-registro" class="btn btn-primario" type="submit">Crear cuenta</button>
   </form>
   <p id="registro-error" class="gate-error" hidden></p>
