@@ -18,6 +18,8 @@ const ogImage = new URL('/hero-academia.jpg', Astro.site).href;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="description" content={descripcion} />
     <title>{tituloCompleto}</title>
     <link rel="canonical" href={canonical} />
@@ -154,6 +156,9 @@ const ogImage = new URL('/hero-academia.jpg', Astro.site).href;
           <a href="/repos/">Repos</a>
           <a href="/aportar/">Contacto</a>
         </nav>
+      </div>
+      <div class="footer-logo">
+        <img src="/logo-conectanex.png" alt="ConectaNex" width="56" height="63" loading="lazy" />
       </div>
       <p>Academia de IA ConectaNex · Fundada por Yinmy Lazaro Carrazana · {anio}</p>
       <p style="font-size:.85rem;margin:.25rem 0 0">Gratuita y abierta. Hecha con Astro.</p>

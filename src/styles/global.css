@@ -500,6 +500,15 @@ footer.sitio {
   margin-top: 4rem; padding: 2rem 1.5rem;
   color: var(--text-soft); text-align: center; font-size: 0.9rem;
 }
+footer.sitio .footer-logo {
+  display: flex; justify-content: center; align-items: center;
+  margin: 0 auto 1rem;
+}
+footer.sitio .footer-logo img {
+  width: 56px; height: auto; opacity: 0.85;
+  transition: opacity 150ms ease;
+}
+footer.sitio .footer-logo img:hover { opacity: 1; }
 
 /* ===== Grid + cards ===== */
 .grid {
