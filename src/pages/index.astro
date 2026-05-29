@@ -54,6 +54,28 @@ const destacados = [
     </div>
   </section>
 
+  <section class="seccion-pasos" aria-labelledby="h-pasos">
+    <h2 id="h-pasos">Cómo funciona</h2>
+    <p class="sub">Empezás en minutos y te llevás un certificado al terminar.</p>
+    <ol class="pasos">
+      <li>
+        <span class="paso-n">1</span>
+        <strong>Creá tu cuenta gratis</strong>
+        <span>Registrate en segundos y elegí el curso o la ruta que quieras.</span>
+      </li>
+      <li>
+        <span class="paso-n">2</span>
+        <strong>Aprendé a tu ritmo</strong>
+        <span>Lecciones, herramientas y trucos en español. Tu progreso queda guardado en tu cuenta.</span>
+      </li>
+      <li>
+        <span class="paso-n">3</span>
+        <strong>Aprobá y certificá</strong>
+        <span>Rendí el examen del curso (80% para aprobar) y obtené tu certificado verificable.</span>
+      </li>
+    </ol>
+  </section>
+
   <section aria-labelledby="h-cursos">
     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap">
       <h2 id="h-cursos">Cursos</h2>
@@ -195,6 +217,28 @@ const destacados = [
     ) : (
       <div class="grid">{destacados.map((d) => <FichaCard {...d} />)}</div>
     )}
+  </section>
+
+  <section class="seccion-porque" aria-labelledby="h-porque" style="margin-top:2rem">
+    <h2 id="h-porque">Por qué ConectaNex</h2>
+    <div class="grid-porque">
+      <div class="porque-item">
+        <strong>100% gratis y en español</strong>
+        <span>Sin pagos ni muros: todo el contenido, abierto, explicado claro.</span>
+      </div>
+      <div class="porque-item">
+        <strong>Contenido verificado</strong>
+        <span>Fichas con fuentes oficiales y fecha de revisión, para no estudiar cosas desactualizadas.</span>
+      </div>
+      <div class="porque-item">
+        <strong>Tu progreso es tuyo</strong>
+        <span>Cuenta propia con avance guardado y certificado verificable al aprobar.</span>
+      </div>
+      <div class="porque-item">
+        <strong>Práctico, no solo teoría</strong>
+        <span>IAs, skills, MCPs y trucos con ejemplos y comandos por sistema operativo.</span>
+      </div>
+    </div>
   </section>
 
   <section class="cta-band">
