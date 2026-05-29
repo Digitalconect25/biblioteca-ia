@@ -64,6 +64,15 @@ if (Astro.locals.user) return Astro.redirect('/dashboard');
       return;
     }
 
+    // Correo ya registrado: Supabase devuelve user con identities vacío (anti-enumeración).
+    if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      errorEl.textContent = 'Ese correo ya tiene una cuenta. Iniciá sesión o recuperá tu contraseña.';
+      errorEl.hidden = false;
+      btn.disabled = false;
+      btn.textContent = 'Crear cuenta';
+      return;
+    }
+
     // Si las confirmaciones por correo están activas no hay sesión todavía.
     if (data.session) {
       window.location.href = '/dashboard';
