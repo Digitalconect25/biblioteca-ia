@@ -2,25 +2,101 @@
 import Base from '../layouts/Base.astro';
 ---
 
-<Base titulo="Aportar">
-  <h1 class="titulo-pag">Aportar una ficha</h1>
-  <p class="sub">La biblioteca es abierta: cualquiera puede sumar o corregir contenido.</p>
+<Base titulo="Contacto" descripcion="Escribinos para sugerir, reportar errores o colaborar con la Academia de IA ConectaNex.">
+  <span class="eyebrow">Contacto</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">Escribinos</h1>
+  <p class="sub" style="max-width:60ch">
+    Sugerencias, errores de contenido o ganas de colaborar: contanos por acá.
+    Por seguridad, las contribuciones se revisan antes de publicarse.
+  </p>
 
-  <h2>Cómo funciona (v1)</h2>
-  <ol class="pasos">
-    <li>Hacé un <em>fork</em> del repositorio en GitHub.</li>
-    <li>Copiá la plantilla de <code>plantillas/ficha-skill.md</code> (o mcp / ia) a la carpeta correspondiente en <code>src/content/</code>.</li>
-    <li>Completá los campos. El nombre del archivo es el identificador (ej: <code>claude-code.md</code> → <code>/skills/claude-code/</code>).</li>
-    <li>Abrí un <em>Pull Request</em>. La validación automática revisa que el formato esté bien y te avisa si falta algo.</li>
-  </ol>
+  <form id="form-contacto" class="form-contacto">
+    <label class="form-campo">
+      <span>Nombre y apellido</span>
+      <input id="nombre" type="text" required minlength="2" maxlength="120" autocomplete="name" />
+    </label>
+    <label class="form-campo">
+      <span>Tu correo</span>
+      <input id="email" type="email" required maxlength="200" autocomplete="email" />
+    </label>
+    <label class="form-campo">
+      <span>Motivo</span>
+      <select id="tipo">
+        <option value="sugerencia">Sugerencia de contenido</option>
+        <option value="error">Reportar un error</option>
+        <option value="colaboracion">Quiero colaborar</option>
+        <option value="otra">Otra consulta</option>
+      </select>
+    </label>
+    <label class="form-campo">
+      <span>Mensaje</span>
+      <textarea id="mensaje" required minlength="5" maxlength="5000" rows="6" placeholder="Contanos en pocas líneas qué necesitás o qué querés aportar."></textarea>
+    </label>
+    <!-- Honeypot: los humanos no lo ven, los bots sí lo llenan. -->
+    <input
+      type="text"
+      id="website"
+      name="website"
+      tabindex="-1"
+      autocomplete="off"
+      aria-hidden="true"
+      style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none"
+    />
+    <button id="btn-enviar" type="submit" class="btn btn-primario">Enviar mensaje</button>
+  </form>
+  <p id="contacto-error" class="gate-error" hidden></p>
 
-  <h2>Reglas simples</h2>
-  <ul>
-    <li><strong>Lo estable va en la ficha</strong> (qué es, cómo funciona). <strong>Lo que cambia seguido</strong> (precios, límites) se enlaza a la fuente oficial, no se copia.</li>
-    <li>Poné <code>revisarAntesDe</code> para que la ficha avise cuando convenga revisarla.</li>
-    <li>Nivel: <code>principiante</code>, <code>intermedio</code> o <code>avanzado</code>.</li>
-    <li>Escribí claro y en español.</li>
-  </ul>
+  <div id="contacto-ok" class="etapa" hidden style="margin-top:1.25rem;max-width:560px">
+    <h2 style="margin-top:0">¡Gracias por escribir! 📬</h2>
+    <p class="sub" style="margin:0">Recibimos tu mensaje. Te respondemos a tu correo lo antes posible.</p>
+  </div>
 
-  <p>¿Dudas? Abrí un <em>issue</em> en GitHub y te ayudamos.</p>
+  <p class="sub" style="margin-top:2rem;max-width:60ch;font-size:.9rem">
+    Tu mensaje se guarda de forma segura: solo el equipo de la Academia lo puede leer.
+    No compartimos tu correo y podés pedir el borrado de tus datos cuando quieras.
+  </p>
 </Base>
+
+<script>
+  const form = document.getElementById('form-contacto') as HTMLFormElement;
+  const errorEl = document.getElementById('contacto-error') as HTMLParagraphElement;
+  const okEl = document.getElementById('contacto-ok') as HTMLDivElement;
+  const btn = document.getElementById('btn-enviar') as HTMLButtonElement;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.hidden = true;
+    btn.disabled = true;
+    btn.textContent = 'Enviando…';
+
+    const body = {
+      nombre: (document.getElementById('nombre') as HTMLInputElement).value.trim(),
+      email: (document.getElementById('email') as HTMLInputElement).value.trim(),
+      tipo: (document.getElementById('tipo') as HTMLSelectElement).value,
+      mensaje: (document.getElementById('mensaje') as HTMLTextAreaElement).value.trim(),
+      website: (document.getElementById('website') as HTMLInputElement).value,
+    };
+
+    try {
+      const res = await fetch('/api/contacto', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        errorEl.textContent = out?.error || 'No se pudo enviar. Probá de nuevo en un momento.';
+        errorEl.hidden = false;
+      } else {
+        form.hidden = true;
+        okEl.hidden = false;
+      }
+    } catch {
+      errorEl.textContent = 'Error de red. Probá de nuevo.';
+      errorEl.hidden = false;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Enviar mensaje';
+    }
+  });
+</script>
