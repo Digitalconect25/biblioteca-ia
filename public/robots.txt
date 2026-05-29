@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Rutas privadas o de cuenta: no indexar
+Disallow: /login
+Disallow: /registro
+Disallow: /dashboard
+Disallow: /mi-progreso
+Disallow: /certificados
+Disallow: /recuperar-password
+Disallow: /actualizar-password
+Disallow: /logout
+Disallow: /api/
+
+Sitemap: https://academia.conectanex.com/sitemap-index.xml
