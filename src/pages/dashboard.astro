@@ -64,7 +64,7 @@ const finalizados = cursos.filter((c) => c.total > 0 && c.done === c.total).leng
 <Base titulo="Mi panel" descripcion="Tu panel de alumno: cursos inscritos y tu avance.">
   <span class="eyebrow">Tu panel</span>
   <h1 class="titulo-pag" style="margin-top:1rem">Hola, {nombre.split(' ')[0]} 👋</h1>
-  <p class="sub" style="max-width:60ch">Tus cursos y tu avance. <a href="/mi-progreso/">Ver progreso detallado</a> · <a href="/certificados/">Mis certificados</a></p>
+  <p class="sub" style="max-width:60ch">Tus cursos y tu avance. <a href="/mi-progreso/">Ver progreso detallado</a> · <a href="/certificados/">Mis certificados</a> · <a href="/mis-compras/">Mis compras</a></p>
 
   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin:1.25rem 0">
     <div class="card" style="text-align:center"><strong style="font-size:2rem">{cursos.length}</strong><span class="sub">cursos inscritos</span></div>

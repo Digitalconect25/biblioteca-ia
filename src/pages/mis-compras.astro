@@ -1,0 +1,93 @@
+---
+import Base from '../layouts/Base.astro';
+
+export const prerender = false;
+
+const { user, supabase } = Astro.locals;
+if (!user) return Astro.redirect('/login?redirect=/mis-compras');
+
+const { data: compras } = await supabase
+  .from('academia_purchases')
+  .select('product_slug, amount, currency, status, created_at, stripe_session_id')
+  .order('created_at', { ascending: false });
+
+const PRODUCTOS: Record<string, { titulo: string; href: string }> = {
+  'codex-de-cero-a-cien': {
+    titulo: 'Codex de Cero a Cien',
+    href: '/guias/codex-de-cero-a-cien/',
+  },
+};
+
+const fmt = (amount: number | null, currency: string | null) => {
+  if (amount == null || !currency) return '—';
+  const value = amount / 100;
+  const cur = currency.toUpperCase();
+  if (cur === 'USD') return `$${value.toFixed(2)} USD`;
+  if (cur === 'EUR') return `€${value.toFixed(2)} EUR`;
+  if (cur === 'MXN') return `$${value.toFixed(0)} MXN`;
+  return `${value} ${cur}`;
+};
+
+const estadoLabel: Record<string, string> = {
+  paid: '✓ Pagado',
+  refunded: '↩ Reembolsado',
+  pending: '⏳ Pendiente',
+  failed: '✕ Falló',
+};
+
+const items = (compras ?? []).map((c: any) => ({
+  ...c,
+  producto: PRODUCTOS[c.product_slug] || { titulo: c.product_slug, href: '#' },
+  monto: fmt(c.amount, c.currency),
+  fecha: c.created_at ? new Date(c.created_at).toLocaleDateString('es') : '',
+  estado: estadoLabel[c.status] || c.status,
+}));
+---
+
+<Base titulo="Mis compras" descripcion="Historial de tus compras de guías premium de la Academia de IA ConectaNex.">
+  <span class="eyebrow">Tu cuenta</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">Mis compras</h1>
+  <p class="sub" style="max-width:60ch">
+    Tus guías compradas. Tenés acceso permanente desde tu cuenta. <a href="/dashboard/">Volver al panel</a>
+  </p>
+
+  {items.length === 0 ? (
+    <div class="etapa" style="max-width:560px;margin-top:1.25rem">
+      <p style="margin:0 0 .75rem">Todavía no compraste ninguna guía premium.</p>
+      <a class="btn btn-primario" href="/guias/">Ver guías disponibles</a>
+    </div>
+  ) : (
+    <div style="overflow-x:auto;margin-top:1.5rem">
+      <table style="width:100%;border-collapse:collapse;min-width:640px">
+        <thead>
+          <tr style="text-align:left;border-bottom:2px solid var(--border-strong)">
+            <th style="padding:.6rem .5rem">Producto</th>
+            <th style="padding:.6rem .5rem">Monto</th>
+            <th style="padding:.6rem .5rem">Estado</th>
+            <th style="padding:.6rem .5rem">Fecha</th>
+            <th style="padding:.6rem .5rem">Acceso</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((c) => (
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:.6rem .5rem"><strong>{c.producto.titulo}</strong></td>
+              <td style="padding:.6rem .5rem">{c.monto}</td>
+              <td style="padding:.6rem .5rem">{c.estado}</td>
+              <td style="padding:.6rem .5rem">{c.fecha}</td>
+              <td style="padding:.6rem .5rem">
+                {c.status === 'paid'
+                  ? <a href={c.producto.href}>Leer →</a>
+                  : <span class="sub">—</span>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+
+  <p class="sub" style="margin-top:2rem;font-size:.88rem">
+    Cualquier consulta sobre una compra, escribinos por <a href="/aportar/">contacto</a>.
+  </p>
+</Base>

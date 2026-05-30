@@ -2,31 +2,55 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
 
-export async function getStaticPaths() {
-  const todos = await getCollection('guiasCodex');
-  const ordenados = todos.sort((a, b) => {
-    if (a.data.tipo !== b.data.tipo) return a.data.tipo === 'capitulo' ? -1 : 1;
-    return String(a.data.n).localeCompare(String(b.data.n), 'es', { numeric: true });
-  });
-  return ordenados.map((entry, i) => ({
-    params: { slug: entry.id },
-    props: {
-      entry,
-      prev: ordenados[i - 1] || null,
-      next: ordenados[i + 1] || null,
-    },
-  }));
-}
+// La ruta es on-demand para poder hacer paywall por usuario.
+// Capítulo 1 queda gratis (preview); el resto requiere compra activa.
+export const prerender = false;
 
-const { entry, prev, next } = Astro.props;
-const { Content } = await render(entry);
+const PRODUCT_SLUG = 'codex-de-cero-a-cien';
+
+const { slug } = Astro.params;
+if (!slug) return Astro.redirect('/guias/codex-de-cero-a-cien/');
+
+const todos = await getCollection('guiasCodex');
+const ordenados = todos.sort((a, b) => {
+  if (a.data.tipo !== b.data.tipo) return a.data.tipo === 'capitulo' ? -1 : 1;
+  return String(a.data.n).localeCompare(String(b.data.n), 'es', { numeric: true });
+});
+const idx = ordenados.findIndex((e) => e.id === slug);
+if (idx === -1) return new Response('No encontrado', { status: 404 });
+
+const entry = ordenados[idx];
+const prev = ordenados[idx - 1] || null;
+const next = ordenados[idx + 1] || null;
 const d = entry.data;
 const tipoLabel = d.tipo === 'capitulo' ? `Capítulo ${d.n}` : `Apéndice ${d.n}`;
+
+// Reglas de acceso:
+// - Capítulo 1 = preview gratuito (todo el mundo).
+// - Resto = requiere compra activa.
+const isPreview = d.tipo === 'capitulo' && Number(d.n) === 1;
+
+const { user, supabase } = Astro.locals;
+
+let tieneCompra = false;
+if (user && supabase) {
+  const { data } = await supabase
+    .from('academia_purchases')
+    .select('id')
+    .eq('product_slug', PRODUCT_SLUG)
+    .eq('status', 'paid')
+    .limit(1)
+    .maybeSingle();
+  tieneCompra = !!data;
+}
+
+const tieneAcceso = isPreview || tieneCompra;
+const { Content } = await render(entry);
 ---
 
 <Base titulo={`${tipoLabel} · ${d.titulo}`} descripcion={d.resumen}>
   <p style="margin:0 0 .5rem"><a href="/guias/codex-de-cero-a-cien/">← Guía Codex de Cero a Cien</a></p>
-  <span class="eyebrow">{d.parte} · {tipoLabel}</span>
+  <span class="eyebrow">{d.parte} · {tipoLabel} {isPreview && '· Preview gratis'}</span>
   <h1 class="titulo-pag" style="margin-top:.75rem;max-width:24ch">{d.titulo}</h1>
   <p class="sub" style="max-width:62ch;margin-top:.5rem">{d.resumen}</p>
 
@@ -39,9 +63,35 @@ const tipoLabel = d.tipo === 'capitulo' ? `Capítulo ${d.n}` : `Apéndice ${d.n}
     </section>
   )}
 
-  <article class="prosa" style="margin-top:1.5rem;max-width:72ch">
-    <Content />
-  </article>
+  {tieneAcceso ? (
+    <article class="prosa" style="margin-top:1.5rem;max-width:72ch">
+      <Content />
+    </article>
+  ) : (
+    <section class="paywall">
+      <span class="paywall-tag">Contenido para compradores</span>
+      <h2>Comprá la guía para leer este capítulo</h2>
+      <p class="sub" style="max-width:54ch">
+        Tenés acceso al <strong>Capítulo 1 gratis</strong> como muestra. El resto de los 25 capítulos
+        y los 5 apéndices se desbloquean al comprar la guía completa.
+      </p>
+      <ul class="paywall-features">
+        <li>✓ Acceso inmediato a los 25 capítulos y 5 apéndices</li>
+        <li>✓ Lecturas ilimitadas desde tu cuenta, cuando quieras</li>
+        <li>✓ Actualizaciones gratis incluidas</li>
+        <li>✓ Pago único, sin suscripción</li>
+      </ul>
+      <p style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.25rem">
+        <a class="btn btn-primario" href="/guias/codex-de-cero-a-cien/comprar">Comprar — $9.90 USD / €9.90 EUR / $199 MXN</a>
+        <a class="btn" href="/guias/codex/cap-01-que-es-codex/">Leer el capítulo 1 gratis</a>
+      </p>
+      {!user && (
+        <p class="sub" style="margin-top:1rem;font-size:.88rem">
+          ¿Ya compraste la guía? <a href={`/login?redirect=${encodeURIComponent('/guias/codex/' + slug + '/')}`}>Iniciá sesión</a> para verla.
+        </p>
+      )}
+    </section>
+  )}
 
   <nav class="cap-nav" aria-label="Navegación de capítulos">
     {prev ? (
@@ -81,4 +131,29 @@ const tipoLabel = d.tipo === 'capitulo' ? `Capítulo ${d.n}` : `Apéndice ${d.n}
   .cap-nav-dir { color: var(--text-soft); font-size: .85rem; }
   .cap-nav-titulo { font-weight: 600; }
   @media (max-width: 640px) { .cap-nav { grid-template-columns: 1fr; } }
+
+  .paywall {
+    margin-top: 2rem;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: radial-gradient(130% 150% at 0% 0%, #0e2433 0%, #0a1620 55%, #060e15 100%);
+    color: #eaf6fb;
+  }
+  .paywall-tag {
+    display: inline-block;
+    background: rgba(56, 189, 248, 0.18);
+    color: #9beaf7;
+    padding: .25rem .55rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+  }
+  .paywall h2 { color: #fff; margin: .75rem 0 .5rem; }
+  .paywall .sub { color: #b9cdd6; }
+  .paywall-features { list-style: none; padding: 0; margin: 1rem 0; color: #d6e6ec; display: flex; flex-direction: column; gap: .35rem; }
+  .paywall .btn:not(.btn-primario) {
+    color: #eaf6fb; background: transparent; border-color: rgba(255,255,255,.35);
+  }
 </style>

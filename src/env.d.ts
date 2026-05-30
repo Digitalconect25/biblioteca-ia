@@ -5,6 +5,11 @@ interface ImportMetaEnv {
   readonly PUBLIC_SUPABASE_ANON_KEY: string;
   /** Solo server-side. Nunca exponer al cliente. */
   readonly SUPABASE_SERVICE_ROLE_KEY: string;
+  /** Stripe — solo server-side. */
+  readonly STRIPE_SECRET_KEY: string;
+  readonly STRIPE_WEBHOOK_SECRET: string;
+  /** Payment Link (puede ser PUBLIC, lo usa el botón Comprar). */
+  readonly PUBLIC_STRIPE_PAYMENT_LINK: string;
 }
 
 interface ImportMeta {

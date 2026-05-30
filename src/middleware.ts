@@ -2,7 +2,7 @@ import { defineMiddleware } from 'astro:middleware';
 import { createSupabaseServerClient } from './lib/supabase/server';
 
 // Rutas que exigen sesión. Se protegen por prefijo (incluye sus subrutas).
-const RUTAS_PRIVADAS = ['/dashboard', '/mi-progreso', '/certificados'];
+const RUTAS_PRIVADAS = ['/dashboard', '/mi-progreso', '/certificados', '/mis-compras'];
 
 export const onRequest = defineMiddleware(async (context, next) => {
   // Las páginas de contenido se prerenderizan en build: no hay request real ni
