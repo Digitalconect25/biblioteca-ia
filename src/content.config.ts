@@ -163,4 +163,18 @@ const cursos = defineCollection({
   }),
 });
 
-export const collections = { skills, mcps, ias, rutas, trucos, ensenanzas, cursos };
+// Guía premium "Codex de Cero a Cien"
+const guiasCodex = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/guias-codex' }),
+  schema: z.object({
+    titulo: z.string(),
+    parte: z.string(),
+    n: z.union([z.number(), z.string()]),
+    tipo: z.enum(['capitulo', 'apendice']),
+    resumen: z.string().max(280),
+    objetivos: z.array(z.string()).default([]),
+    actualizado: z.coerce.date(),
+  }),
+});
+
+export const collections = { skills, mcps, ias, rutas, trucos, ensenanzas, cursos, guiasCodex };

@@ -1,102 +1,35 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 
-const partes = [
-  {
-    titulo: 'Mundo Codex',
-    rango: 'Capítulos 1–4',
-    capitulos: [
-      { n: 1, titulo: 'Qué es Codex',
-        resumen: 'El agente de coding de OpenAI (no el modelo de 2021): las 6 superficies (desktop, móvil, web, Cloud, IDE, CLI), por qué se le dice agente y no asistente, diferencias con asistentes tradicionales.' },
-      { n: 2, titulo: 'Codex vs Claude Code',
-        resumen: 'Comparación completa: superficies, modelos, modos de aprobación, integraciones, precios y casos de uso. Cuándo conviene uno u otro, sin marketing.' },
-      { n: 3, titulo: 'Los Modelos de Codex',
-        resumen: 'Modelos disponibles en mayo 2026, capacidades, velocidad, costo, límites de contexto, cuándo cambiar entre ellos en plena tarea.' },
-      { n: 4, titulo: 'Instalar Codex: Desktop, Móvil, Web y Terminal',
-        resumen: 'Instalación paso a paso en las 6 superficies: macOS y Windows, iOS y Android, chatgpt.com/codex, VS Code, JetBrains y CLI. Troubleshooting incluido.' },
-    ],
-  },
-  {
-    titulo: 'Codex Desktop',
-    rango: 'Capítulos 5–7',
-    capitulos: [
-      { n: 5, titulo: 'Codex en la App de ChatGPT (macOS y Windows)',
-        resumen: 'Task pane, hot corner, screenshot tool, multi-ventana, integración con Spotlight y drag-drop, atajos, concurrencia, resume de sesiones, sync con web y móvil.' },
-      { n: 6, titulo: 'Codex en VS Code, Cursor y JetBrains',
-        resumen: 'Extensiones de IDE: instalación, auth, panel, sugerencias inline vs chat, diffs multi-archivo, atajos, coexistencia con Cursor AI y Copilot, configuración por IDE.' },
-      { n: 7, titulo: 'Workflows y Atajos en Escritorio',
-        resumen: 'Setup de workspace, atajos para refactor/test/explicar/arreglar, hot corners, integración con Raycast y Alfred, multi-monitor, ejemplos reales de desarrollo.' },
-    ],
-  },
-  {
-    titulo: 'Codex Móvil',
-    rango: 'Capítulos 8–10',
-    capitulos: [
-      { n: 8, titulo: 'Codex en iOS y Android',
-        resumen: 'App móvil: lanzar tasks, ver progreso, push notifications, diff viewer, aprobar PRs, adjuntos, dictado de voz, modo offline, diferencias entre iOS y Android.' },
-      { n: 9, titulo: 'Coding On-The-Go: Workflows Reales',
-        resumen: 'Escenarios móviles: revisar bugs camino al trabajo, aprobar PRs en el commute, delegar a Cloud antes de dormir, debug de producción desde el café. Cuándo NO codear en móvil.' },
-      { n: 10, titulo: 'Voice, Screenshots y Push Notifications',
-        resumen: 'Dictado de voz para describir tasks, screenshot capture con AI que lee imágenes, notifications inteligentes, Siri y Google Assistant, widgets y lock screen actions, permisos y privacidad.' },
-    ],
-  },
-  {
-    titulo: 'Codex Web y Cloud',
-    rango: 'Capítulos 11–14',
-    capitulos: [
-      { n: 11, titulo: 'Codex Web: chatgpt.com/codex',
-        resumen: 'Dashboard de tasks, repos conectados, nueva task, selección de branch, progreso en vivo, diff viewer side-by-side, comentarios inline, pause/resume, historial.' },
-      { n: 12, titulo: 'Codex Cloud: Delegación de Tareas Largas',
-        resumen: 'Qué es Cloud y cuándo delegar vs local, tasks ideales (refactors grandes, migraciones, batch jobs), límites, logs en vivo, concurrencia, automatización de branches y PRs.' },
-      { n: 13, titulo: 'Integración GitHub y PRs Automáticos',
-        resumen: 'Auth con GitHub para repos públicos/privados y orgs, Codex como reviewer, comentarios inline en PRs, sync con issues, GitHub Actions, mejores prácticas de seguridad.' },
-      { n: 14, titulo: 'Environments, Secrets y Networking',
-        resumen: 'Configuración de tasks en Cloud: setup.sh, env vars por proyecto, manejo de secrets, acceso a red on/off, sandbox vs open, caching, no commitear secrets nunca.' },
-    ],
-  },
-  {
-    titulo: 'Flujos de Trabajo Reales',
-    rango: 'Capítulos 15–19',
-    capitulos: [
-      { n: 15, titulo: 'Flujo TDD con Codex',
-        resumen: 'TDD automatizado: Codex escribe el test primero, luego el código, luego el refactor. Ejemplo end-to-end, trampas comunes (tests malos, código pasa pero está mal, mock excesivo).' },
-      { n: 16, titulo: 'Flujo de Refactoring Grande',
-        resumen: 'Refactors a escala: planeación con Codex, delegación a Cloud para no bloquear la laptop, revisión incremental de diffs, ejemplos (Express→Fastify, class→Hooks), cómo evitar refactors descontrolados.' },
-      { n: 17, titulo: 'Flujo de Code Review',
-        resumen: 'Codex como reviewer automático en PRs: setup, criterios (estilo, bugs, seguridad, perf), cuándo override, review humano + Codex en paralelo, comparación con CodeRabbit, plantillas.' },
-      { n: 18, titulo: 'Flujo de Bug Fixing con Repros',
-        resumen: 'Pipeline de bugs: reporte con screenshot/log → Codex genera repro test fallido → arregla el bug → test pasa → PR. Cuándo Codex falla (race conditions, memory leaks) y cuándo debug humano es esencial.' },
-      { n: 19, titulo: 'Multi-Modelo: Cuándo Cambiar Entre Modelos',
-        resumen: 'Selección de modelo por tarea: reasoner caro para arquitectura compleja, modelo rápido para trabajo repetitivo, balanceado para uso diario. Costo vs velocidad vs calidad.' },
-    ],
-  },
-  {
-    titulo: 'Avanzado',
-    rango: 'Capítulos 20–25',
-    capitulos: [
-      { n: 20, titulo: 'AGENTS.md y Memoria del Proyecto',
-        resumen: 'AGENTS.md a fondo: ubicaciones (global ~/.codex/, proyecto, subdirs), sintaxis, mejores prácticas, herencia, cómo Codex aplica las instrucciones, paridad con CLAUDE.md.' },
-      { n: 21, titulo: 'Conexiones e Integraciones',
-        resumen: 'GitHub, Slack notifications y slash commands, Linear y Jira, Vercel y Netlify, webhooks, OAuth, tools custom, MCP servers. Paso a paso por integración con ejemplos reales.' },
-      { n: 22, titulo: 'Codex SDK: Automatizar Codex Programáticamente',
-        resumen: 'Paquetes npm y pip, auth, API de tasks, polling de status, webhooks, ejemplos (refactor nocturno, Slack bot, CI auto-review), rate limits y costos vs API directa de OpenAI.' },
-      { n: 23, titulo: 'Codex CLI: Resumen Práctico',
-        resumen: 'Cuándo CLI > app, instalación, comandos más usados (codex, codex exec, codex apply, codex status), workflow CLI + app, modos de aprobación. Referencia completa en apéndice A.' },
-      { n: 24, titulo: 'Equipos, Enterprise y Seguridad',
-        resumen: 'ChatGPT Team vs Enterprise, admin console, SSO/SAML, control de acceso a repos, audit logs, data residency, compliance (SOC2, HIPAA), retention, opt-out de training, IP del código generado.' },
-      { n: 25, titulo: 'Troubleshooting y Mejores Prácticas',
-        resumen: 'Errores comunes y soluciones (app no abre, login falla, Cloud no inicia, GitHub no conecta, modelo lento, costos descontrolados), rate limiting, optimización, antipatrones, recursos de soporte.' },
-    ],
-  },
-];
+const todos = await getCollection('guiasCodex');
+const capitulos = todos
+  .filter((e) => e.data.tipo === 'capitulo')
+  .sort((a, b) => Number(a.data.n) - Number(b.data.n));
+const apendices = todos
+  .filter((e) => e.data.tipo === 'apendice')
+  .sort((a, b) => String(a.data.n).localeCompare(String(b.data.n)));
 
-const apendices = [
-  { letra: 'A', titulo: 'Referencia completa de la CLI', resumen: 'Todos los comandos, sub-comandos y flags de codex-cli.' },
-  { letra: 'B', titulo: 'Settings y configuración por superficie', resumen: 'Cada opción explicada con valores por defecto y recomendaciones.' },
-  { letra: 'C', titulo: 'Variables de entorno', resumen: 'Las variables que Codex lee y cómo afectan cada superficie.' },
-  { letra: 'D', titulo: 'Glosario', resumen: '120+ términos explicados en lenguaje simple.' },
-  { letra: 'E', titulo: 'Changelog (Mayo 2026)', resumen: 'Cambios de modelos, integraciones y app por versión.' },
+const ordenPartes = [
+  'Mundo Codex',
+  'Codex Desktop',
+  'Codex Móvil',
+  'Codex Web y Cloud',
+  'Flujos de Trabajo Reales',
+  'Avanzado',
 ];
+const partesMap = new Map<string, typeof capitulos>();
+for (const cap of capitulos) {
+  const lista = partesMap.get(cap.data.parte) || [];
+  lista.push(cap);
+  partesMap.set(cap.data.parte, lista);
+}
+const partes = ordenPartes
+  .map((titulo) => ({ titulo, capitulos: partesMap.get(titulo) || [] }))
+  .filter((p) => p.capitulos.length > 0);
+
+const totalCapitulos = capitulos.length;
+const totalApendices = apendices.length;
 
 const audiencias = [
   { nombre: 'Curiosos y principiantes',
@@ -110,7 +43,7 @@ const audiencias = [
 ];
 ---
 
-<Base titulo="Codex de Cero a Cien — Guía completa en español" descripcion="La guía más completa en español sobre Codex de OpenAI: 500+ páginas, 25 capítulos y 5 apéndices. Del primer prompt al refactor enterprise.">
+<Base titulo="Codex de Cero a Cien — Guía completa en español" descripcion="La guía más completa en español sobre Codex de OpenAI: 25 capítulos y 5 apéndices. Del primer prompt al refactor enterprise.">
 
   <!-- Hero -->
   <section class="guia-hero">
@@ -118,29 +51,29 @@ const audiencias = [
       <span class="eyebrow">Guía premium · ConectaNex</span>
       <h1 class="titulo-pag hero-h1">Codex de Cero a Cien <span class="anio">— Mayo 2026</span></h1>
       <p class="sub hero-sub">
-        La guía más completa en español sobre Codex de OpenAI. 500+ páginas. 25 capítulos.
-        5 apéndices de referencia. Todo lo que necesitás para dominar Codex: desktop, móvil,
-        web, Cloud, IDE y CLI — del primer prompt al refactor enterprise.
+        La guía más completa en español sobre Codex de OpenAI. {totalCapitulos} capítulos y
+        {totalApendices} apéndices de referencia. Todo lo que necesitás para dominar Codex:
+        desktop, móvil, web, Cloud, IDE y CLI — del primer prompt al refactor enterprise.
       </p>
       <p class="hero-cta">
-        <a class="btn btn-primario" href="/aportar/?ref=codex-cero-a-cien#form-contacto">Reservar tu copia</a>
+        <a class="btn btn-primario" href="/aportar/?ref=codex-cero-a-cien#form-contacto">Reservar tu copia · $9.90</a>
         <a class="btn" href="#temario">Ver temario completo</a>
       </p>
       <ul class="hero-stats" aria-label="Lo que incluye la guía">
-        <li><strong>500+</strong> páginas</li>
-        <li><strong>25</strong> capítulos</li>
-        <li><strong>5</strong> apéndices</li>
-        <li><strong>$29</strong> USD · $599 MXN</li>
+        <li><strong>{totalCapitulos}</strong> capítulos</li>
+        <li><strong>{totalApendices}</strong> apéndices</li>
+        <li><strong>$9.90</strong> USD · $199 MXN</li>
+        <li><strong>Pago único</strong> sin suscripción</li>
       </ul>
     </div>
     <aside class="guia-precio" aria-label="Precio y compra">
       <span class="precio-tag">Pre-venta</span>
-      <p class="precio-cifra">$29 <small>USD</small></p>
-      <p class="precio-mxn">$599 MXN · pago único, sin suscripción</p>
+      <p class="precio-cifra">$9.90 <small>USD</small></p>
+      <p class="precio-mxn">$199 MXN · pago único, sin suscripción</p>
       <ul class="precio-features">
         <li>✓ Descarga digital instantánea cuando salga</li>
         <li>✓ Actualizaciones gratis (Codex se mueve rápido)</li>
-        <li>✓ Newsletter exclusivo con novedades de IA</li>
+        <li>✓ Newsletter exclusivo con novedades</li>
         <li>✓ PDF protegido para cualquier dispositivo</li>
       </ul>
       <a class="btn btn-primario" href="/aportar/?ref=codex-cero-a-cien#form-contacto">Reservar mi copia</a>
@@ -152,11 +85,11 @@ const audiencias = [
   <section style="margin-top:2.5rem" aria-labelledby="h-aprenderas">
     <h2 id="h-aprenderas">Lo que vas a aprender</h2>
     <ul class="lista-check">
-      <li>500+ páginas de contenido práctico en español.</li>
-      <li>25 capítulos que cubren <strong>todo</strong> el ecosistema Codex.</li>
-      <li>5 apéndices de referencia rápida (CLI, settings, env vars, glosario, changelog).</li>
+      <li>Contenido práctico en español, original y verificado.</li>
+      <li>{totalCapitulos} capítulos que cubren <strong>todo</strong> el ecosistema Codex.</li>
+      <li>{totalApendices} apéndices de referencia rápida (CLI, settings, env vars, glosario, changelog).</li>
       <li>Ejemplos de código listos para copiar y usar.</li>
-      <li>Tips, advertencias y notas en cada capítulo.</li>
+      <li>Tips, advertencias y antipatrones en cada capítulo.</li>
       <li>Glosario con 120+ términos en lenguaje simple.</li>
       <li>Actualizaciones gratis vía newsletter exclusivo.</li>
       <li>PDF protegido para leer en cualquier dispositivo.</li>
@@ -179,21 +112,21 @@ const audiencias = [
   <!-- Temario -->
   <section id="temario" style="margin-top:2rem" aria-labelledby="h-temario">
     <h2 id="h-temario">Contenido completo</h2>
-    <p class="sub">25 capítulos repartidos en 6 partes, más 5 apéndices de referencia.</p>
+    <p class="sub">{totalCapitulos} capítulos en 6 partes, más {totalApendices} apéndices de referencia. Tocá cada uno para leerlo.</p>
 
     {partes.map((p) => (
       <article class="guia-parte">
         <header class="guia-parte-h">
           <h3>{p.titulo}</h3>
-          <span class="badge">{p.rango}</span>
+          <span class="badge">{p.capitulos.length} capítulos</span>
         </header>
         <ol class="guia-capitulos">
           {p.capitulos.map((c) => (
             <li>
-              <span class="cap-n">{String(c.n).padStart(2, '0')}</span>
+              <span class="cap-n">{String(c.data.n).padStart(2, '0')}</span>
               <div>
-                <strong>{c.titulo}</strong>
-                <span>{c.resumen}</span>
+                <a href={`/guias/codex/${c.id}/`}><strong>{c.data.titulo}</strong></a>
+                <span>{c.data.resumen}</span>
               </div>
             </li>
           ))}
@@ -209,10 +142,10 @@ const audiencias = [
       <ol class="guia-capitulos">
         {apendices.map((a) => (
           <li>
-            <span class="cap-n">{a.letra}</span>
+            <span class="cap-n">{a.data.n}</span>
             <div>
-              <strong>{a.titulo}</strong>
-              <span>{a.resumen}</span>
+              <a href={`/guias/codex/${a.id}/`}><strong>{a.data.titulo}</strong></a>
+              <span>{a.data.resumen}</span>
             </div>
           </li>
         ))}
@@ -223,11 +156,11 @@ const audiencias = [
   <!-- CTA final -->
   <section class="cta-band" style="margin-top:2.5rem">
     <span class="eyebrow" style="background:rgba(6,182,212,0.18);color:#9beaf7">Pre-venta abierta</span>
-    <h2 style="font-size:clamp(1.6rem,4vw,2.4rem);margin:1rem 0 .5rem">Asegurá tu copia al precio de lanzamiento</h2>
+    <h2 style="font-size:clamp(1.6rem,4vw,2.4rem);margin:1rem 0 .5rem">Asegurá tu copia a $9.90</h2>
     <p class="sub" style="max-width:58ch;margin:0 auto 1.5rem">
-      Estamos terminando los capítulos. Reservá tu copia y te avisamos cuando salga.
+      Todos los capítulos ya están escritos. Reservá tu copia y te avisamos cuando habilitemos el pago.
       Pago único, sin suscripción, actualizaciones incluidas.
     </p>
-    <a class="btn btn-primario" href="/aportar/?ref=codex-cero-a-cien#form-contacto" style="background:var(--accent);border-color:var(--accent);color:#06121a">Reservar — $29 USD</a>
+    <a class="btn btn-primario" href="/aportar/?ref=codex-cero-a-cien#form-contacto" style="background:var(--accent);border-color:var(--accent);color:#06121a">Reservar — $9.90 USD</a>
   </section>
 </Base>
