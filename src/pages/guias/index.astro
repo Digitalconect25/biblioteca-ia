@@ -1,0 +1,41 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const guias = [
+  {
+    href: '/guias/codex-de-cero-a-cien/',
+    titulo: 'Codex de Cero a Cien',
+    subtitulo: 'La guía más completa en español sobre Codex de OpenAI.',
+    paginas: 500,
+    capitulos: 25,
+    apendices: 5,
+    precio: '$29 USD',
+    estado: 'Pre-venta',
+  },
+];
+---
+
+<Base titulo="Guías premium" descripcion="Guías PDF en profundidad sobre herramientas y agentes de IA. Pago único, en español, actualizaciones incluidas.">
+  <span class="eyebrow">Guías premium</span>
+  <h1 class="titulo-pag" style="margin-top:1rem">Guías en profundidad</h1>
+  <p class="sub" style="max-width:62ch">
+    Mientras la academia es 100% gratis, las guías premium son recursos largos en profundidad
+    sobre temas específicos. Pago único, sin suscripción, con actualizaciones gratis.
+  </p>
+
+  <div class="grid" style="margin-top:1.5rem">
+    {guias.map((g) => (
+      <a class="card" href={g.href}>
+        <div class="badges">
+          <span class="badge gratis">{g.estado}</span>
+          <span class="badge">{g.precio}</span>
+        </div>
+        <strong style="font-size:1.15rem">{g.titulo}</strong>
+        <span style="color:var(--text-soft)">{g.subtitulo}</span>
+        <span style="color:var(--text-soft);margin-top:auto;font-size:.85rem">
+          {g.paginas}+ páginas · {g.capitulos} capítulos · {g.apendices} apéndices
+        </span>
+      </a>
+    ))}
+  </div>
+</Base>
